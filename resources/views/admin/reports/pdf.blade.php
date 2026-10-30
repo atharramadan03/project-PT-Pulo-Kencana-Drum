@@ -178,7 +178,7 @@
                 <div style="font-size: 7.5pt; color: #64748b;">Sortir / Tiup / Cuci / Cat</div>
             </td>
             <td class="metric-box">
-                <div class="metric-title">Total Afkir (Reject)</div>
+                <div class="metric-title">Total Reject</div>
                 <div class="metric-value" style="color: #b91c1c;">{{ number_format($metrics['total_afkir']) }} <span style="font-size: 8pt; font-weight: normal;">Pcs</span></div>
                 <div style="font-size: 7.5pt; color: #64748b;">Kerusakan Tidak Lolos Rekondisi</div>
             </td>
@@ -235,7 +235,7 @@
                 <th style="width: 13%;">Tgl Lapangan</th>
                 <th style="width: 13%;">Tgl Input Sistem</th>
                 <th style="width: 9%;" class="text-center">Diproses</th>
-                <th style="width: 8%;" class="text-center">Afkir</th>
+                <th style="width: 8%;" class="text-center">Reject</th>
                 <th style="width: 8%;" class="text-center">Lolos</th>
                 <th style="width: 15%;">Pelapor & Catatan</th>
             </tr>

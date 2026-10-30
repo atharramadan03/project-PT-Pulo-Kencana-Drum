@@ -16,7 +16,9 @@ class DrumProcessIndex extends Component
 
     // Filter
     public string $search = '';
+
     public string $filterJenisProses = '';
+
     public string $filterBatchId = '';
 
     // Modal Input Log Proses Baru
@@ -82,9 +84,10 @@ class DrumProcessIndex extends Component
     {
         $this->validate();
 
-        // Validasi SOP: Jumlah afkir tidak boleh melebihi jumlah yang diproses
+        // Validasi SOP: Jumlah reject tidak boleh melebihi jumlah yang diproses
         if ($this->jumlah_afkir > $this->jumlah_diproses) {
-            $this->addError('jumlah_afkir', 'Jumlah afkir tidak boleh melebihi jumlah drum yang diproses.');
+            $this->addError('jumlah_afkir', 'Jumlah reject tidak boleh melebihi jumlah drum yang diproses.');
+
             return;
         }
 
@@ -119,10 +122,10 @@ class DrumProcessIndex extends Component
             $s = trim($this->search);
             $query->where(function ($q) use ($s) {
                 $q->where('pelapor_gudang', 'like', "%{$s}%")
-                  ->orWhere('hasil_catatan', 'like', "%{$s}%")
-                  ->orWhereHas('drumBatch', function ($b) use ($s) {
-                      $b->where('kode_batch', 'like', "%{$s}%");
-                  });
+                    ->orWhere('hasil_catatan', 'like', "%{$s}%")
+                    ->orWhereHas('drumBatch', function ($b) use ($s) {
+                        $b->where('kode_batch', 'like', "%{$s}%");
+                    });
             });
         }
 
@@ -135,8 +138,8 @@ class DrumProcessIndex extends Component
         }
 
         $logs = $query->orderBy('tanggal_aktivitas', 'desc')
-                      ->orderBy('id', 'desc')
-                      ->paginate(10);
+            ->orderBy('id', 'desc')
+            ->paginate(10);
 
         $daftarBatch = DrumBatch::orderBy('id', 'desc')->get();
 

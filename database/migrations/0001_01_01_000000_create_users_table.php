@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();                              // Email resmi
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');                                     // Password terenkripsi (Bcrypt)
-            $table->enum('role', ['admin_kantor', 'satpam'])->default('admin_kantor'); // Role resmi sistem
+            $table->enum('role', ['admin_kantor', 'satpam', 'admin_keuangan'])->default('admin_kantor'); // Role resmi sistem
             $table->string('shift_jaga')->nullable();                       // Atribut Satpam di ERD: Pagi/Siang/Malam
             $table->string('status_akun')->default('aktif');                // Status: aktif / nonaktif
             $table->rememberToken();

@@ -1,298 +1,347 @@
-<div>
-    <!-- Page Heading Didalam Lingkup Livewire -->
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h2 class="font-bold text-2xl text-slate-800 leading-tight">
-                        Data Penerimaan & Transit Batch Drum
-                    </h2>
-                    <p class="text-sm text-slate-500 mt-1">
-                        Pencatatan batch drum masuk, kategori jenis, serta pemantauan masa pengendapan
-                    </p>
-                </div>
-                <button 
-                    wire:click="bukaCreateModal"
-                    type="button" 
-                    class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm transition inline-flex items-center gap-2 cursor-pointer"
-                >
-                    <span>➕ Input Batch Baru</span>
-                </button>
-            </div>
+<div class="space-y-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+            <h1 class="font-bold text-xl text-[#0F172A] leading-tight">
+                Data Penerimaan & Transit Batch Drum
+            </h1>
+            <p class="text-xs text-[#64748B] mt-0.5">
+                Daftar batch penerimaan drum dan status pengendapan gudang
+            </p>
         </div>
-    </header>
+        <button 
+            wire:click="bukaCreateModal"
+            type="button" 
+            class="px-3.5 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer"
+        >
+            <x-icon name="plus" class="w-4 h-4" />
+            <span>Tambah Data Drum</span>
+        </button>
+    </div>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @if (session('success'))
+        <div class="p-3.5 rounded-xl bg-[#DCFCE7] border border-green-200 text-[#166534] flex items-center gap-2 text-xs font-medium">
+            <x-icon name="circle-check" class="w-4 h-4 shrink-0" />
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
 
-            <!-- Flash Message Sukses -->
-            @if (session('success'))
-                <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span>✅</span>
-                        <span class="text-sm font-medium">{{ session('success') }}</span>
-                    </div>
-                </div>
-            @endif
-
-            <!-- Baris Pencarian & Filter -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="w-full md:w-80">
-                    <input 
-                        wire:model.live.debounce.300ms="search" 
-                        type="text" 
-                        placeholder="🔍 Cari Kode Batch / Jenis..." 
-                        class="w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500 text-sm text-slate-800"
-                    />
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <!-- Filter Status Pengendapan -->
-                    <select 
-                        wire:model.live="filterPengendapan"
-                        class="rounded-xl border-slate-200 text-xs font-medium text-slate-700 focus:border-blue-500 focus:ring-blue-500"
-                    >
-                        <option value="">Semua Status Pengendapan</option>
-                        <option value="Transit">Status: Transit</option>
-                        <option value="Mengendap">Status: Mengendap</option>
-                        <option value="Selesai">Status: Selesai</option>
-                    </select>
-
-                    <!-- Filter Status Proses -->
-                    <select 
-                        wire:model.live="filterProses"
-                        class="rounded-xl border-slate-200 text-xs font-medium text-slate-700 focus:border-blue-500 focus:ring-blue-500"
-                    >
-                        <option value="">Semua Status Proses</option>
-                        <option value="Diterima">Proses: Diterima</option>
-                        <option value="Dalam Proses">Proses: Dalam Proses</option>
-                        <option value="Selesai">Proses: Selesai</option>
-                    </select>
-                </div>
+    <!-- Search & Filter Bar -->
+    <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col md:flex-row justify-between items-center gap-3">
+        <div class="relative w-full md:w-72">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#64748B]">
+                <x-icon name="search" class="w-3.5 h-3.5" />
             </div>
+            <input 
+                wire:model.live.debounce.300ms="search" 
+                type="text" 
+                placeholder="Cari kode batch atau jenis..." 
+                class="w-full pl-9 pr-3 py-1.5 text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:bg-white focus:border-[#2563EB]"
+            />
+        </div>
 
-            <!-- Tabel Data Batch Drum -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-                                <th class="p-4">Kode Batch</th>
-                                <th class="p-4">Tgl Terima</th>
-                                <th class="p-4">Kategori Jenis</th>
-                                <th class="p-4 text-center">Jumlah</th>
-                                <th class="p-4">Status Pengendapan</th>
-                                <th class="p-4">Status Proses</th>
-                                <th class="p-4">Sumber Laporan</th>
-                                <th class="p-4 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">
-                            @forelse ($batches as $batch)
-                                <tr class="hover:bg-slate-50/80 transition">
-                                    <td class="p-4 font-mono font-bold text-xs text-blue-700">
-                                        {{ $batch->kode_batch }}
-                                    </td>
-                                    <td class="p-4 text-slate-700 font-medium">
-                                        {{ $batch->tanggal_penerimaan->format('d/m/Y') }}
-                                    </td>
-                                    <td class="p-4 text-slate-800">
-                                        {{ $batch->kategori_jenis ?? '-' }}
-                                    </td>
-                                    <td class="p-4 text-center font-bold text-slate-900">
-                                        {{ number_format($batch->jumlah_diterima) }}
-                                    </td>
-                                    <td class="p-4">
-                                        @if ($batch->status_pengendapan === 'Transit')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                                ⏳ Transit
-                                            </span>
-                                        @elseif ($batch->status_pengendapan === 'Mengendap')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                                                💧 Mengendap
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                ✅ Selesai
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="p-4">
-                                        @if ($batch->status_proses === 'Diterima')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
-                                                Diterima
-                                            </span>
-                                        @elseif ($batch->status_proses === 'Dalam Proses')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">
-                                                ⚙️ Dalam Proses
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700">
-                                                🏁 Selesai
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="p-4 text-xs text-slate-500">
-                                        {{ $batch->sumber_laporan ?? '-' }}
-                                    </td>
-                                    <td class="p-4 text-center">
-                                        <button 
-                                            wire:click="bukaStatusModal({{ $batch->id }})"
-                                            type="button" 
-                                            class="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition"
-                                        >
-                                            ✏️ Update
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="p-12 text-center text-slate-400">
-                                        <div class="text-4xl mb-2">📦</div>
-                                        <div class="font-semibold text-slate-600">Belum ada data batch drum</div>
-                                        <div class="text-xs mt-1">Klik tombol "Input Batch Baru" di atas untuk mencatat penerimaan drum dari gudang.</div>
-                                        <div class="mt-4">
-                                            <button 
-                                                wire:click="bukaCreateModal"
-                                                type="button" 
-                                                class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition inline-flex items-center gap-1.5 cursor-pointer"
-                                            >
-                                                <span>➕ Input Batch Baru Sekarang</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <select 
+                wire:model.live="filterPengendapan"
+                class="rounded-lg border-[#E2E8F0] bg-[#F7F9FC] text-xs font-medium text-[#0F172A] py-1.5 pl-3 pr-8 focus:border-[#2563EB] focus:bg-white"
+            >
+                <option value="">Semua Pengendapan</option>
+                <option value="Transit">Transit</option>
+                <option value="Mengendap">Mengendap</option>
+                <option value="Selesai">Selesai</option>
+            </select>
 
-                @if ($batches->hasPages())
-                    <div class="p-4 border-t border-slate-100">
-                        {{ $batches->links() }}
-                    </div>
-                @endif
-            </div>
-
+            <select 
+                wire:model.live="filterProses"
+                class="rounded-lg border-[#E2E8F0] bg-[#F7F9FC] text-xs font-medium text-[#0F172A] py-1.5 pl-3 pr-8 focus:border-[#2563EB] focus:bg-white"
+            >
+                <option value="">Semua Status Proses</option>
+                <option value="Diterima">Diterima</option>
+                <option value="Dalam Proses">Dalam Proses</option>
+                <option value="Selesai">Selesai</option>
+            </select>
         </div>
     </div>
 
-    <!-- MODAL 1: INPUT BATCH BARU -->
+    <!-- Data Table -->
+    <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
+                    <tr>
+                        <th class="py-3 px-4 whitespace-nowrap">No. Batch</th>
+                        <th class="py-3 px-4 whitespace-nowrap">Jenis Drum</th>
+                        <th class="py-3 px-4 whitespace-nowrap text-center">Jumlah</th>
+                        <th class="py-3 px-4 whitespace-nowrap">Pengendapan</th>
+                        <th class="py-3 px-4 whitespace-nowrap">Status Proses</th>
+                        <th class="py-3 px-4 whitespace-nowrap">Tanggal Masuk</th>
+                        <th class="py-3 px-4 whitespace-nowrap">Sumber Laporan</th>
+                        <th class="py-3 px-4 whitespace-nowrap text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse ($batches as $batch)
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-semibold text-[#0F172A] whitespace-nowrap">
+                                {{ $batch->kode_batch }}
+                            </td>
+                            <td class="py-2.5 px-4 text-[#0F172A] whitespace-nowrap">
+                                {{ $batch->kategori_jenis ?? '-' }}
+                            </td>
+                            <td class="py-2.5 px-4 text-center font-semibold text-[#0F172A] whitespace-nowrap tabular-nums">
+                                {{ number_format($batch->jumlah_diterima, 0, ',', '.') }}
+                            </td>
+                            <td class="py-2.5 px-4 whitespace-nowrap">
+                                @if ($batch->status_pengendapan === 'Transit')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-[#475569]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                        Transit
+                                    </span>
+                                @elseif ($batch->status_pengendapan === 'Mengendap')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#FEF3C7] text-[#92400E]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
+                                        Mengendap
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                                        Selesai
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-2.5 px-4 whitespace-nowrap">
+                                @if ($batch->status_proses === 'Diterima')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-[#475569]">
+                                        Diterima
+                                    </span>
+                                @elseif ($batch->status_proses === 'Dalam Proses')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-[#2563EB]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+                                        Diproses
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                                        Selesai
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-2.5 px-4 text-[#64748B] whitespace-nowrap tabular-nums">
+                                {{ $batch->tanggal_penerimaan->format('d M Y') }}
+                            </td>
+                            <td class="py-2.5 px-4 text-[#64748B] max-w-[180px] truncate">
+                                {{ $batch->sumber_laporan ?? '-' }}
+                            </td>
+                            <td class="py-2.5 px-4 text-center whitespace-nowrap">
+                                <button 
+                                    wire:click="bukaStatusModal({{ $batch->id }})"
+                                    type="button" 
+                                    class="px-2.5 py-1 rounded-lg border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] text-xs font-medium transition cursor-pointer"
+                                >
+                                    Ubah Status
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="py-10 text-center text-xs text-[#64748B]">
+                                Belum ada data batch drum.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if ($batches->hasPages())
+            <div class="px-4 py-3 border-t border-[#E2E8F0] bg-white">
+                {{ $batches->links() }}
+            </div>
+        @endif
+    </div>
+
+    <!-- Modal 1: Tambah Data Drum (Clean White Style per Reference) -->
     @if ($showCreateModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-in fade-in duration-150">
-                <div class="bg-blue-900 text-white p-6 flex justify-between items-center">
+        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden border border-[#E2E8F0]">
+                <div class="px-5 py-4 border-b border-[#E2E8F0] flex justify-between items-center">
                     <div>
-                        <h3 class="text-lg font-bold">Input Batch Drum Penerimaan</h3>
-                        <p class="text-xs text-blue-200 mt-0.5">Mencatat data fisik drum masuk dari laporan petugas gudang</p>
+                        <h3 class="text-base font-bold text-[#0F172A]">Tambah Data Drum</h3>
+                        <p class="text-xs text-[#64748B] mt-0.5">Kode Otomatis: <span class="font-mono font-semibold text-[#2563EB]">{{ $kode_batch }}</span></p>
                     </div>
-                    <div class="text-right">
-                        <span class="text-[10px] text-blue-300 block uppercase">Kode Batch</span>
-                        <span class="font-mono font-bold text-sm text-white">{{ $kode_batch }}</span>
-                    </div>
+                    <button 
+                        wire:click="tutupCreateModal" 
+                        type="button" 
+                        class="p-1 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100"
+                    >
+                        <x-icon name="x" class="w-4 h-4" />
+                    </button>
                 </div>
 
-                <form wire:submit="simpanBatch" class="p-6 space-y-4">
-                    
-                    <div class="grid grid-cols-2 gap-4">
+                <form wire:submit="simpanBatch" class="p-5 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Terima <span class="text-rose-500">*</span></label>
-                            <input wire:model="tanggal_penerimaan" type="date" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500" required />
+                            <label class="block text-xs font-medium text-[#0F172A] mb-1">Tanggal Masuk <span class="text-rose-500">*</span></label>
+                            <input 
+                                wire:model="tanggal_penerimaan" 
+                                type="date" 
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" 
+                                required 
+                            />
                             @error('tanggal_penerimaan') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Drum (Pcs) <span class="text-rose-500">*</span></label>
-                            <input wire:model="jumlah_diterima" type="number" min="1" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500" required />
+                            <label class="block text-xs font-medium text-[#0F172A] mb-1">Jumlah Drum <span class="text-rose-500">*</span></label>
+                            <input 
+                                wire:model="jumlah_diterima" 
+                                type="number" 
+                                min="1" 
+                                placeholder="Contoh: 150"
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" 
+                                required 
+                            />
                             @error('jumlah_diterima') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Jenis Drum <span class="text-rose-500">*</span></label>
-                        <select wire:model="kategori_jenis" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500">
-                            <option value="Besi Tight Head">Besi Tight Head (Bung Ring / Buntu)</option>
-                            <option value="Besi Open Top">Besi Open Top (Tutup Terbuka)</option>
-                            <option value="Plastik HDPE">Plastik HDPE 200 Liter</option>
-                            <option value="Drum Galvanis">Drum Galvanis</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Status Pengendapan</label>
-                            <select wire:model="status_pengendapan" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="Transit">Transit (Baru Tiba)</option>
-                                <option value="Mengendap">Masa Pengendapan</option>
-                                <option value="Selesai">Pengendapan Selesai</option>
+                            <label class="block text-xs font-medium text-[#0F172A] mb-1">Jenis Drum <span class="text-rose-500">*</span></label>
+                            <select 
+                                wire:model="kategori_jenis" 
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                            >
+                                <option value="Besi Tight Head">Besi Tight Head</option>
+                                <option value="Besi Open Top">Besi Open Top</option>
+                                <option value="Plastik HDPE">Plastik HDPE</option>
+                                <option value="Drum Galvanis">Drum Galvanis</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Status Proses Awal</label>
-                            <select wire:model="status_proses" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="Diterima">Diterima</option>
-                                <option value="Dalam Proses">Dalam Proses</option>
+                            <label class="block text-xs font-medium text-[#0F172A] mb-1">Status Pengendapan</label>
+                            <select 
+                                wire:model.live="status_pengendapan" 
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                            >
+                                <option value="Transit">Transit</option>
+                                <option value="Mengendap">Mengendap</option>
                                 <option value="Selesai">Selesai</option>
                             </select>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sumber Laporan Fisik Gudang</label>
-                        <input wire:model="sumber_laporan" type="text" placeholder="Contoh: Nota Fisik Mandor Pak Joko" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500" />
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-[#0F172A] mb-1">Status Proses</label>
+                            <select 
+                                wire:model.live="status_proses" 
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                            >
+                                <option value="Diterima">Diterima</option>
+                                <option value="Dalam Proses">Dalam Proses</option>
+                                <option value="Selesai">Selesai</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-[#0F172A] mb-1">Sumber Laporan</label>
+                            <input 
+                                wire:model="sumber_laporan" 
+                                type="text" 
+                                placeholder="Contoh: Mandor Gudang" 
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" 
+                            />
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Kondisi Awal (Opsional)</label>
-                        <textarea wire:model="catatan" rows="2" placeholder="Contoh: Drum karat ringan, sisa residu cat" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        <label class="block text-xs font-medium text-[#0F172A] mb-1">Keterangan</label>
+                        <textarea 
+                            wire:model="catatan" 
+                            rows="2" 
+                            placeholder="Masukkan keterangan tambahan..." 
+                            class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        ></textarea>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
-                        <button wire:click="tutupCreateModal" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-100">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm">Simpan Batch</button>
+                    <div class="pt-3 border-t border-[#E2E8F0] flex justify-end gap-2">
+                        <button 
+                            wire:click="tutupCreateModal" 
+                            type="button" 
+                            class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] text-xs font-medium hover:bg-slate-50 transition cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold transition cursor-pointer"
+                        >
+                            Simpan
+                        </button>
                     </div>
-
                 </form>
             </div>
         </div>
     @endif
 
-    <!-- MODAL 2: UPDATE STATUS CEPAT -->
+    <!-- Modal 2: Ubah Status Batch -->
     @if ($showStatusModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 animate-in fade-in duration-150">
-                <div class="bg-slate-900 text-white p-5">
-                    <h3 class="text-base font-bold">Update Status Batch Drum</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Perbarui status masa transit dan status alur proses</p>
+        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden border border-[#E2E8F0]">
+                <div class="px-5 py-4 border-b border-[#E2E8F0] flex justify-between items-center">
+                    <h3 class="text-base font-bold text-[#0F172A]">Ubah Status Batch</h3>
+                    <button 
+                        wire:click="tutupStatusModal" 
+                        type="button" 
+                        class="p-1 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100"
+                    >
+                        <x-icon name="x" class="w-4 h-4" />
+                    </button>
                 </div>
 
-                <form wire:submit="simpanStatus" class="p-6 space-y-4">
+                <form wire:submit="simpanStatus" class="p-5 space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status Pengendapan</label>
-                        <select wire:model="edit_status_pengendapan" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500">
-                            <option value="Transit">Transit (Menunggu Antrean)</option>
-                            <option value="Mengendap">Masa Pengendapan Residu</option>
-                            <option value="Selesai">Pengendapan Selesai</option>
+                        <label class="block text-xs font-medium text-[#0F172A] mb-1">Status Pengendapan</label>
+                        <select 
+                            wire:model.live="edit_status_pengendapan" 
+                            class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        >
+                            <option value="Transit">Transit</option>
+                            <option value="Mengendap">Mengendap</option>
+                            <option value="Selesai">Selesai</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status Proses Rekondisi</label>
-                        <select wire:model="edit_status_proses" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500">
+                        <label class="block text-xs font-medium text-[#0F172A] mb-1">Status Proses</label>
+                        <select 
+                            wire:model.live="edit_status_proses" 
+                            class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        >
                             <option value="Diterima">Diterima</option>
-                            <option value="Dalam Proses">Dalam Proses (Sedang Dikerjakan)</option>
-                            <option value="Selesai">Selesai (Siap Distribusi)</option>
+                            <option value="Dalam Proses">Dalam Proses</option>
+                            <option value="Selesai">Selesai</option>
                         </select>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
-                        <button wire:click="tutupStatusModal" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-100">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm">Simpan Perubahan</button>
+                    <div class="pt-3 border-t border-[#E2E8F0] flex justify-end gap-2">
+                        <button 
+                            wire:click="tutupStatusModal" 
+                            type="button" 
+                            class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] text-xs font-medium hover:bg-slate-50 transition cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold transition cursor-pointer"
+                        >
+                            Simpan
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     @endif
-
 </div>

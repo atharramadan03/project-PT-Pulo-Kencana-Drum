@@ -6,9 +6,9 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'name',
@@ -53,6 +53,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Helper untuk memeriksa apakah user adalah Admin Keuangan
+     */
+    public function isAdminKeuangan(): bool
+    {
+        return $this->role === 'admin_keuangan';
+    }
+
+    /**
      * Relasi 1:N — User Satpam mencatat banyak Kunjungan Kendaraan
      */
     public function vehicleVisits(): HasMany
@@ -74,5 +82,21 @@ class User extends Authenticatable
     public function drumProcessLogs(): HasMany
     {
         return $this->hasMany(DrumProcessLog::class);
+    }
+
+    /**
+     * Relasi 1:N — User Admin Keuangan mencatat Transaksi Keuangan Stok
+     */
+    public function warehouseFinanceLogs(): HasMany
+    {
+        return $this->hasMany(WarehouseFinanceLog::class);
+    }
+
+    /**
+     * Relasi 1:N — User Admin Keuangan mencatat Biaya Perbaikan Kendaraan
+     */
+    public function vehicleMaintenanceLogs(): HasMany
+    {
+        return $this->hasMany(VehicleMaintenanceLog::class);
     }
 }

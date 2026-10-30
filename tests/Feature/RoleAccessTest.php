@@ -91,8 +91,53 @@ class RoleAccessTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin_kantor', 'status_akun' => 'aktif']);
         $satpam = User::factory()->create(['role' => 'satpam', 'status_akun' => 'aktif']);
+        $keuangan = User::factory()->create(['role' => 'admin_keuangan', 'status_akun' => 'aktif']);
 
         $this->actingAs($admin)->get(route('dashboard'))->assertRedirect(route('admin.dashboard'));
         $this->actingAs($satpam)->get(route('dashboard'))->assertRedirect(route('satpam.dashboard'));
+        $this->actingAs($keuangan)->get(route('dashboard'))->assertRedirect(route('keuangan.dashboard'));
+    }
+
+    /**
+     * Admin Keuangan dapat mengakses dashboard keuangan.
+     */
+    public function test_admin_keuangan_can_access_finance_dashboard(): void
+    {
+        $keuangan = User::factory()->create([
+            'role' => 'admin_keuangan',
+            'status_akun' => 'aktif',
+        ]);
+
+        $response = $this->actingAs($keuangan)->get(route('keuangan.dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Dashboard Keuangan');
+    }
+
+    /**
+     * Admin Kantor dan Satpam juga dapat mengakses dashboard rekapitulasi keuangan.
+     */
+    public function test_admin_kantor_and_satpam_can_access_finance_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin_kantor', 'status_akun' => 'aktif']);
+        $satpam = User::factory()->create(['role' => 'satpam', 'status_akun' => 'aktif']);
+
+        $this->actingAs($admin)->get(route('keuangan.dashboard'))->assertStatus(200);
+        $this->actingAs($satpam)->get(route('keuangan.dashboard'))->assertStatus(200);
+    }
+
+    /**
+     * Admin Keuangan dilarang mengakses dashboard admin kantor (otomatis dibelokkan ke dashboard keuangan).
+     */
+    public function test_admin_keuangan_cannot_access_admin_dashboard(): void
+    {
+        $keuangan = User::factory()->create([
+            'role' => 'admin_keuangan',
+            'status_akun' => 'aktif',
+        ]);
+
+        $response = $this->actingAs($keuangan)->get(route('admin.dashboard'));
+
+        $response->assertRedirect(route('keuangan.dashboard'));
     }
 }

@@ -15,11 +15,14 @@ class DrumBatchIndex extends Component
 
     // Filter & Pencarian
     public string $search = '';
+
     public string $filterPengendapan = '';
+
     public string $filterProses = '';
 
     // Properti Modal Input Batch Baru
     public bool $showCreateModal = false;
+
     public string $kode_batch = '';
 
     #[Validate('required|date')]
@@ -45,8 +48,11 @@ class DrumBatchIndex extends Component
 
     // Properti Modal Update Status Cepat
     public bool $showStatusModal = false;
+
     public ?int $selectedBatchId = null;
+
     public string $edit_status_pengendapan = '';
+
     public string $edit_status_proses = '';
 
     public function updatingSearch(): void
@@ -124,6 +130,42 @@ class DrumBatchIndex extends Component
         $this->reset(['selectedBatchId', 'edit_status_pengendapan', 'edit_status_proses']);
     }
 
+    public function updatedStatusPengendapan(string $value): void
+    {
+        if (in_array($value, ['Transit', 'Mengendap'], true) && $this->status_proses === 'Selesai') {
+            $this->status_proses = 'Diterima';
+        } elseif ($value === 'Selesai' && $this->status_proses === 'Diterima') {
+            $this->status_proses = 'Selesai';
+        }
+    }
+
+    public function updatedStatusProses(string $value): void
+    {
+        if ($value === 'Selesai') {
+            $this->status_pengendapan = 'Selesai';
+        } elseif ($value === 'Diterima' && $this->status_pengendapan === 'Selesai') {
+            $this->status_pengendapan = 'Transit';
+        }
+    }
+
+    public function updatedEditStatusPengendapan(string $value): void
+    {
+        if (in_array($value, ['Transit', 'Mengendap'], true) && $this->edit_status_proses === 'Selesai') {
+            $this->edit_status_proses = 'Diterima';
+        } elseif ($value === 'Selesai' && $this->edit_status_proses === 'Diterima') {
+            $this->edit_status_proses = 'Selesai';
+        }
+    }
+
+    public function updatedEditStatusProses(string $value): void
+    {
+        if ($value === 'Selesai') {
+            $this->edit_status_pengendapan = 'Selesai';
+        } elseif ($value === 'Diterima' && $this->edit_status_pengendapan === 'Selesai') {
+            $this->edit_status_pengendapan = 'Transit';
+        }
+    }
+
     public function simpanStatus(): void
     {
         $batch = DrumBatch::find($this->selectedBatchId);
@@ -133,7 +175,7 @@ class DrumBatchIndex extends Component
                 'status_proses' => $this->edit_status_proses,
             ]);
 
-            session()->flash('success', "Status Batch {$batch->kode_batch} berhasil diperbarui!");
+            session()->flash('success', "Status Batch {$batch->kode_batch} berhasil diperbarui menjadi {$this->edit_status_pengendapan} ({$this->edit_status_proses}).");
         }
 
         $this->tutupStatusModal();
@@ -147,8 +189,8 @@ class DrumBatchIndex extends Component
             $s = trim($this->search);
             $query->where(function ($q) use ($s) {
                 $q->where('kode_batch', 'like', "%{$s}%")
-                  ->orWhere('kategori_jenis', 'like', "%{$s}%")
-                  ->orWhere('sumber_laporan', 'like', "%{$s}%");
+                    ->orWhere('kategori_jenis', 'like', "%{$s}%")
+                    ->orWhere('sumber_laporan', 'like', "%{$s}%");
             });
         }
 

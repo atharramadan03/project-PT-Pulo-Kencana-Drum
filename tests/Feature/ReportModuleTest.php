@@ -17,6 +17,7 @@ class ReportModuleTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $satpam;
 
     protected function setUp(): void
@@ -128,7 +129,7 @@ class ReportModuleTest extends TestCase
     }
 
     /**
-     * Admin Kantor dapat mengunduh file Excel (CSV) rekap batch drum.
+     * Admin Kantor dapat mengunduh file Excel (.xlsx) rekap batch drum.
      */
     public function test_admin_can_export_batch_csv(): void
     {
@@ -149,11 +150,11 @@ class ReportModuleTest extends TestCase
             ]));
 
         $response->assertStatus(200);
-        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
 
     /**
-     * Admin Kantor dapat mengunduh file Excel (CSV) rekap 4 tahap proses gudang.
+     * Admin Kantor dapat mengunduh file Excel (.xlsx) rekap 4 tahap proses gudang dan export all.
      */
     public function test_admin_can_export_process_csv(): void
     {
@@ -184,7 +185,16 @@ class ReportModuleTest extends TestCase
             ]));
 
         $response->assertStatus(200);
-        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $responseAll = $this->actingAs($this->admin)
+            ->get(route('admin.reports.export-all', [
+                'start_date' => now()->startOfMonth()->format('Y-m-d'),
+                'end_date' => now()->endOfMonth()->format('Y-m-d'),
+            ]));
+
+        $responseAll->assertStatus(200);
+        $responseAll->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
 
     /**

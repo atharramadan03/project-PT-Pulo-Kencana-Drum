@@ -216,6 +216,36 @@
             <line x1="2" x2="22" y1="2" y2="22"/>
             @break
 
+        @case('wallet')
+            <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+            <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+            @break
+
+        @case('wrench')
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            @break
+
+        @case('arrow-down-left')
+            <path d="M17 7 7 17"/>
+            <path d="M17 17H7V7"/>
+            @break
+
+        @case('arrow-up-right')
+            <path d="M7 7h10v10"/>
+            <path d="M7 17 17 7"/>
+            @break
+
+        @case('trending-up')
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+            <polyline points="16 7 22 7 22 13"/>
+            @break
+
+        @case('banknote')
+            <rect width="20" height="12" x="2" y="6" rx="2"/>
+            <circle cx="12" cy="12" r="2"/>
+            <path d="M6 12h.01M18 12h.01"/>
+            @break
+
         @default
             <circle cx="12" cy="12" r="10"/>
     @endswitch
