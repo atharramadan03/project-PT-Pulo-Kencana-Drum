@@ -209,14 +209,25 @@ new class extends Component
                 <x-icon name="user" class="w-4 h-4 shrink-0" />
                 <span>Pengguna</span>
             </a>
-            <button 
-                wire:click="logout" 
-                type="button"
-                class="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/70 transition-colors cursor-pointer"
-            >
-                <x-icon name="log-out" class="w-4 h-4" />
-                <span>Keluar</span>
-            </button>
+            <form method="POST" action="{{ route('logout') }}" class="w-full" x-data="{ loggingOut: false }" @submit="loggingOut = true">
+                @csrf
+                <button 
+                    type="submit" 
+                    :disabled="loggingOut"
+                    class="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800/70 transition-colors cursor-pointer disabled:opacity-60"
+                >
+                    <template x-if="!loggingOut">
+                        <x-icon name="log-out" class="w-4 h-4" />
+                    </template>
+                    <template x-if="loggingOut">
+                        <svg class="animate-spin w-4 h-4 text-white shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                    </template>
+                    <span x-text="loggingOut ? 'Mengeluarkan...' : 'Keluar'">Keluar</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -367,14 +378,25 @@ new class extends Component
                 <x-icon name="user" class="w-4 h-4 shrink-0" />
                 <span>Pengguna</span>
             </a>
-            <button 
-                wire:click="logout" 
-                type="button"
-                class="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-slate-800/70 transition-colors cursor-pointer"
-            >
-                <x-icon name="log-out" class="w-4 h-4 shrink-0" />
-                <span>Keluar</span>
-            </button>
+            <form method="POST" action="{{ route('logout') }}" class="w-full" x-data="{ loggingOut: false }" @submit="loggingOut = true">
+                @csrf
+                <button 
+                    type="submit" 
+                    :disabled="loggingOut"
+                    class="w-full flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-slate-800/70 transition-colors cursor-pointer disabled:opacity-60"
+                >
+                    <template x-if="!loggingOut">
+                        <x-icon name="log-out" class="w-4 h-4 shrink-0" />
+                    </template>
+                    <template x-if="loggingOut">
+                        <svg class="animate-spin w-4 h-4 text-rose-400 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                    </template>
+                    <span x-text="loggingOut ? 'Mengeluarkan...' : 'Keluar'">Keluar</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -454,14 +476,25 @@ new class extends Component
                                 <x-icon name="user" class="w-3.5 h-3.5 text-slate-400" />
                                 <span>Profil Pengguna</span>
                             </a>
-                            <button 
-                                wire:click="logout" 
-                                type="button"
-                                class="w-full flex items-center gap-2 px-3.5 py-1.5 text-xs text-rose-600 hover:bg-rose-50 text-left cursor-pointer"
-                            >
-                                <x-icon name="log-out" class="w-3.5 h-3.5 text-rose-500" />
-                                <span>Keluar</span>
-                            </button>
+                            <form method="POST" action="{{ route('logout') }}" class="w-full" x-data="{ loggingOut: false }" @submit="loggingOut = true">
+                                @csrf
+                                <button 
+                                    type="submit" 
+                                    :disabled="loggingOut"
+                                    class="w-full flex items-center gap-2 px-3.5 py-1.5 text-xs text-rose-600 hover:bg-rose-50 text-left cursor-pointer disabled:opacity-60"
+                                >
+                                    <template x-if="!loggingOut">
+                                        <x-icon name="log-out" class="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                                    </template>
+                                    <template x-if="loggingOut">
+                                        <svg class="animate-spin w-3.5 h-3.5 text-rose-600 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                        </svg>
+                                    </template>
+                                    <span x-text="loggingOut ? 'Mengeluarkan...' : 'Keluar'">Keluar</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

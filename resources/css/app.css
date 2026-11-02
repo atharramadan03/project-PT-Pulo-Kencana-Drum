@@ -44,4 +44,9 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+
+    /* Modal active: ensure sticky navigation header drops beneath z-100 modal overlay */
+    body.overflow-hidden header {
+        z-index: 10 !important;
+    }
 }

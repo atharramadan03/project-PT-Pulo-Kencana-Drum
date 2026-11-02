@@ -203,9 +203,10 @@ class DrumBatchIndex extends Component
         $this->hapusBatch = null;
     }
 
-    public function hapusBatch(): void
+    public function hapusBatch(?int $id = null): void
     {
-        $batch = DrumBatch::findOrFail($this->hapusBatchId);
+        $targetId = $id ?? $this->hapusBatchId;
+        $batch = DrumBatch::findOrFail($targetId);
         $kode = $batch->kode_batch;
 
         // Bersihkan relasi proses log dan kunjungan

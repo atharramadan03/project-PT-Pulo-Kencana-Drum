@@ -261,11 +261,16 @@
                                     @if (auth()->user()->isAdminKeuangan())
                                         <button 
                                             wire:click="konfirmasiHapus({{ $inv->id }})"
+                                            wire:loading.attr="disabled"
                                             type="button"
-                                            class="p-1 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 transition cursor-pointer shadow-2xs"
+                                            class="p-1 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 transition cursor-pointer shadow-2xs disabled:opacity-50"
                                             title="Hapus data tagihan"
                                         >
-                                            <x-icon name="trash" class="w-3.5 h-3.5" />
+                                            <x-icon name="trash" class="w-3.5 h-3.5" wire:loading.remove wire:target="konfirmasiHapus({{ $inv->id }})" />
+                                            <svg wire:loading wire:target="konfirmasiHapus({{ $inv->id }})" class="animate-spin w-3.5 h-3.5 text-rose-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                            </svg>
                                         </button>
                                     @endif
                                 </div>
@@ -682,44 +687,49 @@
 
     <!-- Modal Konfirmasi Hapus Tagihan -->
     @if ($modalHapusTerbuka && $hapusInvoice)
-        <div 
-            x-data 
-            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
-            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex justify-center items-center"
-        >
-            <div class="relative bg-white rounded-xl max-w-md w-full border border-[#E2E8F0] shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-100">
-                <div class="p-6 text-center">
-                    <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4">
-                        <x-icon name="trash" class="w-6 h-6" />
-                    </div>
-                    <h3 class="text-base font-bold text-[#0F172A] mb-1">Konfirmasi Hapus Data Tagihan</h3>
-                    <p class="text-xs text-[#64748B] mb-5 leading-relaxed">
-                        Apakah Anda yakin ingin menghapus tagihan <strong class="text-[#0F172A]">{{ $hapusInvoice->kode_tagihan }}</strong> ({{ $hapusInvoice->pihak_terkait }}) senilai <strong class="text-[#0F172A]">{{ $hapusInvoice->formatted_nominal }}</strong>? Tindakan ini akan menghapus data tagihan secara permanen.
-                    </p>
-                    <div class="flex items-center justify-center gap-3">
-                        <button 
-                            wire:click="tutupModalHapus" 
-                            type="button" 
-                            class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-xs font-semibold text-[#0F172A] bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
-                        >
-                            Batal
-                        </button>
-                        <button 
-                            wire:click="hapusTagihan" 
-                            type="button" 
-                            wire:loading.attr="disabled"
-                            class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs disabled:opacity-75"
-                        >
-                            <svg wire:loading wire:target="hapusTagihan" class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                            </svg>
-                            <span>Ya, Hapus Tagihan</span>
-                        </button>
+        <template x-teleport="body">
+            <div 
+                x-data 
+                x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+                class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex justify-center items-center"
+            >
+                <div class="relative bg-white rounded-xl max-w-md w-full border border-[#E2E8F0] shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-100">
+                    <div class="p-6 text-center">
+                        <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4">
+                            <x-icon name="trash" class="w-6 h-6" />
+                        </div>
+                        <h3 class="text-base font-bold text-[#0F172A] mb-1">Konfirmasi Hapus Data Tagihan</h3>
+                        <p class="text-xs text-[#64748B] mb-5 leading-relaxed">
+                            Apakah Anda yakin ingin menghapus tagihan <strong class="text-[#0F172A]">{{ $hapusInvoice->kode_tagihan }}</strong> ({{ $hapusInvoice->pihak_terkait }}) senilai <strong class="text-[#0F172A]">{{ $hapusInvoice->formatted_nominal }}</strong>? Tindakan ini akan menghapus data tagihan secara permanen.
+                        </p>
+                        <div class="flex items-center justify-center gap-3">
+                            <button 
+                                wire:click="tutupModalHapus" 
+                                type="button" 
+                                class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-xs font-semibold text-[#0F172A] bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                            >
+                                Batal
+                            </button>
+                            <button 
+                                wire:click="hapusTagihan" 
+                                type="button" 
+                                wire:loading.attr="disabled"
+                                class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs disabled:opacity-75"
+                            >
+                                <span wire:loading.remove wire:target="hapusTagihan">Ya, Hapus Tagihan</span>
+                                <span wire:loading wire:target="hapusTagihan" class="inline-flex items-center gap-1.5">
+                                    <svg class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                    </svg>
+                                    Menghapus...
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     @endif
 </div>
 
