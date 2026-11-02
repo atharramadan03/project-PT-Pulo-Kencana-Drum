@@ -159,4 +159,34 @@ class SatpamModuleTest extends TestCase
         $visit->refresh();
         $this->assertNull($visit->waktu_keluar);
     }
+
+    /**
+     * Satpam dapat menghapus data kunjungan aktif dengan konfirmasi modal.
+     */
+    public function test_satpam_can_delete_vehicle_visit_with_confirmation(): void
+    {
+        $visit = VehicleVisit::create([
+            'user_id' => $this->satpam->id,
+            'nomor_kunjungan' => VehicleVisit::generateNomorKunjungan(),
+            'nomor_polisi' => 'B 7777 DEL',
+            'nama_pengemudi' => 'Supir Salah Input',
+            'asal_tujuan' => 'PT Salah Catat',
+            'keperluan' => 'Uji Hapus Pos Satpam',
+            'waktu_masuk' => now(),
+            'pos_gerbang' => 'Gerbang Utama',
+            'status_pemeriksaan_surat_jalan_b3' => 'tidak_ada_b3',
+        ]);
+
+        Livewire::actingAs($this->satpam)
+            ->test(KendaraanAktif::class)
+            ->call('konfirmasiHapus', $visit->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusVisitId', $visit->id)
+            ->call('hapusVisit')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('vehicle_visits', [
+            'id' => $visit->id,
+        ]);
+    }
 }

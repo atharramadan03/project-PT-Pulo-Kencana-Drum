@@ -7,6 +7,8 @@ use App\Livewire\Admin\DrumProcessIndex;
 use App\Livewire\Admin\ReportIndex;
 use App\Livewire\Admin\VehicleLogIndex;
 use App\Livewire\Keuangan\FinanceDashboard;
+use App\Livewire\Keuangan\FinanceInvoices;
+use App\Livewire\Keuangan\FinanceOperationalExpenses;
 use App\Livewire\Keuangan\FinanceStockTransactions;
 use App\Livewire\Keuangan\FinanceVehicleRepairs;
 use App\Livewire\Satpam\KendaraanAktif;
@@ -75,15 +77,17 @@ Route::middleware(['auth', 'role:satpam'])
 
 // ==========================================
 // 3. RUTE MODUL KEUANGAN & TRACKER REKAPITULASI
-// Dapat diakses oleh Admin Keuangan, Admin Gudang/Kantor, dan Satpam
+// Hak Akses Eksklusif untuk Admin Keuangan
 // ==========================================
-Route::middleware(['auth', 'role:admin_keuangan,admin_kantor,satpam'])
+Route::middleware(['auth', 'role:admin_keuangan'])
     ->prefix('keuangan')
     ->name('keuangan.')
     ->group(function () {
         Route::get('dashboard', FinanceDashboard::class)->name('dashboard');
         Route::get('stok-transaksi', FinanceStockTransactions::class)->name('stok-transaksi');
         Route::get('biaya-kendaraan', FinanceVehicleRepairs::class)->name('biaya-kendaraan');
+        Route::get('tagihan', FinanceInvoices::class)->name('tagihan');
+        Route::get('operasional', FinanceOperationalExpenses::class)->name('operasional');
 
         // Endpoint Unduh Laporan Rekapitulasi Keuangan
         Route::get('export-excel', [FinanceExportController::class, 'exportExcel'])->name('export-excel');

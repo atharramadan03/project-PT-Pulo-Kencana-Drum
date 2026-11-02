@@ -21,6 +21,11 @@ class VehicleLogIndex extends Component
     public bool $showDetailModal = false;
     public ?VehicleVisit $selectedVisit = null;
 
+    // Modal Hapus
+    public bool $modalHapusTerbuka = false;
+    public ?int $hapusVisitId = null;
+    public ?VehicleVisit $hapusVisit = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -53,6 +58,35 @@ class VehicleLogIndex extends Component
     {
         $this->showDetailModal = false;
         $this->selectedVisit = null;
+    }
+
+    public function konfirmasiHapus(int $id): void
+    {
+        $visit = VehicleVisit::findOrFail($id);
+        $this->hapusVisitId = $visit->id;
+        $this->hapusVisit = $visit;
+        $this->modalHapusTerbuka = true;
+    }
+
+    public function tutupModalHapus(): void
+    {
+        $this->modalHapusTerbuka = false;
+        $this->hapusVisitId = null;
+        $this->hapusVisit = null;
+    }
+
+    public function hapusVisit(): void
+    {
+        $visit = VehicleVisit::findOrFail($this->hapusVisitId);
+        $nopol = $visit->nomor_polisi;
+        $noKunjungan = $visit->nomor_kunjungan;
+
+        // Bersihkan relasi batch jika ada
+        $visit->drumBatches()->detach();
+        $visit->delete();
+
+        $this->tutupModalHapus();
+        session()->flash('success', "Catatan kunjungan truk {$nopol} ({$noKunjungan}) berhasil dihapus dari sistem.");
     }
 
     public function render()

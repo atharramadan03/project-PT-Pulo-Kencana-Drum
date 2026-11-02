@@ -21,6 +21,11 @@ class KendaraanAktif extends Component
     public ?string $catatan_keluar = null;
     public bool $showModal = false;
 
+    // Properti untuk Modal Hapus Kunjungan
+    public bool $modalHapusTerbuka = false;
+    public ?int $hapusVisitId = null;
+    public ?VehicleVisit $hapusVisit = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -87,6 +92,34 @@ class KendaraanAktif extends Component
         session()->flash('success', "Kendaraan {$visit->nomor_polisi} berhasil dicatat keluar! Kunjungan telah resmi ditutup.");
 
         $this->tutupModal();
+    }
+
+    public function konfirmasiHapus(int $id): void
+    {
+        $visit = VehicleVisit::findOrFail($id);
+        $this->hapusVisitId = $visit->id;
+        $this->hapusVisit = $visit;
+        $this->modalHapusTerbuka = true;
+    }
+
+    public function tutupModalHapus(): void
+    {
+        $this->modalHapusTerbuka = false;
+        $this->hapusVisitId = null;
+        $this->hapusVisit = null;
+    }
+
+    public function hapusVisit(): void
+    {
+        $visit = VehicleVisit::findOrFail($this->hapusVisitId);
+        $nopol = $visit->nomor_polisi;
+        $noKunjungan = $visit->nomor_kunjungan;
+
+        $visit->drumBatches()->detach();
+        $visit->delete();
+
+        $this->tutupModalHapus();
+        session()->flash('success', "Data kunjungan kendaraan {$nopol} ({$noKunjungan}) berhasil dihapus.");
     }
 
     public function render()

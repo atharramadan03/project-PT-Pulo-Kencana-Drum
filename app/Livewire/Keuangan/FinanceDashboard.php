@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Keuangan;
 
+use App\Models\FinanceInvoice;
+use App\Models\OperationalExpenseLog;
 use App\Models\VehicleMaintenanceLog;
 use App\Models\WarehouseFinanceLog;
 use Illuminate\Support\Facades\Auth;
@@ -198,7 +200,12 @@ class FinanceDashboard extends Component
         $totalPemasukan = (float) WarehouseFinanceLog::where('jenis_transaksi', 'pemasukan')->sum('nominal');
         $totalPengeluaranStok = (float) WarehouseFinanceLog::where('jenis_transaksi', 'pengeluaran')->sum('nominal');
         $totalBiayaPerbaikan = (float) VehicleMaintenanceLog::sum('biaya');
-        $netOperasional = $totalPemasukan - $totalPengeluaranStok - $totalBiayaPerbaikan;
+        $totalBiayaOperasional = (float) OperationalExpenseLog::sum('nominal');
+        $netOperasional = $totalPemasukan - $totalPengeluaranStok - $totalBiayaPerbaikan - $totalBiayaOperasional;
+
+        $tagihanPendingCount = FinanceInvoice::whereIn('status_pembayaran', ['belum_dibayar', 'sebagian'])->count();
+        $tagihanPendingNominal = (float) (FinanceInvoice::whereIn('status_pembayaran', ['belum_dibayar', 'sebagian'])
+            ->selectRaw('SUM(nominal - nominal_dibayar) as sisa')->value('sisa') ?? 0);
 
         $totalUnitTerjual = (int) WarehouseFinanceLog::where('jenis_transaksi', 'pemasukan')->sum('jumlah_unit');
         $totalUnitBahanMasuk = (int) WarehouseFinanceLog::where('jenis_transaksi', 'pengeluaran')->sum('jumlah_unit');
@@ -318,6 +325,9 @@ class FinanceDashboard extends Component
             'totalPemasukan' => $totalPemasukan,
             'totalPengeluaranStok' => $totalPengeluaranStok,
             'totalBiayaPerbaikan' => $totalBiayaPerbaikan,
+            'totalBiayaOperasional' => $totalBiayaOperasional,
+            'tagihanPendingCount' => $tagihanPendingCount,
+            'tagihanPendingNominal' => $tagihanPendingNominal,
             'netOperasional' => $netOperasional,
             'totalUnitTerjual' => $totalUnitTerjual,
             'totalUnitBahanMasuk' => $totalUnitBahanMasuk,

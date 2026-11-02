@@ -21,6 +21,13 @@ class FinanceVehicleRepairs extends Component
     // Modal Create Perbaikan
     public bool $showCreateModal = false;
 
+    // State Modal Hapus
+    public bool $modalHapusTerbuka = false;
+
+    public ?int $hapusRepairId = null;
+
+    public ?VehicleMaintenanceLog $hapusRepair = null;
+
     #[Validate('required|string|max:20')]
     public string $nomor_polisi = '';
 
@@ -101,6 +108,37 @@ class FinanceVehicleRepairs extends Component
 
         session()->flash('success', "Data servis armada {$this->nomor_polisi} berhasil disimpan!");
         $this->tutupCreateModal();
+    }
+
+    public function konfirmasiHapus(int $id): void
+    {
+        $repair = VehicleMaintenanceLog::findOrFail($id);
+        $this->hapusRepairId = $repair->id;
+        $this->hapusRepair = $repair;
+        $this->modalHapusTerbuka = true;
+    }
+
+    public function tutupModalHapus(): void
+    {
+        $this->modalHapusTerbuka = false;
+        $this->hapusRepairId = null;
+        $this->hapusRepair = null;
+    }
+
+    public function hapusPerbaikan(): void
+    {
+        if (! Auth::user()?->isAdminKeuangan()) {
+            abort(403, 'Hanya Admin Keuangan yang berhak menghapus data perbaikan.');
+        }
+
+        $repair = VehicleMaintenanceLog::findOrFail($this->hapusRepairId);
+        $nopol = $repair->nomor_polisi;
+        $jenis = $repair->jenis_perbaikan;
+
+        $repair->delete();
+
+        $this->tutupModalHapus();
+        session()->flash('success', "Catatan perbaikan {$nopol} ({$jenis}) berhasil dihapus dari sistem.");
     }
 
     public function render()

@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Livewire\Admin\DrumBatchIndex;
 use App\Livewire\Admin\DrumProcessIndex;
+use App\Livewire\Admin\VehicleLogIndex;
 use App\Models\DrumBatch;
 use App\Models\DrumProcessLog;
 use App\Models\User;
+use App\Models\VehicleVisit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -166,5 +168,100 @@ class AdminModuleTest extends TestCase
             ->assertHasErrors(['jumlah_afkir']);
 
         $this->assertCount(0, DrumProcessLog::all());
+    }
+
+    /**
+     * Admin dapat menghapus data batch drum dengan konfirmasi modal.
+     */
+    public function test_admin_can_delete_drum_batch_with_confirmation(): void
+    {
+        $batch = DrumBatch::create([
+            'user_id' => $this->admin->id,
+            'kode_batch' => DrumBatch::generateKodeBatch(),
+            'tanggal_penerimaan' => '2026-10-28',
+            'jumlah_diterima' => 75,
+            'status_pengendapan' => 'Transit',
+            'status_proses' => 'Diterima',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(DrumBatchIndex::class)
+            ->call('konfirmasiHapus', $batch->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusBatchId', $batch->id)
+            ->call('hapusBatch')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('drum_batches', [
+            'id' => $batch->id,
+        ]);
+    }
+
+    /**
+     * Admin dapat menghapus catatan log proses gudang dengan konfirmasi modal.
+     */
+    public function test_admin_can_delete_drum_process_log_with_confirmation(): void
+    {
+        $batch = DrumBatch::create([
+            'user_id' => $this->admin->id,
+            'kode_batch' => DrumBatch::generateKodeBatch(),
+            'tanggal_penerimaan' => '2026-10-28',
+            'jumlah_diterima' => 80,
+            'status_pengendapan' => 'Transit',
+            'status_proses' => 'Diterima',
+        ]);
+
+        $log = DrumProcessLog::create([
+            'drum_batch_id' => $batch->id,
+            'user_id' => $this->admin->id,
+            'jenis_proses' => 'peniupan',
+            'tanggal_aktivitas' => '2026-10-28',
+            'tanggal_input' => now(),
+            'jumlah_diproses' => 80,
+            'jumlah_afkir' => 2,
+            'pelapor_gudang' => 'Mandor Budi',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(DrumProcessIndex::class)
+            ->call('konfirmasiHapus', $log->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusLogId', $log->id)
+            ->call('hapusLog')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('drum_process_logs', [
+            'id' => $log->id,
+        ]);
+    }
+
+    /**
+     * Admin dapat menghapus data kunjungan truk dari log dengan konfirmasi modal.
+     */
+    public function test_admin_can_delete_vehicle_visit_with_confirmation(): void
+    {
+        $visit = VehicleVisit::create([
+            'user_id' => $this->admin->id,
+            'nomor_kunjungan' => VehicleVisit::generateNomorKunjungan(),
+            'nomor_polisi' => 'B 1111 DEL',
+            'nama_pengemudi' => 'Supir Hapus',
+            'asal_tujuan' => 'PT Hapus Kunjungan',
+            'keperluan' => 'Pengujian Hapus',
+            'waktu_masuk' => now(),
+            'pos_gerbang' => 'Gerbang Utama',
+            'status_pemeriksaan_surat_jalan_b3' => 'tidak_ada_b3',
+        ]);
+
+        Livewire::actingAs($this->admin)
+            ->test(VehicleLogIndex::class)
+            ->call('konfirmasiHapus', $visit->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusVisitId', $visit->id)
+            ->call('hapusVisit')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('vehicle_visits', [
+            'id' => $visit->id,
+        ]);
     }
 }

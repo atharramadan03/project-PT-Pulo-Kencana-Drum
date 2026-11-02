@@ -142,24 +142,28 @@
     <div class="report-title">Laporan Rekapitulasi Keuangan Operasional</div>
     <div class="report-period">Arus Kas Mutasi Stok Gudang & Biaya Pemeliharaan Armada Kendaraan</div>
 
-    <!-- METRIK RINGKASAN (4 KOTAK) -->
+    <!-- METRIK RINGKASAN (5 KOTAK) -->
     <table class="metrics-table">
         <tr>
-            <td class="metric-box">
-                <div class="metric-label">Pemasukan Penjualan Stok</div>
-                <div class="metric-value" style="color: #10b981;">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</div>
+            <td class="metric-box" style="width: 20%;">
+                <div class="metric-label">Pemasukan Stok</div>
+                <div class="metric-value" style="color: #10b981; font-size: 9.5pt;">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</div>
             </td>
-            <td class="metric-box">
-                <div class="metric-label">Pengeluaran Stok Gudang</div>
-                <div class="metric-value" style="color: #f59e0b;">Rp {{ number_format($totalPengeluaranStok, 0, ',', '.') }}</div>
+            <td class="metric-box" style="width: 20%;">
+                <div class="metric-label">Pengeluaran Stok</div>
+                <div class="metric-value" style="color: #f59e0b; font-size: 9.5pt;">Rp {{ number_format($totalPengeluaranStok, 0, ',', '.') }}</div>
             </td>
-            <td class="metric-box">
-                <div class="metric-label">Biaya Perbaikan Armada</div>
-                <div class="metric-value" style="color: #ef4444;">Rp {{ number_format($totalBiayaPerbaikan, 0, ',', '.') }}</div>
+            <td class="metric-box" style="width: 20%;">
+                <div class="metric-label">Biaya Mobil</div>
+                <div class="metric-value" style="color: #ef4444; font-size: 9.5pt;">Rp {{ number_format($totalBiayaPerbaikan, 0, ',', '.') }}</div>
             </td>
-            <td class="metric-box">
-                <div class="metric-label">Saldo Bersih Operasional</div>
-                <div class="metric-value" style="color: #2563eb;">Rp {{ number_format($netOperasional, 0, ',', '.') }}</div>
+            <td class="metric-box" style="width: 20%;">
+                <div class="metric-label">Biaya Operasional</div>
+                <div class="metric-value" style="color: #b91c1c; font-size: 9.5pt;">Rp {{ number_format($totalBiayaOperasional, 0, ',', '.') }}</div>
+            </td>
+            <td class="metric-box" style="width: 20%;">
+                <div class="metric-label">Saldo Kas Bersih</div>
+                <div class="metric-value" style="color: #2563eb; font-size: 9.5pt;">Rp {{ number_format($netOperasional, 0, ',', '.') }}</div>
             </td>
         </tr>
     </table>
@@ -227,6 +231,76 @@
             @empty
                 <tr>
                     <td colspan="7" class="text-center" style="padding: 12px; color: #64748b;">Tidak ada data perbaikan armada.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- 3. DATA RIWAYAT TAGIHAN & FAKTUR -->
+    <div class="section-header">3. Riwayat Tagihan & Faktur (Invoices)</div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 18%;">Kode & No Faktur</th>
+                <th style="width: 15%;">Jenis</th>
+                <th style="width: 22%;">Pihak Terkait</th>
+                <th style="width: 12%;">Jatuh Tempo</th>
+                <th class="text-center" style="width: 10%;">Status</th>
+                <th class="text-right" style="width: 18%;">Nilai Tagihan</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($invoices as $index => $inv)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>
+                        <div style="font-weight: bold;">{{ $inv->kode_tagihan }}</div>
+                        <div style="font-size: 7pt; color: #64748b;">{{ $inv->nomor_invoice }}</div>
+                    </td>
+                    <td>{{ $inv->jenis_tagihan === 'tagihan_pelanggan' ? 'Piutang Drum' : 'Hutang Vendor' }}</td>
+                    <td>{{ $inv->pihak_terkait }}</td>
+                    <td>{{ $inv->tanggal_jatuh_tempo?->format('d/m/Y') }}</td>
+                    <td class="text-center" style="text-transform: capitalize;">{{ str_replace('_', ' ', $inv->status_pembayaran) }}</td>
+                    <td class="text-right" style="font-weight: bold;">{{ $inv->formatted_nominal }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center" style="padding: 12px; color: #64748b;">Tidak ada data tagihan faktur.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- 4. DATA BIAYA OPERASIONAL PABRIK & GUDANG -->
+    <div class="section-header">4. Rekapitulasi Biaya Operasional Pabrik & Gudang</div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 16%;">Kode & Tanggal</th>
+                <th style="width: 18%;">Kategori</th>
+                <th style="width: 25%;">Deskripsi Pengeluaran</th>
+                <th style="width: 20%;">Penerima Dana</th>
+                <th class="text-right" style="width: 16%;">Nominal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($expenses as $index => $exp)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>
+                        <div style="font-weight: bold;">{{ $exp->kode_biaya }}</div>
+                        <div style="font-size: 7pt; color: #64748b;">{{ $exp->tanggal_pengeluaran?->format('d/m/Y') }}</div>
+                    </td>
+                    <td>{{ $exp->kategori_label }}</td>
+                    <td>{{ $exp->nama_biaya }}</td>
+                    <td>{{ $exp->penerima_dana }}</td>
+                    <td class="text-right" style="font-weight: bold; color: #b91c1c;">{{ $exp->formatted_nominal }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center" style="padding: 12px; color: #64748b;">Tidak ada data biaya operasional.</td>
                 </tr>
             @endforelse
         </tbody>

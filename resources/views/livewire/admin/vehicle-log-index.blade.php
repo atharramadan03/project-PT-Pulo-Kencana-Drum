@@ -54,39 +54,39 @@
 
     <!-- Tabel Data Kunjungan Kendaraan -->
     <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto no-scrollbar">
             <table class="w-full text-left text-xs">
-                <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
+                <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold text-[11px] uppercase tracking-wider">
                     <tr>
-                        <th class="py-3 px-4 whitespace-nowrap">No. Kunjungan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">No. Polisi</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Pengemudi</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Asal / Tujuan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Waktu Masuk</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Status</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Dokumen B3</th>
-                        <th class="py-3 px-4 whitespace-nowrap text-center">Aksi</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">No. Kunjungan</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">No. Polisi</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Pengemudi</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Asal / Tujuan</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Waktu Masuk</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Status</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Dokumen B3</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($visits as $v)
                         <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-2.5 px-4 font-mono font-semibold text-[#0F172A] whitespace-nowrap">
+                            <td class="py-2.5 px-3 font-mono font-semibold text-[#0F172A] whitespace-nowrap">
                                 {{ $v->nomor_kunjungan }}
                             </td>
-                            <td class="py-2.5 px-4 font-mono font-semibold text-[#2563EB] whitespace-nowrap">
+                            <td class="py-2.5 px-3 font-mono font-semibold text-[#2563EB] whitespace-nowrap">
                                 {{ $v->nomor_polisi }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#0F172A] font-medium whitespace-nowrap">
+                            <td class="py-2.5 px-3 text-[#0F172A] font-medium whitespace-nowrap">
                                 {{ $v->nama_pengemudi }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#64748B] max-w-[180px] truncate">
+                            <td class="py-2.5 px-3 text-[#64748B] max-w-[180px] truncate">
                                 {{ $v->asal_tujuan ?? '-' }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#64748B] whitespace-nowrap tabular-nums">
+                            <td class="py-2.5 px-3 text-[#64748B] whitespace-nowrap tabular-nums">
                                 {{ $v->waktu_masuk?->format('d M Y H:i') }}
                             </td>
-                            <td class="py-2.5 px-4 whitespace-nowrap">
+                            <td class="py-2.5 px-3 whitespace-nowrap">
                                 @if ($v->waktu_keluar)
                                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534]">
                                         <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
@@ -99,7 +99,7 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="py-2.5 px-4 whitespace-nowrap">
+                            <td class="py-2.5 px-3 whitespace-nowrap">
                                 @php $statusB3 = strtolower($v->status_pemeriksaan_surat_jalan_b3 ?? ''); @endphp
                                 @if ($statusB3 === 'sesuai' || $statusB3 === 'lolos')
                                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534]">
@@ -115,14 +115,24 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="py-2.5 px-4 text-center whitespace-nowrap">
-                                <button 
-                                    wire:click="lihatDetail({{ $v->id }})"
-                                    type="button"
-                                    class="px-2.5 py-1 rounded-lg border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-medium text-xs transition cursor-pointer"
-                                >
-                                    Detail
-                                </button>
+                            <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button 
+                                        wire:click="lihatDetail({{ $v->id }})"
+                                        type="button"
+                                        class="px-2.5 py-1 rounded-lg border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-medium text-xs transition cursor-pointer"
+                                    >
+                                        Detail
+                                    </button>
+                                    <button 
+                                        wire:click="konfirmasiHapus({{ $v->id }})" 
+                                        type="button" 
+                                        class="p-1 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 transition cursor-pointer shadow-2xs"
+                                        title="Hapus data kunjungan armada"
+                                    >
+                                        <x-icon name="trash" class="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -145,7 +155,11 @@
 
     <!-- Modal Detail Kunjungan (Clean White Style per Reference) -->
     @if ($showDetailModal && $selectedVisit)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6"
+        >
             <div class="bg-white rounded-xl max-w-lg w-full shadow-xl border border-[#E2E8F0] overflow-hidden">
                 <div class="px-5 py-4 border-b border-[#E2E8F0] flex justify-between items-center">
                     <div>
@@ -219,6 +233,48 @@
                     >
                         Tutup
                     </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Modal Konfirmasi Hapus Kunjungan Armada -->
+    @if ($modalHapusTerbuka && $hapusVisit)
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex justify-center items-center"
+        >
+            <div class="relative bg-white rounded-xl max-w-md w-full border border-[#E2E8F0] shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-100">
+                <div class="p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4">
+                        <x-icon name="trash" class="w-6 h-6" />
+                    </div>
+                    <h3 class="text-base font-bold text-[#0F172A] mb-1">Konfirmasi Hapus Data Kunjungan</h3>
+                    <p class="text-xs text-[#64748B] mb-5 leading-relaxed">
+                        Apakah Anda yakin ingin menghapus data kunjungan armada <strong class="text-[#0F172A]">{{ $hapusVisit->nomor_polisi }}</strong> (No: {{ $hapusVisit->nomor_kunjungan }}) atas nama <strong class="text-[#0F172A]">{{ $hapusVisit->nama_pengemudi }}</strong>? Tindakan ini akan menghapus data kunjungan secara permanen.
+                    </p>
+                    <div class="flex items-center justify-center gap-3">
+                        <button 
+                            wire:click="tutupModalHapus" 
+                            type="button" 
+                            class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-xs font-semibold text-[#0F172A] bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            wire:click="hapusVisit" 
+                            type="button" 
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs disabled:opacity-75"
+                        >
+                            <svg wire:loading wire:target="hapusVisit" class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span>Ya, Hapus Data</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

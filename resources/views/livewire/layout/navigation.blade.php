@@ -27,7 +27,7 @@ new class extends Component
         x-transition:leave="transition-opacity ease-linear duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs lg:hidden"
+        class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-xs lg:hidden"
         @click="sidebarOpen = false"
     ></div>
 
@@ -41,11 +41,11 @@ new class extends Component
         x-transition:leave="transition ease-in-out duration-200 transform"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="-translate-x-full"
-        class="fixed inset-y-0 left-0 z-50 w-60 bg-[#0F172A] text-slate-300 flex flex-col lg:hidden shadow-xl"
+        class="fixed inset-y-0 left-0 z-40 w-60 bg-[#0F172A] text-slate-300 flex flex-col lg:hidden shadow-xl"
     >
         <!-- Brand -->
         <div class="h-16 px-5 flex items-center justify-between">
-            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-2.5">
+            <a href="{{ route('dashboard') }}" wire:navigate.hover class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center p-1.5 shrink-0">
                     <x-application-logo class="w-full h-full text-white" />
                 </div>
@@ -68,7 +68,7 @@ new class extends Component
             @if (auth()->user()->isAdminKantor())
                 <a 
                     href="{{ route('admin.dashboard') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -78,7 +78,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.drum-batches') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.drum-batches') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -88,7 +88,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.drum-process') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.drum-process') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -98,7 +98,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.vehicles') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.vehicles') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -108,27 +108,17 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.reports') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.reports*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="file-text" class="w-4 h-4 shrink-0" />
                     <span>Laporan</span>
                 </a>
-
-                <a 
-                    href="{{ route('keuangan.dashboard') }}" 
-                    wire:navigate
-                    @click="sidebarOpen = false"
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
-                >
-                    <x-icon name="wallet" class="w-4 h-4 shrink-0" />
-                    <span>Rekap Keuangan</span>
-                </a>
             @elseif (auth()->user()->isSatpam())
                 <a 
                     href="{{ route('satpam.dashboard') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.dashboard') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -138,7 +128,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('satpam.kendaraan-masuk') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.kendaraan-masuk') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -148,27 +138,17 @@ new class extends Component
 
                 <a 
                     href="{{ route('satpam.kendaraan-aktif') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.kendaraan-aktif') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="truck" class="w-4 h-4 shrink-0" />
                     <span>Kendaraan Aktif</span>
                 </a>
-
-                <a 
-                    href="{{ route('keuangan.dashboard') }}" 
-                    wire:navigate
-                    @click="sidebarOpen = false"
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
-                >
-                    <x-icon name="wallet" class="w-4 h-4 shrink-0" />
-                    <span>Rekap Keuangan</span>
-                </a>
             @elseif (auth()->user()->isAdminKeuangan())
                 <a 
                     href="{{ route('keuangan.dashboard') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.dashboard') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -178,7 +158,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('keuangan.stok-transaksi') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.stok-transaksi') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
@@ -188,12 +168,32 @@ new class extends Component
 
                 <a 
                     href="{{ route('keuangan.biaya-kendaraan') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.biaya-kendaraan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="wrench" class="w-4 h-4 shrink-0" />
                     <span>Biaya Mobil</span>
+                </a>
+
+                <a 
+                    href="{{ route('keuangan.tagihan') }}" 
+                    wire:navigate.hover
+                    @click="sidebarOpen = false"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.tagihan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="receipt" class="w-4 h-4 shrink-0" />
+                    <span>Riwayat Tagihan</span>
+                </a>
+
+                <a 
+                    href="{{ route('keuangan.operasional') }}" 
+                    wire:navigate.hover
+                    @click="sidebarOpen = false"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.operasional') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="banknote" class="w-4 h-4 shrink-0" />
+                    <span>Biaya Operasional</span>
                 </a>
             @endif
         </nav>
@@ -202,7 +202,7 @@ new class extends Component
         <div class="p-3 border-t border-slate-800/80 space-y-1">
             <a 
                 href="{{ route('profile') }}" 
-                wire:navigate
+                wire:navigate.hover
                 @click="sidebarOpen = false"
                 class="flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium {{ request()->routeIs('profile') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
             >
@@ -221,10 +221,10 @@ new class extends Component
     </aside>
 
     <!-- Desktop Fixed Sidebar (Matches Industrial Pro Reference) -->
-    <aside class="hidden lg:flex lg:flex-col lg:w-60 lg:fixed lg:inset-y-0 lg:left-0 z-40 bg-[#0F172A] text-slate-300">
+    <aside class="hidden lg:flex lg:flex-col lg:w-60 lg:fixed lg:inset-y-0 lg:left-0 z-30 bg-[#0F172A] text-slate-300">
         <!-- Brand Header -->
         <div class="h-16 px-5 flex items-center">
-            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-3">
+            <a href="{{ route('dashboard') }}" wire:navigate.hover class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center p-1.5 shrink-0">
                     <x-application-logo class="w-full h-full text-white" />
                 </div>
@@ -240,7 +240,7 @@ new class extends Component
             @if (auth()->user()->isAdminKantor())
                 <a 
                     href="{{ route('admin.dashboard') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="layout-dashboard" class="w-4 h-4 shrink-0" />
@@ -249,7 +249,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.drum-batches') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.drum-batches') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="package" class="w-4 h-4 shrink-0" />
@@ -258,7 +258,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.drum-process') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.drum-process') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="layers" class="w-4 h-4 shrink-0" />
@@ -267,7 +267,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.vehicles') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.vehicles') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="truck" class="w-4 h-4 shrink-0" />
@@ -276,25 +276,16 @@ new class extends Component
 
                 <a 
                     href="{{ route('admin.reports') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.reports*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="file-text" class="w-4 h-4 shrink-0" />
                     <span>Laporan</span>
                 </a>
-
-                <a 
-                    href="{{ route('keuangan.dashboard') }}" 
-                    wire:navigate
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
-                >
-                    <x-icon name="wallet" class="w-4 h-4 shrink-0" />
-                    <span>Rekap Keuangan</span>
-                </a>
             @elseif (auth()->user()->isSatpam())
                 <a 
                     href="{{ route('satpam.dashboard') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.dashboard') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="layout-dashboard" class="w-4 h-4 shrink-0" />
@@ -303,7 +294,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('satpam.kendaraan-masuk') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.kendaraan-masuk') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="log-in" class="w-4 h-4 shrink-0" />
@@ -312,25 +303,16 @@ new class extends Component
 
                 <a 
                     href="{{ route('satpam.kendaraan-aktif') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.kendaraan-aktif') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="truck" class="w-4 h-4 shrink-0" />
                     <span>Kendaraan Aktif</span>
                 </a>
-
-                <a 
-                    href="{{ route('keuangan.dashboard') }}" 
-                    wire:navigate
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
-                >
-                    <x-icon name="wallet" class="w-4 h-4 shrink-0" />
-                    <span>Rekap Keuangan</span>
-                </a>
             @elseif (auth()->user()->isAdminKeuangan())
                 <a 
                     href="{{ route('keuangan.dashboard') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.dashboard') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="layout-dashboard" class="w-4 h-4 shrink-0" />
@@ -339,7 +321,7 @@ new class extends Component
 
                 <a 
                     href="{{ route('keuangan.stok-transaksi') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.stok-transaksi') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="wallet" class="w-4 h-4 shrink-0" />
@@ -348,11 +330,29 @@ new class extends Component
 
                 <a 
                     href="{{ route('keuangan.biaya-kendaraan') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.biaya-kendaraan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
                     <x-icon name="wrench" class="w-4 h-4 shrink-0" />
                     <span>Biaya Mobil</span>
+                </a>
+
+                <a 
+                    href="{{ route('keuangan.tagihan') }}" 
+                    wire:navigate.hover
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.tagihan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="receipt" class="w-4 h-4 shrink-0" />
+                    <span>Riwayat Tagihan</span>
+                </a>
+
+                <a 
+                    href="{{ route('keuangan.operasional') }}" 
+                    wire:navigate.hover
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.operasional') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="banknote" class="w-4 h-4 shrink-0" />
+                    <span>Biaya Operasional</span>
                 </a>
             @endif
         </nav>
@@ -361,7 +361,7 @@ new class extends Component
         <div class="p-3 border-t border-slate-800/80 space-y-1">
             <a 
                 href="{{ route('profile') }}" 
-                wire:navigate
+                wire:navigate.hover
                 class="flex items-center gap-3 px-3.5 py-2 rounded-lg text-xs font-medium {{ request()->routeIs('profile') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
             >
                 <x-icon name="user" class="w-4 h-4 shrink-0" />
@@ -379,7 +379,7 @@ new class extends Component
     </aside>
 
     <!-- Top App Bar (Matches Industrial Pro Reference) -->
-    <header class="sticky top-0 z-30 lg:pl-60 bg-white border-b border-[#E2E8F0]">
+    <header class="sticky top-0 z-20 lg:pl-60 bg-white border-b border-[#E2E8F0]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
             <!-- Left: Hamburger & Search -->
             <div class="flex items-center gap-3 flex-1 min-w-0">
@@ -448,7 +448,7 @@ new class extends Component
                         <div class="py-1">
                             <a 
                                 href="{{ route('profile') }}" 
-                                wire:navigate
+                                wire:navigate.hover
                                 class="flex items-center gap-2 px-3.5 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
                             >
                                 <x-icon name="user" class="w-3.5 h-3.5 text-slate-400" />

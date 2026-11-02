@@ -115,15 +115,15 @@ class RoleAccessTest extends TestCase
     }
 
     /**
-     * Admin Kantor dan Satpam juga dapat mengakses dashboard rekapitulasi keuangan.
+     * Admin Kantor dan Satpam dilarang mengakses dashboard keuangan (dibelokkan ke dashboard masing-masing).
      */
-    public function test_admin_kantor_and_satpam_can_access_finance_dashboard(): void
+    public function test_admin_kantor_and_satpam_cannot_access_finance_dashboard(): void
     {
         $admin = User::factory()->create(['role' => 'admin_kantor', 'status_akun' => 'aktif']);
         $satpam = User::factory()->create(['role' => 'satpam', 'status_akun' => 'aktif']);
 
-        $this->actingAs($admin)->get(route('keuangan.dashboard'))->assertStatus(200);
-        $this->actingAs($satpam)->get(route('keuangan.dashboard'))->assertStatus(200);
+        $this->actingAs($admin)->get(route('keuangan.dashboard'))->assertRedirect(route('admin.dashboard'));
+        $this->actingAs($satpam)->get(route('keuangan.dashboard'))->assertRedirect(route('satpam.dashboard'));
     }
 
     /**

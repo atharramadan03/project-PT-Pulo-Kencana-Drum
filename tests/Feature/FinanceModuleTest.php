@@ -3,6 +3,12 @@
 namespace Tests\Feature;
 
 use App\Livewire\Keuangan\FinanceDashboard;
+use App\Livewire\Keuangan\FinanceInvoices;
+use App\Livewire\Keuangan\FinanceOperationalExpenses;
+use App\Livewire\Keuangan\FinanceStockTransactions;
+use App\Livewire\Keuangan\FinanceVehicleRepairs;
+use App\Models\FinanceInvoice;
+use App\Models\OperationalExpenseLog;
 use App\Models\User;
 use App\Models\VehicleMaintenanceLog;
 use App\Models\WarehouseFinanceLog;
@@ -59,6 +65,16 @@ class FinanceModuleTest extends TestCase
             ->get(route('keuangan.biaya-kendaraan'))
             ->assertStatus(200)
             ->assertSee('Biaya Perbaikan');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.tagihan'))
+            ->assertStatus(200)
+            ->assertSee('Riwayat Tagihan');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.operasional'))
+            ->assertStatus(200)
+            ->assertSee('Biaya Operasional Pabrik');
     }
 
     /**
@@ -172,5 +188,254 @@ class FinanceModuleTest extends TestCase
 
         $responsePdf->assertStatus(200);
         $responsePdf->assertHeader('content-type', 'application/pdf');
+    }
+
+    /**
+     * Admin Keuangan dapat mencatat tagihan dan memperbarui status pelunasan.
+     */
+    public function test_admin_keuangan_can_record_invoice_and_settle(): void
+    {
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceInvoices::class)
+            ->set('nomor_invoice', 'INV/TEST/2026/01')
+            ->set('jenis_tagihan', 'tagihan_pelanggan')
+            ->set('pihak_terkait', 'PT Test Mitra Drum')
+            ->set('kontak_pic', 'Bpk. Gunawan')
+            ->set('nomor_wa', '081234567890')
+            ->set('nominal', '10000000')
+            ->set('tanggal_terbit', '2026-11-01')
+            ->set('tanggal_jatuh_tempo', '2026-11-30')
+            ->set('status_pembayaran', 'belum_dibayar')
+            ->set('metode_pembayaran', 'transfer_bank')
+            ->call('simpanInvoice')
+            ->assertHasNoErrors();
+
+        $invoice = FinanceInvoice::where('nomor_invoice', 'INV/TEST/2026/01')->first();
+        $this->assertNotNull($invoice);
+        $this->assertEquals(10000000, $invoice->nominal);
+        $this->assertEquals('Bpk. Gunawan', $invoice->kontak_pic);
+        $this->assertEquals('081234567890', $invoice->nomor_wa);
+        $this->assertEquals('6281234567890', $invoice->formatted_nomor_wa);
+        $this->assertNotNull($invoice->whatsapp_direct_url);
+        $this->assertStringContainsString('6281234567890', $invoice->whatsapp_direct_url);
+
+        // Uji cicilan pertama (pembayaran sebagian)
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceInvoices::class)
+            ->call('bukaModalLunas', $invoice->id)
+            ->set('lunas_nominal', '4000000')
+            ->set('lunas_tanggal', '2026-11-02')
+            ->call('konfirmasiPelunasan')
+            ->assertHasNoErrors();
+
+        $this->assertEquals('sebagian', $invoice->fresh()->status_pembayaran);
+        $this->assertEquals(4000000, $invoice->fresh()->nominal_dibayar);
+        $this->assertEquals(6000000, $invoice->fresh()->sisa_tagihan);
+
+        // Uji cicilan kedua (pelunasan penuh)
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceInvoices::class)
+            ->call('bukaModalLunas', $invoice->id)
+            ->set('lunas_nominal', '6000000')
+            ->set('lunas_tanggal', '2026-11-05')
+            ->call('konfirmasiPelunasan')
+            ->assertHasNoErrors();
+
+        $this->assertEquals('lunas', $invoice->fresh()->status_pembayaran);
+        $this->assertEquals(10000000, $invoice->fresh()->nominal_dibayar);
+        $this->assertEquals(0, $invoice->fresh()->sisa_tagihan);
+    }
+
+    /**
+     * Admin Keuangan dapat mencatat pengeluaran operasional pabrik.
+     */
+    public function test_admin_keuangan_can_record_operational_expense(): void
+    {
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceOperationalExpenses::class)
+            ->set('kategori_biaya', 'listrik_air')
+            ->set('nama_biaya', 'Listrik PLN Bulan November')
+            ->set('nominal', '3500000')
+            ->set('tanggal_pengeluaran', '2026-11-01')
+            ->set('metode_pembayaran', 'transfer_bank')
+            ->set('penerima_dana', 'PT PLN Persero')
+            ->call('simpanBiaya')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('operational_expense_logs', [
+            'kategori_biaya' => 'listrik_air',
+            'nama_biaya' => 'Listrik PLN Bulan November',
+            'nominal' => 3500000,
+            'penerima_dana' => 'PT PLN Persero',
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat menggunakan fitur WhatsApp penagihan langsung dan melengkapi kontak WA.
+     */
+    public function test_admin_keuangan_can_use_direct_whatsapp_feature(): void
+    {
+        $invoice = FinanceInvoice::create([
+            'user_id' => $this->keuangan->id,
+            'kode_tagihan' => 'INV-202611-999',
+            'nomor_invoice' => 'INV/PKDI/XI/2026/99',
+            'jenis_tagihan' => 'tagihan_pelanggan',
+            'pihak_terkait' => 'PT Semen Perkasa Abadi',
+            'nominal' => 15000000,
+            'nominal_dibayar' => 5000000,
+            'tanggal_terbit' => '2026-10-01',
+            'tanggal_jatuh_tempo' => '2026-10-31',
+            'status_pembayaran' => 'sebagian',
+            'metode_pembayaran' => 'transfer_bank',
+        ]);
+
+        // 1. Tagihan baru belum memiliki nomor WA
+        $this->assertEmpty($invoice->nomor_wa);
+        $this->assertNull($invoice->whatsapp_direct_url);
+
+        // 2. Admin membuka modal lengkapi WA dan menyimpan nomor
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceInvoices::class)
+            ->call('bukaModalWa', $invoice->id)
+            ->assertSet('modalWaTerbuka', true)
+            ->assertSet('quickWaInvoiceId', $invoice->id)
+            ->set('quick_wa_pic', 'Bpk. Rahmat (Finance)')
+            ->set('quick_wa_nomor', '081298765432')
+            ->call('simpanNomorWa')
+            ->assertHasNoErrors()
+            ->assertDispatched('buka-wa-langsung');
+
+        // 3. Verifikasi nomor WA dan PIC tersimpan serta format URL WhatsApp langsung tersedia
+        $freshInvoice = $invoice->fresh();
+        $this->assertEquals('Bpk. Rahmat (Finance)', $freshInvoice->kontak_pic);
+        $this->assertEquals('081298765432', $freshInvoice->nomor_wa);
+        $this->assertEquals('6281298765432', $freshInvoice->formatted_nomor_wa);
+        $this->assertNotNull($freshInvoice->terakhir_ditagih_at);
+
+        // 4. Verifikasi URL langsung memuat nomor 628... dan template pesan resmi tagihan
+        $waUrl = $freshInvoice->whatsapp_direct_url;
+        $this->assertNotNull($waUrl);
+        $this->assertStringContainsString('https://wa.me/6281298765432', $waUrl);
+        $this->assertStringContainsString(urlencode('INV/PKDI/XI/2026/99'), $waUrl);
+        $this->assertStringContainsString(urlencode('123-456-7890'), $waUrl);
+    }
+
+    /**
+     * Admin Keuangan dapat menghapus data tagihan dengan konfirmasi modal.
+     */
+    public function test_admin_keuangan_can_delete_invoice_with_confirmation(): void
+    {
+        $invoice = FinanceInvoice::create([
+            'user_id' => $this->keuangan->id,
+            'kode_tagihan' => 'INV-202611-088',
+            'nomor_invoice' => 'INV/TEST/DELETE/01',
+            'jenis_tagihan' => 'tagihan_pelanggan',
+            'pihak_terkait' => 'PT Hapus Data',
+            'nominal' => 2000000,
+            'nominal_dibayar' => 0,
+            'tanggal_terbit' => '2026-10-01',
+            'tanggal_jatuh_tempo' => '2026-10-31',
+            'status_pembayaran' => 'belum_dibayar',
+            'metode_pembayaran' => 'transfer_bank',
+        ]);
+
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceInvoices::class)
+            ->call('konfirmasiHapus', $invoice->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusInvoiceId', $invoice->id)
+            ->call('hapusTagihan')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('finance_invoices', [
+            'id' => $invoice->id,
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat menghapus biaya operasional dengan konfirmasi modal.
+     */
+    public function test_admin_keuangan_can_delete_operational_expense(): void
+    {
+        $expense = OperationalExpenseLog::create([
+            'user_id' => $this->keuangan->id,
+            'kode_biaya' => 'BOP-202611-099',
+            'kategori_biaya' => 'atk_kantor',
+            'nama_biaya' => 'Beli Kertas HVS',
+            'nominal' => 150000,
+            'tanggal_pengeluaran' => '2026-11-01',
+            'metode_pembayaran' => 'tunai_kas_kecil',
+            'penerima_dana' => 'Toko Gramedia',
+        ]);
+
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceOperationalExpenses::class)
+            ->call('konfirmasiHapus', $expense->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusExpenseId', $expense->id)
+            ->call('hapusBiaya')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('operational_expense_logs', [
+            'id' => $expense->id,
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat menghapus catatan perbaikan armada dengan konfirmasi modal.
+     */
+    public function test_admin_keuangan_can_delete_vehicle_repair(): void
+    {
+        $repair = VehicleMaintenanceLog::create([
+            'user_id' => $this->keuangan->id,
+            'nomor_polisi' => 'B 9999 TEST',
+            'jenis_kendaraan' => 'Truk Tronton Box',
+            'tanggal_perbaikan' => '2026-11-01',
+            'jenis_perbaikan' => 'Ganti Oli Mesin',
+            'nama_bengkel' => 'Bengkel Sejahtera',
+            'biaya' => 850000,
+            'status_perbaikan' => 'selesai',
+        ]);
+
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceVehicleRepairs::class)
+            ->call('konfirmasiHapus', $repair->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusRepairId', $repair->id)
+            ->call('hapusPerbaikan')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('vehicle_maintenance_logs', [
+            'id' => $repair->id,
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat menghapus catatan transaksi keuangan stok dengan konfirmasi modal.
+     */
+    public function test_admin_keuangan_can_delete_stock_transaction(): void
+    {
+        $trx = WarehouseFinanceLog::create([
+            'user_id' => $this->keuangan->id,
+            'kode_transaksi' => 'TRX-202611-999',
+            'jenis_transaksi' => 'pemasukan',
+            'kategori' => 'penjualan_drum',
+            'tanggal_transaksi' => '2026-11-01',
+            'nominal' => 5000000,
+            'metode_pembayaran' => 'transfer',
+            'pihak_terkait' => 'PT Hapus Transaksi',
+        ]);
+
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceStockTransactions::class)
+            ->call('konfirmasiHapus', $trx->id)
+            ->assertSet('modalHapusTerbuka', true)
+            ->assertSet('hapusTrxId', $trx->id)
+            ->call('hapusTransaksi')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('warehouse_finance_logs', [
+            'id' => $trx->id,
+        ]);
     }
 }

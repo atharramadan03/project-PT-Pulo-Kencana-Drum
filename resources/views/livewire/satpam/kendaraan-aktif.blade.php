@@ -45,38 +45,38 @@
 
     <!-- Tabel Daftar Kendaraan Aktif -->
     <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto no-scrollbar">
             <table class="w-full text-left text-xs">
-                <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
+                <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold text-[11px] uppercase tracking-wider">
                     <tr>
-                        <th class="py-3 px-4 whitespace-nowrap">No. Kunjungan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">No. Polisi</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Pengemudi</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Asal / Keperluan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Waktu Masuk</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Dokumen B3</th>
-                        <th class="py-3 px-4 whitespace-nowrap text-center">Aksi</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">No. Kunjungan</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">No. Polisi</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Pengemudi</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Asal / Keperluan</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Waktu Masuk</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Dokumen B3</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($kendaraanAktif as $visit)
                         <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-2.5 px-4 font-mono font-semibold text-[#0F172A] whitespace-nowrap">
+                            <td class="py-2.5 px-3 font-mono font-semibold text-[#0F172A] whitespace-nowrap">
                                 {{ $visit->nomor_kunjungan }}
                             </td>
-                            <td class="py-2.5 px-4 font-mono font-semibold text-[#2563EB] whitespace-nowrap">
+                            <td class="py-2.5 px-3 font-mono font-semibold text-[#2563EB] whitespace-nowrap">
                                 {{ $visit->nomor_polisi }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#0F172A] font-medium whitespace-nowrap">
+                            <td class="py-2.5 px-3 text-[#0F172A] font-medium whitespace-nowrap">
                                 {{ $visit->nama_pengemudi }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#64748B] max-w-[200px] truncate">
+                            <td class="py-2.5 px-3 text-[#64748B] max-w-[200px] truncate">
                                 {{ $visit->asal_tujuan }} ({{ $visit->keperluan }})
                             </td>
-                            <td class="py-2.5 px-4 text-[#64748B] whitespace-nowrap tabular-nums">
+                            <td class="py-2.5 px-3 text-[#64748B] whitespace-nowrap tabular-nums">
                                 {{ $visit->waktu_masuk->format('d M Y H:i') }}
                             </td>
-                            <td class="py-2.5 px-4 whitespace-nowrap">
+                            <td class="py-2.5 px-3 whitespace-nowrap">
                                 @if ($visit->status_pemeriksaan_surat_jalan_b3 === 'sesuai')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534]">
                                         <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
@@ -93,14 +93,24 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="py-2.5 px-4 text-center whitespace-nowrap">
-                                <button
-                                    wire:click="bukaModalKeluar({{ $visit->id }})"
-                                    type="button"
-                                    class="px-2.5 py-1 rounded-lg bg-[#F59E0B] hover:bg-amber-600 text-white font-medium text-xs transition cursor-pointer"
-                                >
-                                    Catat Keluar
-                                </button>
+                            <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button
+                                        wire:click="bukaModalKeluar({{ $visit->id }})"
+                                        type="button"
+                                        class="px-2.5 py-1 rounded-lg bg-[#F59E0B] hover:bg-amber-600 text-white font-medium text-xs transition cursor-pointer"
+                                    >
+                                        Catat Keluar
+                                    </button>
+                                    <button 
+                                        wire:click="konfirmasiHapus({{ $visit->id }})" 
+                                        type="button" 
+                                        class="p-1 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 transition cursor-pointer shadow-2xs"
+                                        title="Hapus data kunjungan"
+                                    >
+                                        <x-icon name="trash" class="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -123,7 +133,11 @@
 
     <!-- Modal Catat Keluar (Clean White Style per Reference) -->
     @if ($showModal && $selectedVisit)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6"
+        >
             <div class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden border border-[#E2E8F0]">
                 <div class="px-5 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
                     <h3 class="text-base font-bold text-[#0F172A]">Catat Kendaraan Keluar</h3>
@@ -198,6 +212,48 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- Modal Konfirmasi Hapus Data Kunjungan -->
+    @if ($modalHapusTerbuka && $hapusVisit)
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex justify-center items-center"
+        >
+            <div class="relative bg-white rounded-xl max-w-md w-full border border-[#E2E8F0] shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-100">
+                <div class="p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4">
+                        <x-icon name="trash" class="w-6 h-6" />
+                    </div>
+                    <h3 class="text-base font-bold text-[#0F172A] mb-1">Konfirmasi Hapus Data Kunjungan</h3>
+                    <p class="text-xs text-[#64748B] mb-5 leading-relaxed">
+                        Apakah Anda yakin ingin menghapus data kunjungan armada <strong class="text-[#0F172A]">{{ $hapusVisit->nomor_polisi }}</strong> (No: {{ $hapusVisit->nomor_kunjungan }}) atas nama <strong class="text-[#0F172A]">{{ $hapusVisit->nama_pengemudi }}</strong>? Tindakan ini akan menghapus data kunjungan aktif dari pos gerbang.
+                    </p>
+                    <div class="flex items-center justify-center gap-3">
+                        <button 
+                            wire:click="tutupModalHapus" 
+                            type="button" 
+                            class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-xs font-semibold text-[#0F172A] bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            wire:click="hapusVisit" 
+                            type="button" 
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs disabled:opacity-75"
+                        >
+                            <svg wire:loading wire:target="hapusVisit" class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span>Ya, Hapus Data</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     @endif

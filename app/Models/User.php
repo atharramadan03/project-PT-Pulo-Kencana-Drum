@@ -99,4 +99,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(VehicleMaintenanceLog::class);
     }
+
+    /**
+     * Relasi 1:N — User Admin Keuangan mencatat Riwayat Tagihan / Invoices
+     */
+    public function financeInvoices(): HasMany
+    {
+        return $this->hasMany(FinanceInvoice::class);
+    }
+
+    /**
+     * Relasi 1:N — User Admin Keuangan mencatat Biaya Operasional Pabrik/Gudang
+     */
+    public function operationalExpenseLogs(): HasMany
+    {
+        return $this->hasMany(OperationalExpenseLog::class);
+    }
 }

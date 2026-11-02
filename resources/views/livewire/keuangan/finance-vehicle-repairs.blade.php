@@ -22,7 +22,7 @@
                 target="_blank"
                 class="px-3 py-2 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer"
             >
-                <x-icon name="file-text" class="w-4 h-4 text-rose-600" />
+                <x-icon name="printer" class="w-4 h-4 text-rose-600" />
                 <span>Cetak PDF</span>
             </a>
             @if (auth()->user()->isAdminKeuangan())
@@ -96,61 +96,76 @@
 
     <!-- Data Table -->
     <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto no-scrollbar">
             <table class="w-full text-left text-xs">
-                <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
+                <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold text-[11px] uppercase tracking-wider">
                     <tr>
-                        <th class="py-3 px-4 whitespace-nowrap">No. Polisi</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Kendaraan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Jenis Perbaikan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Nama Bengkel</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Tanggal</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Status</th>
-                        <th class="py-3 px-4 whitespace-nowrap text-right">Biaya</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">No. Polisi</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Kendaraan</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Jenis Perbaikan</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Nama Bengkel</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Tanggal</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap">Status</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap text-right">Biaya</th>
+                        <th class="py-2.5 px-3 whitespace-nowrap text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($repairs as $rep)
                         <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-2.5 px-4 font-mono font-bold text-[#0F172A] whitespace-nowrap">
+                            <td class="py-2.5 px-3 font-mono font-bold text-[#0F172A] whitespace-nowrap">
                                 {{ $rep->nomor_polisi }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#0F172A] whitespace-nowrap">
+                            <td class="py-2.5 px-3 text-[#0F172A] whitespace-nowrap">
                                 {{ $rep->jenis_kendaraan }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#0F172A] font-medium whitespace-nowrap">
+                            <td class="py-2.5 px-3 text-[#0F172A] font-medium whitespace-nowrap">
                                 {{ $rep->jenis_perbaikan }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#64748B] whitespace-nowrap">
+                            <td class="py-2.5 px-3 text-[#64748B] whitespace-nowrap">
                                 {{ $rep->nama_bengkel }}
                             </td>
-                            <td class="py-2.5 px-4 text-[#64748B] tabular-nums whitespace-nowrap">
+                            <td class="py-2.5 px-3 text-[#64748B] tabular-nums whitespace-nowrap">
                                 {{ $rep->tanggal_perbaikan?->format('d M Y') }}
                             </td>
-                            <td class="py-2.5 px-4 whitespace-nowrap">
+                            <td class="py-2.5 px-3 whitespace-nowrap">
                                 @if ($rep->status_perbaikan === 'selesai')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534]">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#DCFCE7] text-[#166534]">
                                         <span class="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
                                         Selesai
                                     </span>
                                 @elseif ($rep->status_perbaikan === 'dalam_pengerjaan')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#FEF3C7] text-[#92400E]">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#FEF3C7] text-[#92400E]">
                                         <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
                                         Pengerjaan
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-[#475569]">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-[#475569]">
                                         Dijadwalkan
                                     </span>
                                 @endif
                             </td>
-                            <td class="py-2.5 px-4 text-right font-bold text-[#0F172A] tabular-nums whitespace-nowrap">
+                            <td class="py-2.5 px-3 text-right font-bold text-[#0F172A] tabular-nums whitespace-nowrap">
                                 {{ $rep->formatted_biaya }}
+                            </td>
+                            <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                                @if (auth()->user()->isAdminKeuangan())
+                                    <button 
+                                        wire:click="konfirmasiHapus({{ $rep->id }})" 
+                                        type="button" 
+                                        class="p-1 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 transition cursor-pointer shadow-2xs"
+                                        title="Hapus data perbaikan armada"
+                                    >
+                                        <x-icon name="trash" class="w-3.5 h-3.5" />
+                                    </button>
+                                @else
+                                    <span class="text-[#64748B]">-</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-10 text-center text-xs text-[#64748B]">
+                            <td colspan="8" class="py-10 text-center text-xs text-[#64748B]">
                                 Belum ada catatan biaya perbaikan armada.
                             </td>
                         </tr>
@@ -168,11 +183,15 @@
 
     <!-- Modal Catat Biaya Perbaikan (Khusus Admin Keuangan) -->
     @if ($showCreateModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden border border-[#E2E8F0]">
-                <div class="px-5 py-4 border-b border-[#E2E8F0] flex justify-between items-center">
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-3 sm:p-6"
+        >
+            <div class="relative bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-[#E2E8F0] my-auto flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3.5rem)] animate-in fade-in zoom-in-95 duration-100">
+                <div class="px-5 py-3.5 border-b border-[#E2E8F0] flex justify-between items-center bg-slate-50/75 shrink-0">
                     <div>
-                        <h3 class="text-base font-bold text-[#0F172A]">Catat Biaya Perbaikan Mobil</h3>
+                        <h3 class="text-sm font-bold text-[#0F172A]">Catat Biaya Perbaikan Mobil</h3>
                         <p class="text-xs text-[#64748B] mt-0.5">Pemeliharaan dan perbaikan armada operasional</p>
                     </div>
                     <button 
@@ -184,7 +203,8 @@
                     </button>
                 </div>
 
-                <form wire:submit="simpanPerbaikan" class="p-5 space-y-4">
+                <form wire:submit="simpanPerbaikan" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div class="p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-[#0F172A] mb-1">Nomor Polisi <span class="text-rose-500">*</span></label>
@@ -200,16 +220,14 @@
 
                         <div>
                             <label class="block text-xs font-medium text-[#0F172A] mb-1">Jenis Kendaraan <span class="text-rose-500">*</span></label>
-                            <select 
+                            <input 
                                 wire:model="jenis_kendaraan" 
-                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
-                            >
-                                <option value="Truk Tronton Box">Truk Tronton Box</option>
-                                <option value="Truk Engkel Bak">Truk Engkel Bak</option>
-                                <option value="Truk Tangki B3">Truk Tangki B3</option>
-                                <option value="Pickup Operasional">Pickup Operasional</option>
-                                <option value="Mobil Operasional">Mobil Operasional</option>
-                            </select>
+                                type="text" 
+                                placeholder="Contoh: Truk Tronton Box / Pickup / Operasional" 
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" 
+                                required 
+                            />
+                            @error('jenis_kendaraan') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
@@ -287,7 +305,8 @@
                         ></textarea>
                     </div>
 
-                    <div class="pt-3 border-t border-[#E2E8F0] flex justify-end gap-2">
+                    </div>
+                    <div class="px-5 py-3 border-t border-[#E2E8F0] bg-slate-50/75 flex justify-end gap-2 shrink-0">
                         <button 
                             wire:click="tutupCreateModal" 
                             type="button" 
@@ -303,6 +322,48 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- Modal Konfirmasi Hapus Biaya Perbaikan -->
+    @if ($modalHapusTerbuka && $hapusRepair)
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex justify-center items-center"
+        >
+            <div class="relative bg-white rounded-xl max-w-md w-full border border-[#E2E8F0] shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-100">
+                <div class="p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4">
+                        <x-icon name="trash" class="w-6 h-6" />
+                    </div>
+                    <h3 class="text-base font-bold text-[#0F172A] mb-1">Konfirmasi Hapus Data Perbaikan</h3>
+                    <p class="text-xs text-[#64748B] mb-5 leading-relaxed">
+                        Apakah Anda yakin ingin menghapus catatan servis armada <strong class="text-[#0F172A]">{{ $hapusRepair->nomor_polisi }}</strong> ({{ $hapusRepair->jenis_perbaikan }}) senilai <strong class="text-rose-600">{{ $hapusRepair->formatted_biaya }}</strong>? Data akan dihapus secara permanen.
+                    </p>
+                    <div class="flex items-center justify-center gap-3">
+                        <button 
+                            wire:click="tutupModalHapus" 
+                            type="button" 
+                            class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-xs font-semibold text-[#0F172A] bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            wire:click="hapusPerbaikan" 
+                            type="button" 
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs disabled:opacity-75"
+                        >
+                            <svg wire:loading wire:target="hapusPerbaikan" class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span>Ya, Hapus Data</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     @endif

@@ -49,6 +49,13 @@ class DrumBatchIndex extends Component
     // Properti Modal Update Status Cepat
     public bool $showStatusModal = false;
 
+    // Properti Modal Hapus
+    public bool $modalHapusTerbuka = false;
+
+    public ?int $hapusBatchId = null;
+
+    public ?DrumBatch $hapusBatch = null;
+
     public ?int $selectedBatchId = null;
 
     public string $edit_status_pengendapan = '';
@@ -179,6 +186,35 @@ class DrumBatchIndex extends Component
         }
 
         $this->tutupStatusModal();
+    }
+
+    public function konfirmasiHapus(int $id): void
+    {
+        $batch = DrumBatch::findOrFail($id);
+        $this->hapusBatchId = $batch->id;
+        $this->hapusBatch = $batch;
+        $this->modalHapusTerbuka = true;
+    }
+
+    public function tutupModalHapus(): void
+    {
+        $this->modalHapusTerbuka = false;
+        $this->hapusBatchId = null;
+        $this->hapusBatch = null;
+    }
+
+    public function hapusBatch(): void
+    {
+        $batch = DrumBatch::findOrFail($this->hapusBatchId);
+        $kode = $batch->kode_batch;
+
+        // Bersihkan relasi proses log dan kunjungan
+        $batch->drumProcessLogs()->delete();
+        $batch->vehicleVisits()->detach();
+        $batch->delete();
+
+        $this->tutupModalHapus();
+        session()->flash('success', "Data drum batch {$kode} berhasil dihapus dari sistem.");
     }
 
     public function render()

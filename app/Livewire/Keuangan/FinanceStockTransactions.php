@@ -23,6 +23,13 @@ class FinanceStockTransactions extends Component
     // Modal Create Transaksi
     public bool $showCreateModal = false;
 
+    // State Modal Hapus
+    public bool $modalHapusTerbuka = false;
+
+    public ?int $hapusTrxId = null;
+
+    public ?WarehouseFinanceLog $hapusTrx = null;
+
     public string $kode_transaksi = '';
 
     #[Validate('required|in:pemasukan,pengeluaran')]
@@ -114,6 +121,37 @@ class FinanceStockTransactions extends Component
 
         session()->flash('success', "Transaksi {$kodeBaru} berhasil disimpan!");
         $this->tutupCreateModal();
+    }
+
+    public function konfirmasiHapus(int $id): void
+    {
+        $trx = WarehouseFinanceLog::findOrFail($id);
+        $this->hapusTrxId = $trx->id;
+        $this->hapusTrx = $trx;
+        $this->modalHapusTerbuka = true;
+    }
+
+    public function tutupModalHapus(): void
+    {
+        $this->modalHapusTerbuka = false;
+        $this->hapusTrxId = null;
+        $this->hapusTrx = null;
+    }
+
+    public function hapusTransaksi(): void
+    {
+        if (! Auth::user()?->isAdminKeuangan()) {
+            abort(403, 'Hanya Admin Keuangan yang berhak menghapus data transaksi.');
+        }
+
+        $trx = WarehouseFinanceLog::findOrFail($this->hapusTrxId);
+        $kode = $trx->kode_transaksi;
+        $pihak = $trx->pihak_terkait;
+
+        $trx->delete();
+
+        $this->tutupModalHapus();
+        session()->flash('success', "Transaksi kas {$kode} ({$pihak}) berhasil dihapus dari sistem.");
     }
 
     public function render()

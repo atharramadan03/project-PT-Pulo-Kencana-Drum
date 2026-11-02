@@ -1,13 +1,13 @@
 <div class="space-y-4">
     <!-- Header Section (Matches Dashboard Kantor Style) -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
         <div>
             <h1 class="font-bold text-xl text-[#0F172A] leading-tight">
                 Dashboard Keuangan
                 <span class="sr-only">Tracker Arus Kas Stok Gudang & Biaya Armada</span>
             </h1>
             <p class="text-xs text-[#64748B] mt-0.5">
-                Tracker arus kas stok gudang dan biaya pemeliharaan armada
+                Tracker arus kas stok gudang, riwayat tagihan, dan operasional pabrik
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -27,9 +27,9 @@
                 <button 
                     wire:click="bukaModalPerbaikan"
                     type="button" 
-                    class="px-3 py-1.5 rounded-lg bg-[#0F172A] hover:bg-slate-800 text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer"
+                    class="px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 text-[#0F172A] font-semibold text-xs shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                    <x-icon name="wrench" class="w-3.5 h-3.5" />
+                    <x-icon name="wrench" class="w-3.5 h-3.5 text-slate-500" />
                     <span>Biaya Mobil</span>
                 </button>
             @endif
@@ -43,65 +43,94 @@
         </div>
     @endif
 
-    <!-- 1. 4 KPI Cards (Clean Icon Without Colored Circle Background & Balanced Font Size) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    @if ($tagihanPendingCount > 0)
+        <!-- Banner Notifikasi Tagihan Aktif -->
+        <div class="px-4 py-2.5 rounded-xl bg-blue-50/70 border border-blue-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs shadow-2xs">
+            <div class="flex items-center gap-2 text-blue-900 font-medium">
+                <x-icon name="receipt" class="w-4 h-4 text-blue-600 shrink-0" />
+                <span>Terdapat <strong>{{ $tagihanPendingCount }} faktur/tagihan aktif</strong> yang belum selesai dengan total sisa <strong>Rp {{ number_format($tagihanPendingNominal, 0, ',', '.') }}</strong></span>
+            </div>
+            <a href="{{ route('keuangan.tagihan') }}" wire:navigate.hover class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] transition inline-flex items-center gap-1 shrink-0">
+                <span>Kelola Tagihan</span>
+                <x-icon name="arrow-right" class="w-3 h-3" />
+            </a>
+        </div>
+    @endif
+
+    <!-- 1. 5 KPI Cards (Clean Icon Without Colored Circle Background & Balanced Layout) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
         <!-- Card 1: Total Pemasukan Stok -->
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
             <div class="flex items-center justify-between gap-2">
-                <p class="text-xs text-[#64748B] font-medium truncate">Total Pemasukan Stok</p>
+                <p class="text-xs text-[#64748B] font-medium truncate">Pemasukan Stok</p>
                 <x-icon name="wallet" class="w-4 h-4 text-[#10B981] shrink-0" />
             </div>
-            <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
+            <h3 class="text-sm sm:text-base font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
                 Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span class="text-[#10B981] font-semibold">{{ number_format($totalUnitTerjual, 0, ',', '.') }} Drum</span>
+                <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate.hover class="text-[#10B981] font-semibold hover:underline">{{ number_format($totalUnitTerjual, 0, ',', '.') }} Drum</a>
                 <span class="text-[#64748B]">Hasil penjualan</span>
             </div>
         </div>
 
         <!-- Card 2: Pengeluaran Stok Gudang -->
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
             <div class="flex items-center justify-between gap-2">
                 <p class="text-xs text-[#64748B] font-medium truncate">Pengeluaran Stok</p>
                 <x-icon name="package" class="w-4 h-4 text-[#F59E0B] shrink-0" />
             </div>
-            <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
+            <h3 class="text-sm sm:text-base font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
                 Rp {{ number_format($totalPengeluaranStok, 0, ',', '.') }}
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span class="text-[#F59E0B] font-semibold">{{ number_format($totalUnitBahanMasuk, 0, ',', '.') }} Unit</span>
-                <span class="text-[#64748B]">Modal & operasional</span>
+                <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate.hover class="text-[#F59E0B] font-semibold hover:underline">{{ number_format($totalUnitBahanMasuk, 0, ',', '.') }} Unit</a>
+                <span class="text-[#64748B]">Bahan & modal</span>
             </div>
         </div>
 
         <!-- Card 3: Biaya Perbaikan Mobil -->
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
             <div class="flex items-center justify-between gap-2">
-                <p class="text-xs text-[#64748B] font-medium truncate">Biaya Perbaikan Mobil</p>
+                <p class="text-xs text-[#64748B] font-medium truncate">Biaya Armada</p>
                 <x-icon name="wrench" class="w-4 h-4 text-[#EF4444] shrink-0" />
             </div>
-            <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
+            <h3 class="text-sm sm:text-base font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
                 Rp {{ number_format($totalBiayaPerbaikan, 0, ',', '.') }}
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span class="text-rose-600 font-semibold">{{ $totalPerbaikanSelesai }} Selesai</span>
+                <a href="{{ route('keuangan.biaya-kendaraan') }}" wire:navigate.hover class="text-rose-600 font-semibold hover:underline">{{ $totalPerbaikanSelesai }} Selesai</a>
                 <span class="text-[#64748B]">{{ $perbaikanProsesCount }} pengerjaan</span>
             </div>
         </div>
 
-        <!-- Card 4: Saldo Kas Operasional (Net) -->
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+        <!-- Card 4: Biaya Operasional Pabrik -->
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
             <div class="flex items-center justify-between gap-2">
-                <p class="text-xs text-[#64748B] font-medium truncate">Saldo Kas Operasional</p>
+                <p class="text-xs text-[#64748B] font-medium truncate">Biaya Operasional</p>
+                <x-icon name="banknote" class="w-4 h-4 text-rose-500 shrink-0" />
+            </div>
+            <h3 class="text-sm sm:text-base font-bold text-rose-600 tabular-nums leading-tight mt-1.5 whitespace-nowrap">
+                Rp {{ number_format($totalBiayaOperasional, 0, ',', '.') }}
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <a href="{{ route('keuangan.operasional') }}" wire:navigate.hover class="text-[#2563EB] hover:underline font-semibold">Listrik, BBM & APD</a>
+                <span class="text-[#64748B]">Overhead</span>
+            </div>
+        </div>
+
+        <!-- Card 5: Saldo Kas Bersih (Net) -->
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors sm:col-span-2 lg:col-span-1 xl:col-span-1">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Saldo Kas Bersih</p>
                 <x-icon name="trending-up" class="w-4 h-4 text-[#2563EB] shrink-0" />
             </div>
-            <h3 class="text-base sm:text-lg font-bold {{ $netOperasional >= 0 ? 'text-[#0F172A]' : 'text-rose-600' }} tabular-nums leading-tight mt-1.5 whitespace-nowrap">
+            <h3 class="text-sm sm:text-base font-bold {{ $netOperasional >= 0 ? 'text-[#0F172A]' : 'text-rose-600' }} tabular-nums leading-tight mt-1.5 whitespace-nowrap">
                 Rp {{ number_format($netOperasional, 0, ',', '.') }}
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-[#2563EB] font-semibold">Margin {{ $marginPct }}%</span>
-                <span class="text-[#64748B]">Arus kas bersih</span>
+                <span class="text-[#64748B]">Kas riil</span>
             </div>
         </div>
     </div>
@@ -315,7 +344,7 @@
         <div class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
                 <h2 class="text-sm font-bold text-[#0F172A]">Aktivitas Keuangan</h2>
-                <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
+                <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate.hover class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
                     <span>Lihat Semua</span>
                     <x-icon name="arrow-right" class="w-3 h-3" />
                 </a>
@@ -375,13 +404,13 @@
         <div class="lg:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
             <div class="p-4 sm:px-5 border-b border-[#E2E8F0] flex items-center justify-between">
                 <h2 class="text-sm font-bold text-[#0F172A]">Data Transaksi Stok Terbaru</h2>
-                <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
+                <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate.hover class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
                     <span>Lihat Semua</span>
                     <x-icon name="arrow-right" class="w-3 h-3" />
                 </a>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto no-scrollbar">
                 <table class="w-full text-left text-xs">
                     <thead class="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
                         <tr>
@@ -477,11 +506,15 @@
 
     <!-- Modal 1: Catat Transaksi Keuangan Stok (Khusus Admin Keuangan) -->
     @if ($showModalTransaksi)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden border border-[#E2E8F0]">
-                <div class="px-5 py-4 border-b border-[#E2E8F0] flex justify-between items-center">
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-3 sm:p-6"
+        >
+            <div class="relative bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-[#E2E8F0] my-auto flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3.5rem)] animate-in fade-in zoom-in-95 duration-100">
+                <div class="px-5 py-3.5 border-b border-[#E2E8F0] flex justify-between items-center bg-slate-50/75 shrink-0">
                     <div>
-                        <h3 class="text-base font-bold text-[#0F172A]">Catat Transaksi Keuangan Stok</h3>
+                        <h3 class="text-sm font-bold text-[#0F172A]">Catat Transaksi Keuangan Stok</h3>
                         <p class="text-xs text-[#64748B] mt-0.5">Kode: <span class="font-mono font-semibold text-[#2563EB]">{{ $kode_transaksi }}</span></p>
                     </div>
                     <button 
@@ -493,7 +526,8 @@
                     </button>
                 </div>
 
-                <form wire:submit="simpanTransaksi" class="p-5 space-y-4">
+                <form wire:submit="simpanTransaksi" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div class="p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-[#0F172A] mb-1">Jenis Transaksi <span class="text-rose-500">*</span></label>
@@ -598,7 +632,8 @@
                         ></textarea>
                     </div>
 
-                    <div class="pt-3 border-t border-[#E2E8F0] flex justify-end gap-2">
+                    </div>
+                    <div class="px-5 py-3 border-t border-[#E2E8F0] bg-slate-50/75 flex justify-end gap-2 shrink-0">
                         <button 
                             wire:click="tutupModalTransaksi" 
                             type="button" 
@@ -620,11 +655,15 @@
 
     <!-- Modal 2: Catat Biaya Perbaikan Mobil (Khusus Admin Keuangan) -->
     @if ($showModalPerbaikan)
-        <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden border border-[#E2E8F0]">
-                <div class="px-5 py-4 border-b border-[#E2E8F0] flex justify-between items-center">
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-3 sm:p-6"
+        >
+            <div class="relative bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-[#E2E8F0] my-auto flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3.5rem)] animate-in fade-in zoom-in-95 duration-100">
+                <div class="px-5 py-3.5 border-b border-[#E2E8F0] flex justify-between items-center bg-slate-50/75 shrink-0">
                     <div>
-                        <h3 class="text-base font-bold text-[#0F172A]">Catat Biaya Perbaikan Mobil</h3>
+                        <h3 class="text-sm font-bold text-[#0F172A]">Catat Biaya Perbaikan Mobil</h3>
                         <p class="text-xs text-[#64748B] mt-0.5">Pemeliharaan dan perbaikan armada operasional</p>
                     </div>
                     <button 
@@ -636,7 +675,8 @@
                     </button>
                 </div>
 
-                <form wire:submit="simpanPerbaikan" class="p-5 space-y-4">
+                <form wire:submit="simpanPerbaikan" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div class="p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-[#0F172A] mb-1">Nomor Polisi <span class="text-rose-500">*</span></label>
@@ -652,16 +692,14 @@
 
                         <div>
                             <label class="block text-xs font-medium text-[#0F172A] mb-1">Jenis Kendaraan <span class="text-rose-500">*</span></label>
-                            <select 
+                            <input 
                                 wire:model="jenis_kendaraan" 
-                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
-                            >
-                                <option value="Truk Tronton Box">Truk Tronton Box</option>
-                                <option value="Truk Engkel Bak">Truk Engkel Bak</option>
-                                <option value="Truk Tangki B3">Truk Tangki B3</option>
-                                <option value="Pickup Operasional">Pickup Operasional</option>
-                                <option value="Mobil Operasional">Mobil Operasional</option>
-                            </select>
+                                type="text" 
+                                placeholder="Contoh: Truk Tronton Box / Pickup / Operasional" 
+                                class="w-full rounded-lg border-[#E2E8F0] bg-white text-xs text-[#0F172A] py-2 px-3 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]" 
+                                required 
+                            />
+                            @error('jenis_kendaraan') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
@@ -739,7 +777,8 @@
                         ></textarea>
                     </div>
 
-                    <div class="pt-3 border-t border-[#E2E8F0] flex justify-end gap-2">
+                    </div>
+                    <div class="px-5 py-3 border-t border-[#E2E8F0] bg-slate-50/75 flex justify-end gap-2 shrink-0">
                         <button 
                             wire:click="tutupModalPerbaikan" 
                             type="button" 

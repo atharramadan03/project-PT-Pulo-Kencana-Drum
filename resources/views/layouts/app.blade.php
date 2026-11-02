@@ -15,13 +15,13 @@
         <!-- Scripts & Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-[#0F172A] bg-[#F7F9FC] antialiased min-h-full selection:bg-[#2563EB] selection:text-white">
-        <div class="min-h-screen bg-[#F7F9FC] flex flex-col">
+    <body class="font-sans text-[#0F172A] bg-[#F7F9FC] antialiased min-h-full selection:bg-[#2563EB] selection:text-white overflow-x-hidden">
+        <div class="min-h-screen bg-[#F7F9FC] overflow-x-hidden">
             <!-- Sidebar & Top Bar -->
             <livewire:layout.navigation />
 
             <!-- Main Content Area -->
-            <div class="lg:pl-60 flex flex-col flex-1 min-w-0">
+            <div class="lg:pl-60 flex flex-col min-h-screen">
                 <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     @if (isset($header))
                         <div class="mb-5">

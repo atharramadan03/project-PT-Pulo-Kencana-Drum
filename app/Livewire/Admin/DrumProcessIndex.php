@@ -24,6 +24,13 @@ class DrumProcessIndex extends Component
     // Modal Input Log Proses Baru
     public bool $showCreateModal = false;
 
+    // Properti Modal Hapus
+    public bool $modalHapusTerbuka = false;
+
+    public ?int $hapusLogId = null;
+
+    public ?DrumProcessLog $hapusLog = null;
+
     #[Validate('required|exists:drum_batches,id')]
     public ?int $drum_batch_id = null;
 
@@ -112,6 +119,31 @@ class DrumProcessIndex extends Component
         session()->flash('success', "Log proses {$log->label_proses} untuk batch {$batch?->kode_batch} berhasil dicatat!");
 
         $this->tutupCreateModal();
+    }
+
+    public function konfirmasiHapus(int $id): void
+    {
+        $log = DrumProcessLog::with('drumBatch')->findOrFail($id);
+        $this->hapusLogId = $log->id;
+        $this->hapusLog = $log;
+        $this->modalHapusTerbuka = true;
+    }
+
+    public function tutupModalHapus(): void
+    {
+        $this->modalHapusTerbuka = false;
+        $this->hapusLogId = null;
+        $this->hapusLog = null;
+    }
+
+    public function hapusLog(): void
+    {
+        $log = DrumProcessLog::findOrFail($this->hapusLogId);
+        $jenis = $log->label_proses;
+        $log->delete();
+
+        $this->tutupModalHapus();
+        session()->flash('success', "Catatan proses {$jenis} berhasil dihapus dari sistem.");
     }
 
     public function render()

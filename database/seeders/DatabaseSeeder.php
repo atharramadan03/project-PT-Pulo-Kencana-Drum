@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\FinanceInvoice;
+use App\Models\OperationalExpenseLog;
 use App\Models\User;
 use App\Models\VehicleMaintenanceLog;
 use App\Models\WarehouseFinanceLog;
@@ -149,6 +151,95 @@ class DatabaseSeeder extends Seeder
                 'biaya' => 1650000,
                 'status_perbaikan' => 'dalam_pengerjaan',
                 'keterangan' => 'Ban belakang aus tergores material gudang',
+            ]);
+        }
+
+        if (FinanceInvoice::count() === 0) {
+            FinanceInvoice::create([
+                'user_id' => $keuangan->id,
+                'kode_tagihan' => 'INV-202611-001',
+                'nomor_invoice' => 'INV/PKDI/2026/XI/012',
+                'jenis_tagihan' => 'tagihan_pelanggan',
+                'pihak_terkait' => 'PT Agro Pelita Nusantara',
+                'nominal' => 31200000,
+                'nominal_dibayar' => 31200000,
+                'tanggal_terbit' => now()->subDays(5)->toDateString(),
+                'tanggal_jatuh_tempo' => now()->addDays(25)->toDateString(),
+                'tanggal_lunas' => now()->subDays(1)->toDateString(),
+                'status_pembayaran' => 'lunas',
+                'metode_pembayaran' => 'transfer_bank',
+                'keterangan' => 'Pelunasan PO 120 Unit Drum Metal Coating Kuning',
+            ]);
+
+            FinanceInvoice::create([
+                'user_id' => $keuangan->id,
+                'kode_tagihan' => 'INV-202611-002',
+                'nomor_invoice' => 'FKT-SUP/SKM/8812',
+                'jenis_tagihan' => 'tagihan_vendor',
+                'pihak_terkait' => 'PT Surya Kimia Murni',
+                'nominal' => 14500000,
+                'nominal_dibayar' => 5000000,
+                'tanggal_terbit' => now()->subDays(3)->toDateString(),
+                'tanggal_jatuh_tempo' => now()->addDays(11)->toDateString(),
+                'status_pembayaran' => 'sebagian',
+                'metode_pembayaran' => 'transfer_bank',
+                'keterangan' => 'Pengadaan chemical degreaser dan soda api pencucian drum',
+            ]);
+
+            FinanceInvoice::create([
+                'user_id' => $keuangan->id,
+                'kode_tagihan' => 'INV-202611-003',
+                'nomor_invoice' => 'INV/PKDI/2026/XI/015',
+                'jenis_tagihan' => 'tagihan_pelanggan',
+                'pihak_terkait' => 'CV Sumber Kimia Abadi',
+                'nominal' => 18750000,
+                'nominal_dibayar' => 0,
+                'tanggal_terbit' => now()->subDays(1)->toDateString(),
+                'tanggal_jatuh_tempo' => now()->addDays(13)->toDateString(),
+                'status_pembayaran' => 'belum_dibayar',
+                'metode_pembayaran' => 'transfer_bank',
+                'keterangan' => 'Tagihan termin 1 pengiriman 90 unit drum rekondisi biru',
+            ]);
+        }
+
+        if (OperationalExpenseLog::count() === 0) {
+            OperationalExpenseLog::create([
+                'user_id' => $keuangan->id,
+                'kode_biaya' => 'BOP-202611-001',
+                'kategori_biaya' => 'listrik_air',
+                'nama_biaya' => 'Tagihan Listrik PLN Pabrik & Pompa Cuci Drum',
+                'nominal' => 4850000,
+                'tanggal_pengeluaran' => now()->subDays(4)->toDateString(),
+                'metode_pembayaran' => 'transfer_bank',
+                'nomor_bukti' => 'PLN-REK-202610-9921',
+                'penerima_dana' => 'PT PLN (Persero)',
+                'keterangan' => 'Daya 33.000 VA operasional workshop dan gudang',
+            ]);
+
+            OperationalExpenseLog::create([
+                'user_id' => $keuangan->id,
+                'kode_biaya' => 'BOP-202611-002',
+                'kategori_biaya' => 'bbm_solar',
+                'nama_biaya' => 'Pengisian Solar Truk Armada B 9123 KDA & Genset',
+                'nominal' => 1400000,
+                'tanggal_pengeluaran' => now()->subDays(2)->toDateString(),
+                'metode_pembayaran' => 'tunai_kas_kecil',
+                'nomor_bukti' => 'SPBU-34-17129-A',
+                'penerima_dana' => 'SPBU Pertamina Cikarang',
+                'keterangan' => 'Pengiriman drum ke kawasan industri Cikarang',
+            ]);
+
+            OperationalExpenseLog::create([
+                'user_id' => $keuangan->id,
+                'kode_biaya' => 'BOP-202611-003',
+                'kategori_biaya' => 'perlengkapan_apd',
+                'nama_biaya' => 'Pengadaan Masker Gas Respirator B3 & Sarung Tangan Karet',
+                'nominal' => 850000,
+                'tanggal_pengeluaran' => now()->subDays(1)->toDateString(),
+                'metode_pembayaran' => 'tunai_kas_kecil',
+                'nomor_bukti' => 'NOTA-K3-4410',
+                'penerima_dana' => 'Toko Safety Mandiri',
+                'keterangan' => 'Kebutuhan APD tim peniupan & pencucian drum chemical',
             ]);
         }
     }

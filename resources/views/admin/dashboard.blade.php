@@ -425,7 +425,7 @@
             <div class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-bold text-[#0F172A]">Aktivitas Terbaru</h2>
-                    <a href="{{ route('admin.reports') }}" wire:navigate class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
+                    <a href="{{ route('admin.reports') }}" wire:navigate.hover class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
                         <span>Lihat Semua</span>
                         <x-icon name="arrow-right" class="w-3 h-3" />
                     </a>
@@ -504,7 +504,7 @@
             <div class="lg:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
                 <div class="p-4 sm:px-5 border-b border-[#E2E8F0] flex items-center justify-between">
                     <h2 class="text-sm font-bold text-[#0F172A]">Data Drum Terbaru</h2>
-                    <a href="{{ route('admin.drum-batches') }}" wire:navigate class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
+                    <a href="{{ route('admin.drum-batches') }}" wire:navigate.hover class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1">
                         <span>Lihat Semua</span>
                         <x-icon name="arrow-right" class="w-3 h-3" />
                     </a>

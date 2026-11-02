@@ -27,7 +27,7 @@ new class extends Component
         }
 
         Auth::user()->update([
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
         ]);
 
         $this->reset('password', 'password_confirmation');
@@ -109,15 +109,23 @@ new class extends Component
         </div>
 
         <div class="pt-3 border-t border-[#E2E8F0] flex items-center justify-between gap-3">
-            <x-action-message class="text-xs font-medium text-[#166534]" on="password-updated">
-                Password baru berhasil disimpan.
+            <x-action-message class="text-xs font-medium text-[#166534] inline-flex items-center gap-1.5 bg-green-50 px-2.5 py-1 rounded-md border border-green-200" on="password-updated">
+                <x-icon name="circle-check" class="w-3.5 h-3.5 text-[#166534]" />
+                <span>Password baru berhasil disimpan!</span>
             </x-action-message>
 
             <button
                 type="submit"
-                class="ml-auto px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold transition cursor-pointer"
+                wire:loading.attr="disabled"
+                wire:target="updatePassword"
+                class="ml-auto px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-75 disabled:cursor-not-allowed"
             >
-                Simpan Password Baru
+                <svg wire:loading wire:target="updatePassword" class="animate-spin -ml-0.5 w-3.5 h-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span wire:loading.remove wire:target="updatePassword">Simpan Password Baru</span>
+                <span wire:loading wire:target="updatePassword">Menyimpan...</span>
             </button>
         </div>
     </form>

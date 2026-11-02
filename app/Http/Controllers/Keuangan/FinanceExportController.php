@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Keuangan;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinanceInvoice;
+use App\Models\OperationalExpenseLog;
 use App\Models\VehicleMaintenanceLog;
 use App\Models\WarehouseFinanceLog;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -37,6 +39,20 @@ class FinanceExportController extends Controller
             ];
         }
 
+        if ($jenis === 'all' || $jenis === 'tagihan') {
+            $sheets[] = [
+                'name' => 'Riwayat Tagihan Faktur',
+                'rows' => $this->getInvoiceRows(),
+            ];
+        }
+
+        if ($jenis === 'all' || $jenis === 'operasional') {
+            $sheets[] = [
+                'name' => 'Biaya Operasional Pabrik',
+                'rows' => $this->getOperationalExpenseRows(),
+            ];
+        }
+
         return $this->generateXlsxResponse($sheets, $filename);
     }
 
@@ -48,19 +64,25 @@ class FinanceExportController extends Controller
         $totalPemasukan = (float) WarehouseFinanceLog::where('jenis_transaksi', 'pemasukan')->sum('nominal');
         $totalPengeluaranStok = (float) WarehouseFinanceLog::where('jenis_transaksi', 'pengeluaran')->sum('nominal');
         $totalBiayaPerbaikan = (float) VehicleMaintenanceLog::sum('biaya');
-        $netOperasional = $totalPemasukan - $totalPengeluaranStok - $totalBiayaPerbaikan;
+        $totalBiayaOperasional = (float) OperationalExpenseLog::sum('nominal');
+        $netOperasional = $totalPemasukan - $totalPengeluaranStok - $totalBiayaPerbaikan - $totalBiayaOperasional;
 
         $stockLogs = WarehouseFinanceLog::with('user')->orderBy('tanggal_transaksi', 'desc')->get();
         $repairs = VehicleMaintenanceLog::with('user')->orderBy('tanggal_perbaikan', 'desc')->get();
+        $invoices = FinanceInvoice::with('user')->orderBy('tanggal_terbit', 'desc')->get();
+        $expenses = OperationalExpenseLog::with('user')->orderBy('tanggal_pengeluaran', 'desc')->get();
 
         $pdf = Pdf::loadView('keuangan.reports.pdf', [
             'tanggalCetak' => Carbon::now()->locale('id')->isoFormat('D MMMM Y, H:i').' WIB',
             'totalPemasukan' => $totalPemasukan,
             'totalPengeluaranStok' => $totalPengeluaranStok,
             'totalBiayaPerbaikan' => $totalBiayaPerbaikan,
+            'totalBiayaOperasional' => $totalBiayaOperasional,
             'netOperasional' => $netOperasional,
             'stockLogs' => $stockLogs,
             'repairs' => $repairs,
+            'invoices' => $invoices,
+            'expenses' => $expenses,
         ]);
 
         $pdf->setPaper('a4', 'portrait');
@@ -146,6 +168,100 @@ class FinanceExportController extends Controller
                 (float) $rep->biaya,
                 (string) ($rep->keterangan ?? '-'),
                 (string) ($rep->user?->name ?? 'Admin'),
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Susun baris data Riwayat Tagihan / Invoices untuk Sheet Excel.
+     *
+     * @return array<int, array<int, string|int|float>>
+     */
+    private function getInvoiceRows(): array
+    {
+        $invoices = FinanceInvoice::with('user')->orderBy('tanggal_terbit', 'desc')->get();
+
+        $rows = [[
+            'No',
+            'Kode Tagihan',
+            'Nomor Invoice',
+            'Jenis Tagihan',
+            'Pihak Terkait',
+            'Tanggal Terbit',
+            'Jatuh Tempo',
+            'Status Pembayaran',
+            'Metode Pembayaran',
+            'Nilai Tagihan (Rp)',
+            'Sudah Dibayar (Rp)',
+            'Sisa Tagihan (Rp)',
+            'Tanggal Lunas',
+            'Keterangan',
+            'Pencatat',
+        ]];
+
+        $no = 1;
+        foreach ($invoices as $inv) {
+            $rows[] = [
+                $no++,
+                (string) $inv->kode_tagihan,
+                (string) $inv->nomor_invoice,
+                (string) ($inv->jenis_tagihan === 'tagihan_pelanggan' ? 'Pelanggan (Piutang)' : 'Vendor (Hutang)'),
+                (string) $inv->pihak_terkait,
+                $inv->tanggal_terbit?->format('Y-m-d') ?? '-',
+                $inv->tanggal_jatuh_tempo?->format('Y-m-d') ?? '-',
+                (string) ucfirst(str_replace('_', ' ', $inv->status_pembayaran)),
+                (string) strtoupper(str_replace('_', ' ', $inv->metode_pembayaran)),
+                (float) $inv->nominal,
+                (float) $inv->nominal_dibayar,
+                (float) $inv->sisa_tagihan,
+                $inv->tanggal_lunas?->format('Y-m-d') ?? '-',
+                (string) ($inv->keterangan ?? '-'),
+                (string) ($inv->user?->name ?? 'Admin'),
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Susun baris data Biaya Operasional Pabrik untuk Sheet Excel.
+     *
+     * @return array<int, array<int, string|int|float>>
+     */
+    private function getOperationalExpenseRows(): array
+    {
+        $expenses = OperationalExpenseLog::with('user')->orderBy('tanggal_pengeluaran', 'desc')->get();
+
+        $rows = [[
+            'No',
+            'Kode Biaya',
+            'Kategori Biaya',
+            'Deskripsi Pengeluaran',
+            'Nomor Bukti / Nota',
+            'Penerima Dana / Toko',
+            'Tanggal Pengeluaran',
+            'Metode Pembayaran',
+            'Nominal (Rp)',
+            'Keterangan',
+            'Pencatat',
+        ]];
+
+        $no = 1;
+        foreach ($expenses as $exp) {
+            $rows[] = [
+                $no++,
+                (string) $exp->kode_biaya,
+                (string) $exp->kategori_label,
+                (string) $exp->nama_biaya,
+                (string) ($exp->nomor_bukti ?? '-'),
+                (string) $exp->penerima_dana,
+                $exp->tanggal_pengeluaran?->format('Y-m-d') ?? '-',
+                (string) ($exp->metode_pembayaran === 'tunai_kas_kecil' ? 'Kas Kecil (Tunai)' : 'Transfer Bank'),
+                (float) $exp->nominal,
+                (string) ($exp->keterangan ?? '-'),
+                (string) ($exp->user?->name ?? 'Admin'),
             ];
         }
 
