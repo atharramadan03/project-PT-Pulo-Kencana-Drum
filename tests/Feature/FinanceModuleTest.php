@@ -3,12 +3,18 @@
 namespace Tests\Feature;
 
 use App\Livewire\Keuangan\FinanceDashboard;
+use App\Livewire\Keuangan\FinanceEmployees;
+use App\Livewire\Keuangan\FinanceIncomingGoods;
 use App\Livewire\Keuangan\FinanceInvoices;
 use App\Livewire\Keuangan\FinanceOperationalExpenses;
+use App\Livewire\Keuangan\FinanceReportsPrint;
 use App\Livewire\Keuangan\FinanceStockTransactions;
+use App\Livewire\Keuangan\FinanceSuppliers;
 use App\Livewire\Keuangan\FinanceVehicleRepairs;
+use App\Models\Employee;
 use App\Models\FinanceInvoice;
 use App\Models\OperationalExpenseLog;
+use App\Models\Supplier;
 use App\Models\User;
 use App\Models\VehicleMaintenanceLog;
 use App\Models\WarehouseFinanceLog;
@@ -436,6 +442,264 @@ class FinanceModuleTest extends TestCase
 
         $this->assertDatabaseMissing('warehouse_finance_logs', [
             'id' => $trx->id,
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat mengakses seluruh menu terstruktur baru (Barang Masuk, Barang Keluar, Supplier, Laporan Cetak, Riwayat Keuangan, Karyawan).
+     */
+    public function test_admin_keuangan_can_access_all_restructured_navigation_pages(): void
+    {
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.barang-masuk'))
+            ->assertStatus(200)
+            ->assertSee('Data Barang Masuk');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.barang-keluar'))
+            ->assertStatus(200)
+            ->assertSee('Data Barang Keluar');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.suppliers'))
+            ->assertStatus(200)
+            ->assertSee('Data Supplier');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.laporan-cetak'))
+            ->assertStatus(200)
+            ->assertSee('Laporan Keuangan');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.riwayat-keuangan'))
+            ->assertStatus(200)
+            ->assertSee('Riwayat Keuangan');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.driver-truk'))
+            ->assertStatus(200)
+            ->assertSee('Data Driver Truk');
+
+        $this->actingAs($this->keuangan)
+            ->get(route('keuangan.karyawan'))
+            ->assertRedirect(route('keuangan.driver-truk'));
+    }
+
+    /**
+     * Admin Keuangan dapat memuat halaman Laporan untuk di Cetak dengan data faktur tagihan.
+     */
+    public function test_admin_keuangan_can_view_reports_print_with_invoices(): void
+    {
+        FinanceInvoice::create([
+            'user_id' => $this->keuangan->id,
+            'kode_tagihan' => 'INV-TEST-001',
+            'nomor_invoice' => 'INV/2026/001',
+            'jenis_tagihan' => 'tagihan_pelanggan',
+            'pihak_terkait' => 'PT Mitra Sejahtera',
+            'nominal' => 12500000,
+            'nominal_dibayar' => 12500000,
+            'tanggal_terbit' => now()->toDateString(),
+            'tanggal_jatuh_tempo' => now()->addDays(14)->toDateString(),
+            'tanggal_lunas' => now()->toDateString(),
+            'status_pembayaran' => 'lunas',
+        ]);
+
+        FinanceInvoice::create([
+            'user_id' => $this->keuangan->id,
+            'kode_tagihan' => 'INV-TEST-002',
+            'nomor_invoice' => 'INV/2026/002',
+            'jenis_tagihan' => 'tagihan_pelanggan',
+            'pihak_terkait' => 'CV Sumber Makmur',
+            'nominal' => 8500000,
+            'nominal_dibayar' => 0,
+            'tanggal_terbit' => now()->toDateString(),
+            'tanggal_jatuh_tempo' => now()->subDays(3)->toDateString(),
+            'status_pembayaran' => 'jatuh_tempo',
+        ]);
+
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceReportsPrint::class)
+            ->assertStatus(200)
+            ->assertSee('PT Pulo Kencana Drum Industri')
+            ->assertSee('PT Mitra Sejahtera')
+            ->assertSee('CV Sumber Makmur');
+    }
+
+    /**
+     * Admin Keuangan dapat menambah, mengedit, dan menghapus Supplier baru.
+     */
+    public function test_admin_keuangan_can_manage_suppliers(): void
+    {
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceSuppliers::class)
+            ->call('bukaModalTambah')
+            ->set('nama_supplier', 'CV Baja Unggul Perkasa')
+            ->set('kategori_pasokan', 'Bahan Baku Drum Logam')
+            ->set('nama_pic', 'Hendra Gunawan')
+            ->set('nomor_telepon', '081299887766')
+            ->set('alamat', 'Jl. Industri Logam No. 12')
+            ->set('status_kerjasama', 'aktif')
+            ->call('simpanSupplier')
+            ->assertHasNoErrors()
+            ->assertSet('modalTerbuka', false);
+
+        $this->assertDatabaseHas('suppliers', [
+            'nama_supplier' => 'CV Baja Unggul Perkasa',
+            'nama_pic' => 'Hendra Gunawan',
+            'nomor_telepon' => '081299887766',
+        ]);
+
+        $supplier = Supplier::where('nama_supplier', 'CV Baja Unggul Perkasa')->first();
+
+        // Edit
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceSuppliers::class)
+            ->call('bukaModalEdit', $supplier->id)
+            ->set('nama_supplier', 'CV Baja Unggul Perkasa Reborn')
+            ->call('simpanSupplier')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('suppliers', [
+            'id' => $supplier->id,
+            'nama_supplier' => 'CV Baja Unggul Perkasa Reborn',
+        ]);
+
+        // Hapus
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceSuppliers::class)
+            ->call('konfirmasiHapus', $supplier->id)
+            ->call('hapusSupplier')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('suppliers', [
+            'id' => $supplier->id,
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat mengelola Data Karyawan pengelola biaya operasional.
+     */
+    public function test_admin_keuangan_can_manage_employees(): void
+    {
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceEmployees::class)
+            ->call('bukaModalTambah')
+            ->set('nama_karyawan', 'Budi Santoso Mandiri')
+            ->set('departemen', 'Logistik Armada')
+            ->set('jabatan', 'Koordinator Supir Truk')
+            ->set('nomor_telepon', '085712345678')
+            ->set('status_kerja', 'aktif')
+            ->set('tanggal_masuk', '2026-01-15')
+            ->set('catatan', 'Penanggung jawab biaya BBM dan tol armada tim barat')
+            ->call('simpanKaryawan')
+            ->assertHasNoErrors()
+            ->assertSet('modalTerbuka', false);
+
+        $this->assertDatabaseHas('employees', [
+            'nama_karyawan' => 'Budi Santoso Mandiri',
+            'departemen' => 'Logistik Armada',
+            'nomor_telepon' => '085712345678',
+        ]);
+
+        $employee = Employee::where('nama_karyawan', 'Budi Santoso Mandiri')->first();
+
+        // Edit
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceEmployees::class)
+            ->call('bukaModalEdit', $employee->id)
+            ->set('jabatan', 'Manajer Operasional Logistik')
+            ->call('simpanKaryawan')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('employees', [
+            'id' => $employee->id,
+            'jabatan' => 'Manajer Operasional Logistik',
+        ]);
+
+        // Hapus
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceEmployees::class)
+            ->call('konfirmasiHapus', $employee->id)
+            ->call('hapusKaryawan')
+            ->assertSet('modalHapusTerbuka', false);
+
+        $this->assertDatabaseMissing('employees', [
+            'id' => $employee->id,
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat mencatat pengadaan barang masuk dengan mengaitkan supplier.
+     */
+    public function test_admin_keuangan_can_record_incoming_goods_with_supplier(): void
+    {
+        $supplier = Supplier::create([
+            'kode_supplier' => 'SUP-TEST-001',
+            'nama_supplier' => 'PT Mitra Pengadaan Drum Logam',
+            'kategori_pasokan' => 'Bahan Baku Drum Logam',
+            'nama_pic' => 'Pak Joko',
+            'nomor_telepon' => '08123456789',
+            'status_kerjasama' => 'aktif',
+        ]);
+
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceIncomingGoods::class)
+            ->call('bukaCreateModal')
+            ->set('tanggal_transaksi', '2026-11-04')
+            ->set('supplier_id', $supplier->id)
+            ->set('kategori', 'pembelian_bahan_baku')
+            ->set('jumlah_unit', 150)
+            ->set('nominal', '15000000')
+            ->set('metode_pembayaran', 'transfer')
+            ->set('keterangan', 'Pengadaan 150 drum polos dari PT Mitra')
+            ->call('simpanBarangMasuk')
+            ->assertHasNoErrors()
+            ->assertSet('isCreateModalOpen', false);
+
+        $this->assertDatabaseHas('warehouse_finance_logs', [
+            'supplier_id' => $supplier->id,
+            'jenis_transaksi' => 'pengeluaran',
+            'kategori' => 'pembelian_bahan_baku',
+            'jumlah_unit' => 150,
+            'nominal' => 15000000,
+        ]);
+    }
+
+    /**
+     * Admin Keuangan dapat mencatat biaya operasional dengan memilih karyawan PIC pengelola.
+     */
+    public function test_admin_keuangan_can_record_operational_expense_with_employee_pic(): void
+    {
+        $employee = Employee::create([
+            'nik_karyawan' => 'EMP-TEST-999',
+            'nama_karyawan' => 'Slamet Riyadi',
+            'departemen' => 'Workshop Maintenance',
+            'jabatan' => 'Teknisi Utama',
+            'nomor_telepon' => '087788990011',
+            'status_kerja' => 'aktif',
+            'tanggal_masuk' => '2026-02-01',
+        ]);
+
+        Livewire::actingAs($this->keuangan)
+            ->test(FinanceOperationalExpenses::class)
+            ->call('bukaModal')
+            ->set('kategori_biaya', 'pemeliharaan_fasilitas')
+            ->set('nama_biaya', 'Penggantian Seal Pompa High-Pressure Cuci Drum')
+            ->set('nominal', '1850000')
+            ->set('tanggal_pengeluaran', '2026-11-04')
+            ->set('metode_pembayaran', 'tunai_kas_kecil')
+            ->set('penerima_dana', 'Toko Teknik Sejahtera')
+            ->set('employee_id', $employee->id)
+            ->set('keterangan', 'Biaya perbaikan pompa workshop di bawah tanggung jawab Mas Slamet')
+            ->call('simpanBiaya')
+            ->assertHasNoErrors()
+            ->assertSet('modalTerbuka', false);
+
+        $this->assertDatabaseHas('operational_expense_logs', [
+            'employee_id' => $employee->id,
+            'kategori_biaya' => 'pemeliharaan_fasilitas',
+            'nama_biaya' => 'Penggantian Seal Pompa High-Pressure Cuci Drum',
+            'nominal' => 1850000,
         ]);
     }
 }

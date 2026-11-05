@@ -11,26 +11,44 @@
             </div>
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[#E2E8F0] text-xs font-medium text-[#0F172A]">
                 <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                <span>{{ auth()->user()->isAdminKantor() ? 'Admin Kantor' : (auth()->user()->isAdminKeuangan() ? 'Admin Keuangan' : 'Petugas Satpam') }}</span>
+                <span>{{ auth()->user()->isAdminKantor() ? 'Admin Gudang' : (auth()->user()->isAdminKeuangan() ? 'Admin Keuangan' : 'Petugas Satpam') }}</span>
             </div>
         </div>
     </x-slot>
 
     <div class="space-y-4">
         <!-- Ringkasan Identitas Pengguna -->
-        <div class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div
+            x-data="{
+                name: @js(auth()->user()->name),
+                username: @js(auth()->user()->username ?? ''),
+                email: @js(auth()->user()->email),
+                initials: @js(strtoupper(substr(auth()->user()->name, 0, 2)))
+            }"
+            @profile-updated.window="
+                if ($event.detail.name) name = $event.detail.name;
+                if ($event.detail.username !== undefined) username = $event.detail.username;
+                if ($event.detail.email) email = $event.detail.email;
+                if ($event.detail.initials) initials = $event.detail.initials;
+            "
+            class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        >
             <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                <div class="w-12 h-12 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-bold text-sm shrink-0" x-text="initials">
                     {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
                 </div>
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <h2 class="text-sm font-bold text-[#0F172A]">{{ auth()->user()->name }}</h2>
+                        <h2 class="text-sm font-bold text-[#0F172A]" x-text="name">{{ auth()->user()->name }}</h2>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-[#2563EB]">
-                            {{ auth()->user()->isAdminKantor() ? 'Admin Kantor' : (auth()->user()->isAdminKeuangan() ? 'Admin Keuangan' : 'Satpam') }}
+                            {{ auth()->user()->isAdminKantor() ? 'Admin Gudang' : (auth()->user()->isAdminKeuangan() ? 'Admin Keuangan' : 'Satpam') }}
                         </span>
                     </div>
-                    <p class="text-xs text-[#64748B] mt-0.5">{{ auth()->user()->email }}</p>
+                    <p class="text-xs text-[#64748B] mt-0.5">
+                        <span x-show="username" class="font-medium text-[#0F172A]" x-text="'@' + username">{{ auth()->user()->username ? '@' . auth()->user()->username : '' }}</span>
+                        <span x-show="username" class="mx-1 text-slate-300">•</span>
+                        <span x-text="email">{{ auth()->user()->email }}</span>
+                    </p>
                 </div>
             </div>
 

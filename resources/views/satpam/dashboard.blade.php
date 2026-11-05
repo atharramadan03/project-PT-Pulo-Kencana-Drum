@@ -12,9 +12,17 @@
             </div>
             <div class="flex items-center gap-2">
                 <a 
+                    href="{{ route('satpam.riwayat') }}" 
+                    wire:navigate
+                    class="px-3.5 py-2 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
+                >
+                    <x-icon name="history" class="w-4 h-4 text-slate-600" />
+                    <span>Riwayat Kendaraan</span>
+                </a>
+                <a 
                     href="{{ route('satpam.kendaraan-masuk') }}" 
                     wire:navigate
-                    class="px-3.5 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5"
+                    class="px-3.5 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
                 >
                     <x-icon name="plus" class="w-4 h-4" />
                     <span>Catat Truk Masuk</span>

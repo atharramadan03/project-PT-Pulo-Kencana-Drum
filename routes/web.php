@@ -6,13 +6,20 @@ use App\Livewire\Admin\DrumBatchIndex;
 use App\Livewire\Admin\DrumProcessIndex;
 use App\Livewire\Admin\ReportIndex;
 use App\Livewire\Admin\VehicleLogIndex;
+use App\Livewire\Keuangan\FinanceCashFlowHistory;
 use App\Livewire\Keuangan\FinanceDashboard;
+use App\Livewire\Keuangan\FinanceEmployees;
+use App\Livewire\Keuangan\FinanceIncomingGoods;
 use App\Livewire\Keuangan\FinanceInvoices;
 use App\Livewire\Keuangan\FinanceOperationalExpenses;
+use App\Livewire\Keuangan\FinanceOutgoingGoods;
+use App\Livewire\Keuangan\FinanceReportsPrint;
 use App\Livewire\Keuangan\FinanceStockTransactions;
+use App\Livewire\Keuangan\FinanceSuppliers;
 use App\Livewire\Keuangan\FinanceVehicleRepairs;
 use App\Livewire\Satpam\KendaraanAktif;
 use App\Livewire\Satpam\KendaraanMasuk;
+use App\Livewire\Satpam\RiwayatKendaraan;
 use Illuminate\Support\Facades\Route;
 
 // Halaman Utama: Otomatis arahkan ke Dashboard (jika sudah login) atau ke Halaman Login PKDI (jika belum login)
@@ -73,6 +80,7 @@ Route::middleware(['auth', 'role:satpam'])
         Route::view('dashboard', 'satpam.dashboard')->name('dashboard');
         Route::get('kendaraan-masuk', KendaraanMasuk::class)->name('kendaraan-masuk');
         Route::get('kendaraan-aktif', KendaraanAktif::class)->name('kendaraan-aktif');
+        Route::get('riwayat', RiwayatKendaraan::class)->name('riwayat');
     });
 
 // ==========================================
@@ -84,10 +92,23 @@ Route::middleware(['auth', 'role:admin_keuangan'])
     ->name('keuangan.')
     ->group(function () {
         Route::get('dashboard', FinanceDashboard::class)->name('dashboard');
-        Route::get('stok-transaksi', FinanceStockTransactions::class)->name('stok-transaksi');
-        Route::get('biaya-kendaraan', FinanceVehicleRepairs::class)->name('biaya-kendaraan');
-        Route::get('tagihan', FinanceInvoices::class)->name('tagihan');
+        Route::get('barang-masuk', FinanceIncomingGoods::class)->name('barang-masuk');
+        Route::get('barang-keluar', FinanceOutgoingGoods::class)->name('barang-keluar');
+        Route::get('suppliers', FinanceSuppliers::class)->name('suppliers');
+
+        // Modul Biaya Operasional & Turunannya
         Route::get('operasional', FinanceOperationalExpenses::class)->name('operasional');
+        Route::get('biaya-kendaraan', FinanceVehicleRepairs::class)->name('biaya-kendaraan');
+        Route::get('laporan-cetak', FinanceReportsPrint::class)->name('laporan-cetak');
+        Route::get('riwayat-keuangan', FinanceCashFlowHistory::class)->name('riwayat-keuangan');
+
+        // Riwayat Tagihan & Data Driver Truk
+        Route::get('tagihan', FinanceInvoices::class)->name('tagihan');
+        Route::get('driver-truk', FinanceEmployees::class)->name('driver-truk');
+        Route::get('karyawan', fn () => redirect()->route('keuangan.driver-truk'))->name('karyawan');
+
+        // Backward compatibility
+        Route::get('stok-transaksi', FinanceStockTransactions::class)->name('stok-transaksi');
 
         // Endpoint Unduh Laporan Rekapitulasi Keuangan
         Route::get('export-excel', [FinanceExportController::class, 'exportExcel'])->name('export-excel');

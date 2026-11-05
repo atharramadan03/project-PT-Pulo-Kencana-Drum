@@ -162,10 +162,16 @@ class FinanceInvoices extends Component
             'metode_pembayaran' => ['required', 'string'],
             'keterangan' => ['nullable', 'string', 'max:500'],
         ], [
-            'nomor_invoice.required' => 'Nomor invoice resmi wajib diisi.',
+            'nomor_invoice.required' => 'Nomor invoice / faktur cetak wajib diisi.',
+            'jenis_tagihan.required' => 'Klasifikasi tagihan wajib dipilih.',
             'pihak_terkait.required' => 'Nama pihak terkait (klien/vendor) wajib diisi.',
+            'nominal.required' => 'Total nilai tagihan wajib diisi.',
             'nominal.min' => 'Nominal tagihan minimal Rp 1.000.',
+            'tanggal_terbit.required' => 'Tanggal terbit faktur wajib diisi.',
+            'tanggal_jatuh_tempo.required' => 'Batas jatuh tempo faktur wajib diisi.',
             'tanggal_jatuh_tempo.after_or_equal' => 'Tanggal jatuh tempo tidak boleh sebelum tanggal terbit.',
+            'status_pembayaran.required' => 'Status pembayaran awal wajib dipilih.',
+            'metode_pembayaran.required' => 'Rencana metode pembayaran wajib dipilih.',
         ]);
 
         $kodeBaru = FinanceInvoice::generateKodeTagihan();
@@ -224,6 +230,17 @@ class FinanceInvoices extends Component
         if (! auth()->user()->isAdminKeuangan()) {
             abort(403, 'Hanya Admin Keuangan yang berhak mengubah status tagihan.');
         }
+
+        $this->validate([
+            'lunas_nominal' => ['required', 'numeric', 'min:1'],
+            'lunas_tanggal' => ['required', 'date'],
+            'lunas_metode' => ['required', 'string'],
+        ], [
+            'lunas_nominal.required' => 'Nominal pembayaran wajib diisi.',
+            'lunas_nominal.min' => 'Nominal pembayaran minimal Rp 1.',
+            'lunas_tanggal.required' => 'Tanggal pembayaran wajib diisi.',
+            'lunas_metode.required' => 'Metode pembayaran wajib dipilih.',
+        ]);
 
         $invoice = FinanceInvoice::findOrFail($this->selectedInvoiceId);
 

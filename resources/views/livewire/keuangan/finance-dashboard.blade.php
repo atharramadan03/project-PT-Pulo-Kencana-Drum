@@ -1,35 +1,35 @@
 <div class="space-y-4">
     <!-- Header Section (Matches Dashboard Kantor Style) -->
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
-        <div>
-            <h1 class="font-bold text-xl text-[#0F172A] leading-tight">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex-1 min-w-0">
+            <h1 class="font-bold text-lg sm:text-xl text-[#0F172A] tracking-tight leading-snug">
                 Dashboard Keuangan
                 <span class="sr-only">Tracker Arus Kas Stok Gudang & Biaya Armada</span>
             </h1>
-            <p class="text-xs text-[#64748B] mt-0.5">
+            <p class="text-xs text-[#64748B] mt-0.5 leading-relaxed">
                 Tracker arus kas stok gudang, riwayat tagihan, dan operasional pabrik
             </p>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-            <div class="inline-flex items-center gap-1.5 text-xs text-[#64748B] bg-white border border-[#E2E8F0] px-3 py-1.5 rounded-lg shadow-2xs">
-                <x-icon name="calendar" class="w-3.5 h-3.5 text-[#64748B]" />
+        <div class="shrink-0 flex items-center gap-2">
+            <div class="inline-flex items-center gap-1.5 text-xs text-[#64748B] bg-white border border-[#E2E8F0] px-3.5 py-2 rounded-lg shadow-2xs whitespace-nowrap shrink-0">
+                <x-icon name="calendar" class="w-4 h-4 text-[#64748B] shrink-0" />
                 <span>{{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
             </div>
             @if (auth()->user()->isAdminKeuangan())
                 <button 
                     wire:click="bukaModalTransaksi"
                     type="button" 
-                    class="px-3 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer"
+                    class="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                 >
-                    <x-icon name="plus" class="w-3.5 h-3.5" />
+                    <x-icon name="plus" class="w-4 h-4 shrink-0" />
                     <span>Catat Transaksi</span>
                 </button>
                 <button 
                     wire:click="bukaModalPerbaikan"
                     type="button" 
-                    class="px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 text-[#0F172A] font-semibold text-xs shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer"
+                    class="px-3.5 py-2 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 text-[#0F172A] font-semibold text-xs shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                 >
-                    <x-icon name="wrench" class="w-3.5 h-3.5 text-slate-500" />
+                    <x-icon name="wrench" class="w-4 h-4 text-slate-500 shrink-0" />
                     <span>Biaya Mobil</span>
                 </button>
             @endif
@@ -526,7 +526,7 @@
                     </button>
                 </div>
 
-                <form wire:submit="simpanTransaksi" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+                <form wire:submit="simpanTransaksi" class="flex flex-col flex-1 min-h-0 overflow-hidden" novalidate>
                     <div class="p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -675,7 +675,7 @@
                     </button>
                 </div>
 
-                <form wire:submit="simpanPerbaikan" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+                <form wire:submit="simpanPerbaikan" class="flex flex-col flex-1 min-h-0 overflow-hidden" novalidate>
                     <div class="p-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>

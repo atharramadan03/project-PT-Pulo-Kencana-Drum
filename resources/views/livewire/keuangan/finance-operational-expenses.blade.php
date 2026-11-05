@@ -1,37 +1,37 @@
 <div class="space-y-4">
     <!-- Header Section -->
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
-        <div class="min-w-0">
-            <h1 class="font-bold text-xl text-[#0F172A] leading-tight">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex-1 min-w-0">
+            <h1 class="font-bold text-lg sm:text-xl text-[#0F172A] tracking-tight leading-snug">
                 Biaya Operasional Pabrik & Gudang
             </h1>
-            <p class="text-xs text-[#64748B] mt-0.5">
+            <p class="text-xs text-[#64748B] mt-0.5 leading-relaxed">
                 Pencatatan pengeluaran rutin utilitas listrik, air cuci drum, BBM solar armada, APD limbah B3, dan konsumsi
             </p>
         </div>
-        <div class="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
+        <div class="shrink-0 flex items-center gap-2">
             <a 
                 href="{{ route('keuangan.export-excel') }}?jenis=operasional" 
-                class="px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 text-xs font-semibold text-[#0F172A] shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer shrink-0"
+                class="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
             >
-                <x-icon name="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-600" />
-                <span>Unduh Excel</span>
+                <x-icon name="file-spreadsheet" class="w-4 h-4 shrink-0" />
+                <span>Export Excel</span>
             </a>
             <a 
                 href="{{ route('keuangan.export-pdf') }}?jenis=operasional" 
                 target="_blank"
-                class="px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 text-xs font-semibold text-[#0F172A] shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer shrink-0"
+                class="px-3.5 py-2 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
             >
-                <x-icon name="printer" class="w-3.5 h-3.5 text-rose-600" />
+                <x-icon name="printer" class="w-4 h-4 text-rose-600 shrink-0" />
                 <span>Cetak PDF</span>
             </a>
             @if (auth()->user()->isAdminKeuangan())
                 <button 
                     wire:click="bukaModal"
                     type="button" 
-                    class="px-3 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap"
+                    class="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                 >
-                    <x-icon name="plus" class="w-3.5 h-3.5" />
+                    <x-icon name="plus" class="w-4 h-4 shrink-0" />
                     <span>Catat Biaya Operasional</span>
                 </button>
             @endif
@@ -193,7 +193,12 @@
                             </td>
                             <td class="px-3 py-2.5 whitespace-nowrap">
                                 <div class="font-medium text-[#0F172A]">{{ $item->penerima_dana }}</div>
-                                <div class="text-[11px] text-[#64748B]">{{ $item->nomor_bukti ? 'Bukti: '.$item->nomor_bukti : 'Tanpa Nota' }}</div>
+                                <div class="text-[11px] text-[#64748B]">
+                                    {{ $item->nomor_bukti ? 'Bukti: '.$item->nomor_bukti : 'Tanpa Nota' }}
+                                    @if ($item->employee)
+                                        • <span class="text-purple-700 font-medium">Driver: {{ $item->employee->nama_karyawan }}</span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-3 py-2.5 text-center whitespace-nowrap">
                                 <span class="text-[11px] text-[#64748B] font-medium">
@@ -269,7 +274,7 @@
                 </div>
 
                 <!-- Form & Scrollable Body -->
-                <form wire:submit="simpanBiaya" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+                <form wire:submit="simpanBiaya" class="flex flex-col flex-1 min-h-0 overflow-hidden" novalidate>
                     <div class="p-5 space-y-3.5 overflow-y-auto flex-1 min-h-0">
                         <!-- 1. Kategori Biaya & Metode Pembayaran -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -353,6 +358,21 @@
                             </div>
                         </div>
 
+                        <!-- 4b. Driver Truk Pengelola Biaya -->
+                        <div>
+                            <label class="block text-xs font-semibold text-[#0F172A] mb-1">Driver Truk Penanggung Jawab Biaya (Opsional)</label>
+                            <select 
+                                wire:model="employee_id"
+                                class="w-full text-xs rounded-lg border border-[#E2E8F0] py-1.5 px-3 bg-white text-[#0F172A] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] shadow-2xs"
+                            >
+                                <option value="">-- Pilih Driver Truk (Opsional) --</option>
+                                @foreach ($employeesList as $emp)
+                                    <option value="{{ $emp->id }}">{{ $emp->nama_karyawan }} ({{ $emp->nik_karyawan }} - {{ $emp->departemen }})</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('employee_id')" class="mt-1" />
+                        </div>
+
                         <!-- 5. Keterangan Tambahan -->
                         <div>
                             <label class="block text-xs font-semibold text-[#0F172A] mb-1">Keterangan Tambahan</label>
@@ -378,49 +398,47 @@
 
     <!-- Modal Konfirmasi Hapus Biaya Operasional -->
     @if ($modalHapusTerbuka && $hapusExpense)
-        <template x-teleport="body">
-            <div 
-                x-data 
-                x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
-                class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex justify-center items-center"
-            >
-                <div class="relative bg-white rounded-xl max-w-md w-full border border-[#E2E8F0] shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-100">
-                    <div class="p-6 text-center">
-                        <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4">
-                            <x-icon name="trash" class="w-6 h-6" />
-                        </div>
-                        <h3 class="text-base font-bold text-[#0F172A] mb-1">Konfirmasi Hapus Biaya Operasional</h3>
-                        <p class="text-xs text-[#64748B] mb-5 leading-relaxed">
-                            Apakah Anda yakin ingin menghapus catatan biaya <strong class="text-[#0F172A]">{{ $hapusExpense->kode_biaya }}</strong> ({{ $hapusExpense->nama_biaya }}) senilai <strong class="text-rose-600">{{ $hapusExpense->formatted_nominal }}</strong>? Tindakan ini akan menghapus data dari pembukuan secara permanen.
-                        </p>
-                        <div class="flex items-center justify-center gap-3">
-                            <button 
-                                wire:click="tutupModalHapus" 
-                                type="button" 
-                                class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-xs font-semibold text-[#0F172A] bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
-                            >
-                                Batal
-                            </button>
-                            <button 
-                                wire:click="hapusBiaya" 
-                                type="button" 
-                                wire:loading.attr="disabled"
-                                class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs disabled:opacity-75"
-                            >
-                                <span wire:loading.remove wire:target="hapusBiaya">Ya, Hapus Biaya</span>
-                                <span wire:loading wire:target="hapusBiaya" class="inline-flex items-center gap-1.5">
-                                    <svg class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                    </svg>
-                                    Menghapus...
-                                </span>
-                            </button>
-                        </div>
+        <div 
+            x-data 
+            x-init="document.body.classList.add('overflow-hidden'); return () => document.body.classList.remove('overflow-hidden')" 
+            class="fixed inset-0 z-100 overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-3 sm:p-6 flex justify-center items-center"
+        >
+            <div class="relative bg-white rounded-xl max-w-md w-full border border-[#E2E8F0] shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-100">
+                <div class="p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto mb-4">
+                        <x-icon name="trash" class="w-6 h-6" />
+                    </div>
+                    <h3 class="text-base font-bold text-[#0F172A] mb-1">Konfirmasi Hapus Biaya Operasional</h3>
+                    <p class="text-xs text-[#64748B] mb-5 leading-relaxed">
+                        Apakah Anda yakin ingin menghapus catatan biaya <strong class="text-[#0F172A]">{{ $hapusExpense->kode_biaya }}</strong> ({{ $hapusExpense->nama_biaya }}) senilai <strong class="text-rose-600">{{ $hapusExpense->formatted_nominal }}</strong>? Tindakan ini akan menghapus data dari pembukuan secara permanen.
+                    </p>
+                    <div class="flex items-center justify-center gap-3">
+                        <button 
+                            wire:click="tutupModalHapus" 
+                            type="button" 
+                            class="px-4 py-2 rounded-lg border border-[#E2E8F0] text-xs font-semibold text-[#0F172A] bg-white hover:bg-slate-50 transition cursor-pointer shadow-2xs"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            wire:click="hapusBiaya" 
+                            type="button" 
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer inline-flex items-center gap-1.5 shadow-xs disabled:opacity-75"
+                        >
+                            <span wire:loading.remove wire:target="hapusBiaya">Ya, Hapus Biaya</span>
+                            <span wire:loading wire:target="hapusBiaya" class="inline-flex items-center gap-1.5">
+                                <svg class="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                                Menghapus...
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
-        </template>
+        </div>
     @endif
 </div>
 

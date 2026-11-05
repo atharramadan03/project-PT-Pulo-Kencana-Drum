@@ -37,11 +37,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Helper untuk memeriksa apakah user adalah Admin Kantor
+     * Helper untuk memeriksa apakah user adalah Admin Gudang (role: admin_kantor)
      */
     public function isAdminKantor(): bool
     {
         return $this->role === 'admin_kantor';
+    }
+
+    /**
+     * Alias resmi Admin Gudang
+     */
+    public function isAdminGudang(): bool
+    {
+        return $this->isAdminKantor();
     }
 
     /**

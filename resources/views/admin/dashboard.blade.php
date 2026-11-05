@@ -32,13 +32,9 @@
         $catCount = (int) \App\Models\DrumProcessLog::where('jenis_proses', 'pengecatan')->sum('jumlah_diproses');
         $totalAfkirCount = (int) \App\Models\DrumProcessLog::sum('jumlah_afkir');
 
-        $trukAktifCount = \App\Models\VehicleVisit::whereNull('waktu_keluar')->count();
-        $totalKunjunganBulanIni = \App\Models\VehicleVisit::whereMonth('waktu_masuk', now()->month)->count();
-
         $latestBatches = \App\Models\DrumBatch::latest('updated_at')->latest('id')->take(5)->get();
-        $latestBatchUpdates = \App\Models\DrumBatch::with('user')->latest('updated_at')->take(2)->get();
-        $latestLogs = \App\Models\DrumProcessLog::with('drumBatch')->latest('id')->take(2)->get();
-        $latestVisits = \App\Models\VehicleVisit::latest('waktu_masuk')->take(1)->get();
+        $latestBatchUpdates = \App\Models\DrumBatch::with('user')->latest('updated_at')->take(3)->get();
+        $latestLogs = \App\Models\DrumProcessLog::with('drumBatch')->latest('id')->take(3)->get();
 
         $maxProcess = max(1, $sortirCount, $tiupCount, $cuciCount, $catCount);
 
@@ -174,18 +170,18 @@
                 </div>
             </div>
 
-            <!-- Kunjungan & Laporan -->
+            <!-- Total Drum Afkir / Reject -->
             <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
                 <div class="flex items-center justify-between gap-2">
-                    <p class="text-xs text-[#64748B] font-medium truncate">Kunjungan Bulanan</p>
-                    <x-icon name="truck" class="w-4 h-4 text-[#7C3AED] shrink-0" />
+                    <p class="text-xs text-[#64748B] font-medium truncate">Total Drum Afkir</p>
+                    <x-icon name="alert-triangle" class="w-4 h-4 text-rose-500 shrink-0" />
                 </div>
                 <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
-                    {{ number_format($totalKunjunganBulanIni, 0, ',', '.') }}
+                    {{ number_format($totalAfkirCount, 0, ',', '.') }}
                 </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                    <span class="text-[#F59E0B] font-semibold">{{ $trukAktifCount }} Truk Aktif</span>
-                    <span class="text-[#64748B]">Di area pabrik</span>
+                    <span class="text-rose-600 font-semibold">{{ $totalDrumDiterima > 0 ? round(($totalAfkirCount / $totalDrumDiterima) * 100, 1) : 0 }}% Tingkat Afkir</span>
+                    <span class="text-[#64748B]">Sortir & rekondisi</span>
                 </div>
             </div>
         </div>
@@ -470,26 +466,7 @@
                         </div>
                     @endforeach
 
-                    @foreach ($latestVisits as $visit)
-                        <div class="py-2.5 flex items-center justify-between gap-3">
-                            <div class="flex items-start gap-2.5 min-w-0">
-                                <x-icon name="truck" class="w-4 h-4 mt-0.5 shrink-0 text-[#2563EB]" />
-                                <div class="min-w-0">
-                                    <p class="text-xs font-semibold text-[#0F172A] truncate">
-                                        Kendaraan {{ $visit->nomor_polisi }} masuk
-                                    </p>
-                                    <p class="text-[11px] text-[#64748B] truncate">
-                                        {{ $visit->asal_tujuan }}
-                                    </p>
-                                </div>
-                            </div>
-                            <span class="text-[11px] text-[#64748B] tabular-nums shrink-0">
-                                {{ $visit->waktu_masuk?->format('H:i') }}
-                            </span>
-                        </div>
-                    @endforeach
-
-                    @if ($latestBatchUpdates->isEmpty() && $latestLogs->isEmpty() && $latestVisits->isEmpty())
+                    @if ($latestBatchUpdates->isEmpty() && $latestLogs->isEmpty())
                         <div class="py-8 text-center text-xs text-[#64748B]">
                             Belum ada aktivitas tercatat hari ini.
                         </div>

@@ -42,6 +42,21 @@ class KendaraanMasuk extends Component
     public ?string $catatan = null;
 
     /**
+     * Pesan validasi kustom Bahasa Indonesia
+     */
+    protected function messages(): array
+    {
+        return [
+            'nomor_polisi.required' => 'Nomor polisi kendaraan wajib diisi.',
+            'nama_pengemudi.required' => 'Nama supir / pengemudi wajib diisi.',
+            'asal_tujuan.required' => 'Asal atau tujuan kendaraan wajib diisi.',
+            'keperluan.required' => 'Keperluan kunjungan kendaraan wajib diisi.',
+            'waktu_masuk.required' => 'Waktu masuk kendaraan wajib diisi.',
+            'status_pemeriksaan_surat_jalan_b3.required' => 'Pemeriksaan status surat jalan B3 wajib dipilih.',
+        ];
+    }
+
+    /**
      * Inisialisasi awal form saat dibuka
      */
     public function mount(): void

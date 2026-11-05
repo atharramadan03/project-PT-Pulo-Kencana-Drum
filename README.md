@@ -18,7 +18,7 @@ Proyek ini dibangun sebagai luaran mata kuliah **Manajemen Proyek Perangkat Luna
 ## 2. Struktur Hak Akses (Role-Based Access Control)
 
 Sesuai dengan **PRD v1.2**, sistem memiliki 2 peran resmi:
-1. **`admin_kantor` (Admin Kantor)**:
+1. **`admin_kantor` (Admin Gudang)**:
    * Menginput laporan penerimaan dan batch drum.
    * Mencatat status transit dan pengendapan drum.
    * Menginput data 4 tahap proses gudang (*Penyortiran, Peniupan, Pencucian, Pengecatan*) berdasarkan laporan fisik orang gudang.

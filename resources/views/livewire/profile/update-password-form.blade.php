@@ -19,6 +19,10 @@ new class extends Component
         try {
             $validated = $this->validate([
                 'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+            ], [
+                'password.required' => 'Password baru wajib diisi.',
+                'password.min' => 'Password baru minimal harus :min karakter.',
+                'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
             ]);
         } catch (ValidationException $e) {
             $this->reset('password', 'password_confirmation');
@@ -26,7 +30,8 @@ new class extends Component
             throw $e;
         }
 
-        Auth::user()->update([
+        $user = Auth::user();
+        $user->update([
             'password' => $validated['password'],
         ]);
 
@@ -46,7 +51,7 @@ new class extends Component
                 Ganti Password Baru
             </h2>
             <p class="text-xs text-[#64748B]">
-                Buat password baru dan konfirmasi password secara langsung
+                Buat password baru (minimal 8 karakter) dan konfirmasi secara langsung
             </p>
         </div>
     </div>
@@ -54,7 +59,7 @@ new class extends Component
     <form wire:submit="updatePassword" class="p-5 space-y-4">
         <div>
             <label for="update_password_password" class="block text-xs font-medium text-[#0F172A] mb-1">
-                Password Baru <span class="text-rose-500">*</span>
+                Password Baru <span class="text-rose-500">*</span> <span class="text-[11px] font-normal text-[#64748B]">(Minimal 8 karakter)</span>
             </label>
             <div class="relative">
                 <input
@@ -62,7 +67,7 @@ new class extends Component
                     id="update_password_password"
                     name="password"
                     :type="showNewPassword ? 'text' : 'password'"
-                    placeholder="Masukkan password baru"
+                    placeholder="Masukkan password baru (min. 8 karakter)"
                     class="w-full py-2 pl-3 pr-9 text-xs rounded-lg border border-[#E2E8F0] bg-white text-[#0F172A] placeholder:text-slate-400 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
                     autocomplete="new-password"
                     required

@@ -106,7 +106,21 @@
             <path d="M12 5v14"/>
             @break
 
+        @case('check')
+            <polyline points="20 6 9 17 4 12"/>
+            @break
+
+        @case('clipboard-list')
+            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <path d="M12 11h4"/>
+            <path d="M12 16h4"/>
+            <path d="M8 11h.01"/>
+            <path d="M8 16h.01"/>
+            @break
+
         @case('circle-check')
+        @case('check-circle')
         @case('check-circle-2')
             <circle cx="12" cy="12" r="10"/>
             <path d="m9 12 2 2 4-4"/>
@@ -115,6 +129,12 @@
         @case('clock')
             <circle cx="12" cy="12" r="10"/>
             <polyline points="12 6 12 12 16 14"/>
+            @break
+
+        @case('history')
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M12 7v5l4 2"/>
             @break
 
         @case('triangle-alert')
@@ -134,6 +154,13 @@
         @case('user')
             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
+            @break
+
+        @case('users')
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             @break
 
         @case('search')
@@ -259,10 +286,17 @@
             <rect width="12" height="8" x="6" y="14"/>
             @break
 
+        @case('pen-to-square')
+        @case('square-pen')
         @case('pencil')
         @case('edit')
-            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
-            <path d="m15 5 4 4"/>
+            <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>
+            @break
+
+        @case('inbox')
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+            <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
             @break
 
         @case('trash')

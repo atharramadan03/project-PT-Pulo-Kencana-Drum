@@ -303,10 +303,10 @@
         <tr>
             <td class="signature-box">
                 Dibuat Oleh,<br>
-                <strong>Admin Kantor</strong>
+                <strong>Admin Gudang</strong>
                 <div class="signature-space"></div>
                 <u>( {{ $adminName }} )</u><br>
-                <span style="font-size: 7.5pt; color: #64748b;">Departemen Administrasi Operasional</span>
+                <span style="font-size: 7.5pt; color: #64748b;">Departemen Operasional Gudang</span>
             </td>
             <td class="signature-box">
                 Mengetahui & Menyetujui,<br>

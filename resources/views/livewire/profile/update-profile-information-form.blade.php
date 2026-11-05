@@ -9,6 +9,7 @@ use Livewire\Volt\Component;
 new class extends Component
 {
     public string $name = '';
+    public string $username = '';
     public string $email = '';
 
     /**
@@ -17,6 +18,7 @@ new class extends Component
     public function mount(): void
     {
         $this->name = Auth::user()->name;
+        $this->username = Auth::user()->username ?? '';
         $this->email = Auth::user()->email;
     }
 
@@ -29,8 +31,19 @@ new class extends Component
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['nullable', 'string', 'max:100', Rule::unique(User::class)->ignore($user->id)],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'username.unique' => 'Username ini sudah digunakan oleh akun lain.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
+            'email.unique' => 'Alamat email ini sudah digunakan oleh akun lain.',
         ]);
+
+        if (isset($validated['username']) && trim($validated['username']) === '') {
+            $validated['username'] = null;
+        }
 
         $user->fill($validated);
 
@@ -40,7 +53,13 @@ new class extends Component
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        $this->dispatch(
+            'profile-updated',
+            name: $user->name,
+            username: $user->username ?? '',
+            email: $user->email,
+            initials: strtoupper(substr($user->name, 0, 2))
+        );
     }
 
     /**
@@ -87,12 +106,30 @@ new class extends Component
                 id="name"
                 name="name"
                 type="text"
+                placeholder="Masukkan nama lengkap"
                 class="w-full py-2 px-3 text-xs rounded-lg border border-[#E2E8F0] bg-white text-[#0F172A] placeholder:text-slate-400 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
                 required
                 autofocus
                 autocomplete="name"
             />
             <x-input-error class="mt-1" :messages="$errors->get('name')" />
+        </div>
+
+        <div>
+            <label for="username" class="block text-xs font-medium text-[#0F172A] mb-1">
+                Username Login
+            </label>
+            <input
+                wire:model="username"
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Contoh: admin_gudang"
+                class="w-full py-2 px-3 text-xs rounded-lg border border-[#E2E8F0] bg-white text-[#0F172A] placeholder:text-slate-400 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                autocomplete="username"
+            />
+            <p class="mt-1 text-[11px] text-[#64748B]">Dapat digunakan untuk login selain menggunakan alamat email.</p>
+            <x-input-error class="mt-1" :messages="$errors->get('username')" />
         </div>
 
         <div>
@@ -104,9 +141,10 @@ new class extends Component
                 id="email"
                 name="email"
                 type="email"
+                placeholder="Masukkan alamat email resmi"
                 class="w-full py-2 px-3 text-xs rounded-lg border border-[#E2E8F0] bg-white text-[#0F172A] placeholder:text-slate-400 focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
                 required
-                autocomplete="username"
+                autocomplete="email"
             />
             <x-input-error class="mt-1" :messages="$errors->get('email')" />
 

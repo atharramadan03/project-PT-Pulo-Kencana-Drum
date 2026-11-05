@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Keuangan;
 
+use App\Models\Employee;
 use App\Models\OperationalExpenseLog;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -47,6 +48,8 @@ class FinanceOperationalExpenses extends Component
     public string $nomor_bukti = '';
 
     public string $penerima_dana = '';
+
+    public ?int $employee_id = null;
 
     public string $keterangan = '';
 
@@ -98,6 +101,7 @@ class FinanceOperationalExpenses extends Component
         $this->metode_pembayaran = 'tunai_kas_kecil';
         $this->nomor_bukti = '';
         $this->penerima_dana = '';
+        $this->employee_id = null;
         $this->keterangan = '';
     }
 
@@ -117,11 +121,16 @@ class FinanceOperationalExpenses extends Component
             'metode_pembayaran' => ['required', 'in:tunai_kas_kecil,transfer_bank'],
             'nomor_bukti' => ['nullable', 'string', 'max:100'],
             'penerima_dana' => ['required', 'string', 'max:255'],
+            'employee_id' => ['nullable', 'exists:employees,id'],
             'keterangan' => ['nullable', 'string', 'max:500'],
         ], [
-            'nama_biaya.required' => 'Deskripsi biaya pengeluaran wajib diisi.',
-            'penerima_dana.required' => 'Nama penerima dana/toko penyedia wajib diisi.',
+            'kategori_biaya.required' => 'Kategori biaya operasional wajib dipilih.',
+            'nama_biaya.required' => 'Deskripsi nama biaya pengeluaran wajib diisi.',
+            'nominal.required' => 'Nominal biaya operasional wajib diisi.',
             'nominal.min' => 'Nominal pengeluaran minimal Rp 1.000.',
+            'tanggal_pengeluaran.required' => 'Tanggal pengeluaran wajib diisi.',
+            'metode_pembayaran.required' => 'Metode pembayaran wajib dipilih.',
+            'penerima_dana.required' => 'Nama penerima dana / toko penyedia wajib diisi.',
         ]);
 
         $kodeBaru = OperationalExpenseLog::generateKodeBiaya();
@@ -136,6 +145,7 @@ class FinanceOperationalExpenses extends Component
             'metode_pembayaran' => $this->metode_pembayaran,
             'nomor_bukti' => $this->nomor_bukti ?: null,
             'penerima_dana' => $this->penerima_dana,
+            'employee_id' => $this->employee_id ?: null,
             'keterangan' => $this->keterangan ?: null,
         ]);
 
@@ -176,7 +186,7 @@ class FinanceOperationalExpenses extends Component
 
     public function render()
     {
-        $query = OperationalExpenseLog::with('user');
+        $query = OperationalExpenseLog::with(['user', 'employee']);
 
         if ($this->search) {
             $query->where(function ($q) {
@@ -215,8 +225,11 @@ class FinanceOperationalExpenses extends Component
         $totalTransferBank = (float) OperationalExpenseLog::where('metode_pembayaran', 'transfer_bank')->sum('nominal');
         $totalKeseluruhan = (float) OperationalExpenseLog::sum('nominal');
 
+        $employeesList = Employee::where('status_kerja', 'aktif')->orderBy('nama_karyawan')->get();
+
         return view('livewire.keuangan.finance-operational-expenses', [
             'expenses' => $expenses,
+            'employeesList' => $employeesList,
             'totalBiayaBulanIni' => $totalBiayaBulanIni,
             'totalKasKecil' => $totalKasKecil,
             'totalTransferBank' => $totalTransferBank,

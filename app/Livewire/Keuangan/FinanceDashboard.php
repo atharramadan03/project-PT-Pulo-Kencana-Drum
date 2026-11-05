@@ -116,6 +116,14 @@ class FinanceDashboard extends Component
             'metode_pembayaran' => 'required|in:transfer,tunai,tempo',
             'pihak_terkait' => 'required|string|max:150',
             'keterangan' => 'nullable|string',
+        ], [
+            'jenis_transaksi.required' => 'Jenis transaksi wajib dipilih.',
+            'kategori.required' => 'Kategori transaksi wajib dipilih.',
+            'tanggal_transaksi.required' => 'Tanggal transaksi wajib diisi.',
+            'nominal.required' => 'Nominal transaksi wajib diisi.',
+            'nominal.min' => 'Nominal transaksi minimal Rp 1.000.',
+            'metode_pembayaran.required' => 'Metode pembayaran wajib dipilih.',
+            'pihak_terkait.required' => 'Nama pihak terkait wajib diisi.',
         ]);
 
         $kodeBaru = WarehouseFinanceLog::generateKodeTransaksi();
@@ -176,6 +184,15 @@ class FinanceDashboard extends Component
             'biaya' => 'required|numeric|min:1000',
             'status_perbaikan' => 'required|in:selesai,dalam_pengerjaan,dijadwalkan',
             'keterangan_perbaikan' => 'nullable|string',
+        ], [
+            'nomor_polisi.required' => 'Nomor polisi kendaraan wajib diisi.',
+            'jenis_kendaraan.required' => 'Jenis kendaraan wajib diisi.',
+            'tanggal_perbaikan.required' => 'Tanggal perbaikan wajib diisi.',
+            'jenis_perbaikan.required' => 'Jenis perbaikan wajib diisi.',
+            'nama_bengkel.required' => 'Nama bengkel rekanan wajib diisi.',
+            'biaya.required' => 'Biaya perbaikan wajib diisi.',
+            'biaya.min' => 'Biaya perbaikan minimal Rp 1.000.',
+            'status_perbaikan.required' => 'Status perbaikan wajib dipilih.',
         ]);
 
         VehicleMaintenanceLog::create([

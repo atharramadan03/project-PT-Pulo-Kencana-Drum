@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Employee;
 use App\Models\FinanceInvoice;
 use App\Models\OperationalExpenseLog;
+use App\Models\Supplier;
 use App\Models\User;
 use App\Models\VehicleMaintenanceLog;
 use App\Models\WarehouseFinanceLog;
@@ -17,12 +19,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Akun Resmi Admin Kantor
+        // 1. Akun Resmi Admin Gudang
         User::updateOrCreate(
             ['email' => 'admin@pkdi.co.id'],
             [
-                'name' => 'Admin Kantor Gudang',
-                'username' => 'admin_kantor',
+                'name' => 'Admin Gudang',
+                'username' => 'admin_gudang',
                 'password' => Hash::make('password123'),
                 'role' => 'admin_kantor',
                 'shift_jaga' => null,
@@ -56,11 +58,105 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // 4. Data Awal Supplier Rekanan PKDI
+        $sup1 = Supplier::firstOrCreate(
+            ['kode_supplier' => 'SUP-202610-001'],
+            [
+                'nama_supplier' => 'PT Mitra Logam Bersama',
+                'kategori_pasokan' => 'Bahan Baku Drum Logam',
+                'nama_pic' => 'Bpk. Hendra Gunawan',
+                'nomor_telepon' => '081298765432',
+                'alamat' => 'Kawasan Industri Jababeka Tahap II, Cikarang',
+                'status_kerjasama' => 'aktif',
+                'catatan' => 'Pemasok utama drum besi open top & tight head',
+            ]
+        );
+
+        $sup2 = Supplier::firstOrCreate(
+            ['kode_supplier' => 'SUP-202610-002'],
+            [
+                'nama_supplier' => 'Toko Cat Kimia Mandiri',
+                'kategori_pasokan' => 'Cat Epoxy & Thinner',
+                'nama_pic' => 'Ibu Rina Safitri',
+                'nomor_telepon' => '081387654321',
+                'alamat' => 'Jl. Penggilingan Raya No. 45, Pulogadung, Jakarta Timur',
+                'status_kerjasama' => 'aktif',
+                'catatan' => 'Pemasok cat oven coating biru dan thinner cuci',
+            ]
+        );
+
+        $sup3 = Supplier::firstOrCreate(
+            ['kode_supplier' => 'SUP-202610-003'],
+            [
+                'nama_supplier' => 'CV Sumber Makmur Sparepart',
+                'kategori_pasokan' => 'Suku Cadang & Pelumas',
+                'nama_pic' => 'Bpk. Budi Santoso',
+                'nomor_telepon' => '085711223344',
+                'alamat' => 'Sentra Otomotif Kranji Blok B3, Bekasi Barat',
+                'status_kerjasama' => 'aktif',
+                'catatan' => 'Rekanan suku cadang armada truk operasional',
+            ]
+        );
+
+        // 5. Data Awal Karyawan Pengelola Biaya Operasional
+        $emp1 = Employee::firstOrCreate(
+            ['nik_karyawan' => 'EMP-202610-001'],
+            [
+                'nama_karyawan' => 'Agus Prasetyo',
+                'departemen' => 'Gudang & Workshop',
+                'jabatan' => 'Mandor Gudang & Rekondisi',
+                'nomor_telepon' => '085712345678',
+                'status_kerja' => 'aktif',
+                'tanggal_masuk' => now()->subYears(2)->toDateString(),
+                'catatan' => 'Penanggung jawab biaya APD & operasional pembersihan drum',
+            ]
+        );
+
+        $emp2 = Employee::firstOrCreate(
+            ['nik_karyawan' => 'EMP-202610-002'],
+            [
+                'nama_karyawan' => 'Dedi Suryana',
+                'departemen' => 'Logistik Armada',
+                'jabatan' => 'Supir Truk Armada B 9481 KDA',
+                'nomor_telepon' => '087812345678',
+                'status_kerja' => 'aktif',
+                'tanggal_masuk' => now()->subYear()->toDateString(),
+                'catatan' => 'Pengelola kas kecil BBM solar & tol armada',
+            ]
+        );
+
+        $emp3 = Employee::firstOrCreate(
+            ['nik_karyawan' => 'EMP-202610-003'],
+            [
+                'nama_karyawan' => 'Rahmat Hidayat',
+                'departemen' => 'Teknisi Pemeliharaan',
+                'jabatan' => 'Teknisi Mesin & Pompa Cuci B3',
+                'nomor_telepon' => '089612345678',
+                'status_kerja' => 'aktif',
+                'tanggal_masuk' => now()->subMonths(8)->toDateString(),
+                'catatan' => 'Pengelola biaya pemeliharaan mesin & pompa workshop',
+            ]
+        );
+
+        $emp4 = Employee::firstOrCreate(
+            ['nik_karyawan' => 'EMP-202610-004'],
+            [
+                'nama_karyawan' => 'Siti Aminah',
+                'departemen' => 'Operasional Kantor',
+                'jabatan' => 'Staf Pengadaan & ATK Pabrik',
+                'nomor_telepon' => '081234567890',
+                'status_kerja' => 'aktif',
+                'tanggal_masuk' => now()->subMonths(5)->toDateString(),
+                'catatan' => 'Pengelola biaya konsumsi karyawan & ATK',
+            ]
+        );
+
         // Data Awal Transaksi Keuangan Stok Gudang (Pemasukan & Pengeluaran)
         if (WarehouseFinanceLog::count() === 0) {
             WarehouseFinanceLog::create([
                 'user_id' => $keuangan->id,
                 'drum_batch_id' => null,
+                'supplier_id' => $sup1->id,
                 'kode_transaksi' => 'TRX-STK-202610-001',
                 'jenis_transaksi' => 'pengeluaran',
                 'kategori' => 'pembelian_batch',
@@ -75,6 +171,7 @@ class DatabaseSeeder extends Seeder
             WarehouseFinanceLog::create([
                 'user_id' => $keuangan->id,
                 'drum_batch_id' => null,
+                'supplier_id' => $sup2->id,
                 'kode_transaksi' => 'TRX-STK-202610-002',
                 'jenis_transaksi' => 'pengeluaran',
                 'kategori' => 'bahan_operasional',
@@ -205,6 +302,7 @@ class DatabaseSeeder extends Seeder
         if (OperationalExpenseLog::count() === 0) {
             OperationalExpenseLog::create([
                 'user_id' => $keuangan->id,
+                'employee_id' => $emp3->id,
                 'kode_biaya' => 'BOP-202611-001',
                 'kategori_biaya' => 'listrik_air',
                 'nama_biaya' => 'Tagihan Listrik PLN Pabrik & Pompa Cuci Drum',
@@ -218,6 +316,7 @@ class DatabaseSeeder extends Seeder
 
             OperationalExpenseLog::create([
                 'user_id' => $keuangan->id,
+                'employee_id' => $emp2->id,
                 'kode_biaya' => 'BOP-202611-002',
                 'kategori_biaya' => 'bbm_solar',
                 'nama_biaya' => 'Pengisian Solar Truk Armada B 9123 KDA & Genset',
@@ -231,6 +330,7 @@ class DatabaseSeeder extends Seeder
 
             OperationalExpenseLog::create([
                 'user_id' => $keuangan->id,
+                'employee_id' => $emp1->id,
                 'kode_biaya' => 'BOP-202611-003',
                 'kategori_biaya' => 'perlengkapan_apd',
                 'nama_biaya' => 'Pengadaan Masker Gas Respirator B3 & Sarung Tangan Karet',
@@ -242,5 +342,8 @@ class DatabaseSeeder extends Seeder
                 'keterangan' => 'Kebutuhan APD tim peniupan & pencucian drum chemical',
             ]);
         }
+
+        // 6. Data Dummy Satpam & Admin Gudang
+        $this->call(WarehouseAndSecuritySeeder::class);
     }
 }

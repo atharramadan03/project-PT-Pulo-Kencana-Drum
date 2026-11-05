@@ -52,6 +52,23 @@ class FinanceVehicleRepairs extends Component
     #[Validate('nullable|string')]
     public ?string $keterangan = null;
 
+    /**
+     * Pesan validasi kustom Bahasa Indonesia
+     */
+    protected function messages(): array
+    {
+        return [
+            'nomor_polisi.required' => 'Nomor polisi kendaraan wajib diisi.',
+            'jenis_kendaraan.required' => 'Jenis kendaraan wajib diisi.',
+            'tanggal_perbaikan.required' => 'Tanggal servis / perbaikan wajib diisi.',
+            'jenis_perbaikan.required' => 'Jenis perbaikan armada wajib diisi.',
+            'nama_bengkel.required' => 'Nama bengkel rekanan wajib diisi.',
+            'biaya.required' => 'Biaya perbaikan kendaraan wajib diisi.',
+            'biaya.min' => 'Biaya perbaikan minimal Rp 1.000.',
+            'status_perbaikan.required' => 'Status pengerjaan servis wajib dipilih.',
+        ];
+    }
+
     public function updatingSearch(): void
     {
         $this->resetPage();

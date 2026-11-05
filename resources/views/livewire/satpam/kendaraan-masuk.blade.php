@@ -29,7 +29,7 @@
             </span>
         </div>
 
-        <form wire:submit="simpan" class="p-5 space-y-4">
+        <form wire:submit="simpan" class="p-5 space-y-4" novalidate>
             <!-- Baris 1 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

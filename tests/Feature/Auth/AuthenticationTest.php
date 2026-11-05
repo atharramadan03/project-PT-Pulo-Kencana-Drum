@@ -51,10 +51,39 @@ class AuthenticationTest extends TestCase
         $component->call('login');
 
         $component
-            ->assertHasErrors()
+            ->assertHasErrors(['form.email'])
             ->assertNoRedirect();
 
         $this->assertGuest();
+    }
+
+    public function test_login_shows_indonesian_validation_errors_when_fields_are_empty(): void
+    {
+        $component = Volt::test('pages.auth.login')
+            ->set('form.email', '')
+            ->set('form.password', '');
+
+        $component->call('login');
+
+        $component
+            ->assertHasErrors(['form.email', 'form.password'])
+            ->assertSee('Username atau alamat email wajib diisi.')
+            ->assertSee('Password akun wajib diisi.');
+    }
+
+    public function test_login_shows_indonesian_error_message_when_credentials_are_invalid(): void
+    {
+        $user = User::factory()->create();
+
+        $component = Volt::test('pages.auth.login')
+            ->set('form.email', $user->email)
+            ->set('form.password', 'salah123');
+
+        $component->call('login');
+
+        $component
+            ->assertHasErrors(['form.email'])
+            ->assertSee('Email/Username atau password yang Anda masukkan salah. Silakan periksa kembali.');
     }
 
     public function test_navigation_menu_can_be_rendered(): void
@@ -98,5 +127,26 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect(route('login'));
         $this->assertGuest();
+    }
+
+    public function test_users_can_authenticate_using_username(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'admin_gudang_pkdi',
+            'role' => 'admin_kantor',
+            'status_akun' => 'aktif',
+        ]);
+
+        $component = Volt::test('pages.auth.login')
+            ->set('form.email', 'admin_gudang_pkdi')
+            ->set('form.password', 'password');
+
+        $component->call('login');
+
+        $component
+            ->assertHasNoErrors()
+            ->assertRedirect(route('admin.dashboard', absolute: false));
+
+        $this->assertAuthenticatedAs($user);
     }
 }

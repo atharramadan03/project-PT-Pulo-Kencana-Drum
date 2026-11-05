@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'user_id',
     'drum_batch_id',
+    'supplier_id',
     'kode_transaksi',
     'jenis_transaksi',
     'kategori',
@@ -70,6 +71,14 @@ class WarehouseFinanceLog extends Model
     public function drumBatch(): BelongsTo
     {
         return $this->belongsTo(DrumBatch::class);
+    }
+
+    /**
+     * Relasi ke Supplier Rekanan (opsional)
+     */
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
     /**

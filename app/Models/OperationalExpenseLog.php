@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'user_id',
+    'employee_id',
     'kode_biaya',
     'kategori_biaya',
     'nama_biaya',
@@ -60,6 +61,14 @@ class OperationalExpenseLog extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relasi ke Karyawan Pengelola / Penanggung Jawab Biaya Operasional
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
     }
 
     /**

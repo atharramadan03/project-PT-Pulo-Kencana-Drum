@@ -97,16 +97,6 @@ new class extends Component
                 </a>
 
                 <a 
-                    href="{{ route('admin.vehicles') }}" 
-                    wire:navigate.hover
-                    @click="sidebarOpen = false"
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.vehicles') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
-                >
-                    <x-icon name="truck" class="w-4 h-4 shrink-0" />
-                    <span>Kunjungan Truk</span>
-                </a>
-
-                <a 
                     href="{{ route('admin.reports') }}" 
                     wire:navigate.hover
                     @click="sidebarOpen = false"
@@ -145,7 +135,18 @@ new class extends Component
                     <x-icon name="truck" class="w-4 h-4 shrink-0" />
                     <span>Kendaraan Aktif</span>
                 </a>
+
+                <a 
+                    href="{{ route('satpam.riwayat') }}" 
+                    wire:navigate.hover
+                    @click="sidebarOpen = false"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.riwayat') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="history" class="w-4 h-4 shrink-0" />
+                    <span>Riwayat Kendaraan</span>
+                </a>
             @elseif (auth()->user()->isAdminKeuangan())
+                <!-- 1. Dashboard Keuangan -->
                 <a 
                     href="{{ route('keuangan.dashboard') }}" 
                     wire:navigate.hover
@@ -156,44 +157,128 @@ new class extends Component
                     <span>Dashboard Keuangan</span>
                 </a>
 
+                <!-- 2. Data Barang Masuk -->
                 <a 
-                    href="{{ route('keuangan.stok-transaksi') }}" 
+                    href="{{ route('keuangan.barang-masuk') }}" 
                     wire:navigate.hover
                     @click="sidebarOpen = false"
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.stok-transaksi') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.barang-masuk') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="wallet" class="w-4 h-4 shrink-0" />
-                    <span>Keuangan Stok</span>
+                    <x-icon name="arrow-down-left" class="w-4 h-4 shrink-0 text-emerald-400" />
+                    <span>Data Barang Masuk</span>
                 </a>
 
+                <!-- 3. Data Barang Keluar -->
                 <a 
-                    href="{{ route('keuangan.biaya-kendaraan') }}" 
+                    href="{{ route('keuangan.barang-keluar') }}" 
                     wire:navigate.hover
                     @click="sidebarOpen = false"
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.biaya-kendaraan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.barang-keluar') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="wrench" class="w-4 h-4 shrink-0" />
-                    <span>Biaya Mobil</span>
+                    <x-icon name="arrow-up-right" class="w-4 h-4 shrink-0 text-blue-400" />
+                    <span>Data Barang Keluar</span>
                 </a>
 
+                <!-- 4. Data Supplier -->
+                <a 
+                    href="{{ route('keuangan.suppliers') }}" 
+                    wire:navigate.hover
+                    @click="sidebarOpen = false"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.suppliers') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="truck" class="w-4 h-4 shrink-0" />
+                    <span>Data Supplier</span>
+                </a>
+
+                <!-- 5. Biaya Operasional (Dropdown Collapsible) -->
+                <div x-data="{ openBiaya: {{ request()->routeIs('keuangan.operasional*', 'keuangan.biaya-kendaraan*', 'keuangan.laporan-cetak*', 'keuangan.riwayat-keuangan*') ? 'true' : 'false' }} }" class="space-y-1">
+                    <button 
+                        type="button" 
+                        @click="openBiaya = !openBiaya"
+                        class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.operasional*', 'keuangan.biaya-kendaraan*', 'keuangan.laporan-cetak*', 'keuangan.riwayat-keuangan*') ? 'bg-slate-800/90 text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    >
+                        <div class="flex items-center gap-3">
+                            <x-icon name="banknote" class="w-4 h-4 shrink-0 text-amber-400" />
+                            <span>Biaya Operasional</span>
+                        </div>
+                        <svg 
+                            class="w-3.5 h-3.5 transition-transform duration-200 text-slate-400" 
+                            :class="openBiaya ? 'rotate-180 text-white' : ''" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div x-show="openBiaya" x-cloak class="pl-4 space-y-1 pt-1">
+                        <!-- a. Catatan Keuangan -->
+                        <a 
+                            href="{{ route('keuangan.operasional') }}" 
+                            wire:navigate.hover
+                            @click="sidebarOpen = false"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.operasional') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="wallet" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Catatan Keuangan</span>
+                        </a>
+
+                        <!-- b. Biaya Mobil -->
+                        <a 
+                            href="{{ route('keuangan.biaya-kendaraan') }}" 
+                            wire:navigate.hover
+                            @click="sidebarOpen = false"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.biaya-kendaraan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="wrench" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Biaya Mobil</span>
+                        </a>
+
+                        <!-- c. Laporan untuk di Cetak -->
+                        <a 
+                            href="{{ route('keuangan.laporan-cetak') }}" 
+                            wire:navigate.hover
+                            @click="sidebarOpen = false"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.laporan-cetak') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="printer" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Laporan untuk di Cetak</span>
+                        </a>
+
+                        <!-- d. Riwayat Keuangan -->
+                        <a 
+                            href="{{ route('keuangan.riwayat-keuangan') }}" 
+                            wire:navigate.hover
+                            @click="sidebarOpen = false"
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.riwayat-keuangan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="receipt" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Riwayat Keuangan</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 6. Riwayat Tagihan (di bawah Biaya Operasional) -->
                 <a 
                     href="{{ route('keuangan.tagihan') }}" 
                     wire:navigate.hover
                     @click="sidebarOpen = false"
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.tagihan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="receipt" class="w-4 h-4 shrink-0" />
+                    <x-icon name="file-text" class="w-4 h-4 shrink-0" />
                     <span>Riwayat Tagihan</span>
                 </a>
 
+                <!-- 7. Data Driver Truk (mengelola biaya operasional armada) -->
                 <a 
-                    href="{{ route('keuangan.operasional') }}" 
+                    href="{{ route('keuangan.driver-truk') }}" 
                     wire:navigate.hover
                     @click="sidebarOpen = false"
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.operasional') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.driver-truk*', 'keuangan.karyawan*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="banknote" class="w-4 h-4 shrink-0" />
-                    <span>Biaya Operasional</span>
+                    <x-icon name="truck" class="w-4 h-4 shrink-0" />
+                    <span>Data Driver Truk</span>
                 </a>
             @endif
         </nav>
@@ -277,15 +362,6 @@ new class extends Component
                 </a>
 
                 <a 
-                    href="{{ route('admin.vehicles') }}" 
-                    wire:navigate.hover
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.vehicles') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
-                >
-                    <x-icon name="truck" class="w-4 h-4 shrink-0" />
-                    <span>Kunjungan Truk</span>
-                </a>
-
-                <a 
                     href="{{ route('admin.reports') }}" 
                     wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.reports*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
@@ -320,7 +396,17 @@ new class extends Component
                     <x-icon name="truck" class="w-4 h-4 shrink-0" />
                     <span>Kendaraan Aktif</span>
                 </a>
+
+                <a 
+                    href="{{ route('satpam.riwayat') }}" 
+                    wire:navigate.hover
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('satpam.riwayat') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="history" class="w-4 h-4 shrink-0" />
+                    <span>Riwayat Kendaraan</span>
+                </a>
             @elseif (auth()->user()->isAdminKeuangan())
+                <!-- 1. Dashboard Keuangan -->
                 <a 
                     href="{{ route('keuangan.dashboard') }}" 
                     wire:navigate.hover
@@ -330,40 +416,119 @@ new class extends Component
                     <span>Dashboard Keuangan</span>
                 </a>
 
+                <!-- 2. Data Barang Masuk -->
                 <a 
-                    href="{{ route('keuangan.stok-transaksi') }}" 
+                    href="{{ route('keuangan.barang-masuk') }}" 
                     wire:navigate.hover
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.stok-transaksi') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.barang-masuk') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="wallet" class="w-4 h-4 shrink-0" />
-                    <span>Keuangan Stok</span>
+                    <x-icon name="arrow-down-left" class="w-4 h-4 shrink-0 text-emerald-400" />
+                    <span>Data Barang Masuk</span>
                 </a>
 
+                <!-- 3. Data Barang Keluar -->
                 <a 
-                    href="{{ route('keuangan.biaya-kendaraan') }}" 
+                    href="{{ route('keuangan.barang-keluar') }}" 
                     wire:navigate.hover
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.biaya-kendaraan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.barang-keluar') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="wrench" class="w-4 h-4 shrink-0" />
-                    <span>Biaya Mobil</span>
+                    <x-icon name="arrow-up-right" class="w-4 h-4 shrink-0 text-blue-400" />
+                    <span>Data Barang Keluar</span>
                 </a>
 
+                <!-- 4. Data Supplier -->
+                <a 
+                    href="{{ route('keuangan.suppliers') }}" 
+                    wire:navigate.hover
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.suppliers') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                >
+                    <x-icon name="truck" class="w-4 h-4 shrink-0" />
+                    <span>Data Supplier</span>
+                </a>
+
+                <!-- 5. Biaya Operasional (Dropdown Collapsible) -->
+                <div x-data="{ openBiaya: {{ request()->routeIs('keuangan.operasional*', 'keuangan.biaya-kendaraan*', 'keuangan.laporan-cetak*', 'keuangan.riwayat-keuangan*') ? 'true' : 'false' }} }" class="space-y-1">
+                    <button 
+                        type="button" 
+                        @click="openBiaya = !openBiaya"
+                        class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.operasional*', 'keuangan.biaya-kendaraan*', 'keuangan.laporan-cetak*', 'keuangan.riwayat-keuangan*') ? 'bg-slate-800/90 text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    >
+                        <div class="flex items-center gap-3">
+                            <x-icon name="banknote" class="w-4 h-4 shrink-0 text-amber-400" />
+                            <span>Biaya Operasional</span>
+                        </div>
+                        <svg 
+                            class="w-3.5 h-3.5 transition-transform duration-200 text-slate-400" 
+                            :class="openBiaya ? 'rotate-180 text-white' : ''" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div x-show="openBiaya" x-cloak class="pl-4 space-y-1 pt-1">
+                        <!-- a. Catatan Keuangan -->
+                        <a 
+                            href="{{ route('keuangan.operasional') }}" 
+                            wire:navigate.hover
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.operasional') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="wallet" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Catatan Keuangan</span>
+                        </a>
+
+                        <!-- b. Biaya Mobil -->
+                        <a 
+                            href="{{ route('keuangan.biaya-kendaraan') }}" 
+                            wire:navigate.hover
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.biaya-kendaraan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="wrench" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Biaya Mobil</span>
+                        </a>
+
+                        <!-- c. Laporan untuk di Cetak -->
+                        <a 
+                            href="{{ route('keuangan.laporan-cetak') }}" 
+                            wire:navigate.hover
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.laporan-cetak') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="printer" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Laporan untuk di Cetak</span>
+                        </a>
+
+                        <!-- d. Riwayat Keuangan -->
+                        <a 
+                            href="{{ route('keuangan.riwayat-keuangan') }}" 
+                            wire:navigate.hover
+                            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium transition-colors {{ request()->routeIs('keuangan.riwayat-keuangan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}"
+                        >
+                            <x-icon name="receipt" class="w-3.5 h-3.5 shrink-0" />
+                            <span>Riwayat Keuangan</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 6. Riwayat Tagihan (di bawah Biaya Operasional) -->
                 <a 
                     href="{{ route('keuangan.tagihan') }}" 
                     wire:navigate.hover
                     class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.tagihan') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="receipt" class="w-4 h-4 shrink-0" />
+                    <x-icon name="file-text" class="w-4 h-4 shrink-0" />
                     <span>Riwayat Tagihan</span>
                 </a>
 
+                <!-- 7. Data Driver Truk (mengelola biaya operasional armada) -->
                 <a 
-                    href="{{ route('keuangan.operasional') }}" 
+                    href="{{ route('keuangan.driver-truk') }}" 
                     wire:navigate.hover
-                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.operasional') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
+                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('keuangan.driver-truk*', 'keuangan.karyawan*') ? 'bg-[#2563EB] text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/70' }}"
                 >
-                    <x-icon name="banknote" class="w-4 h-4 shrink-0" />
-                    <span>Biaya Operasional</span>
+                    <x-icon name="truck" class="w-4 h-4 shrink-0" />
+                    <span>Data Driver Truk</span>
                 </a>
             @endif
         </nav>
@@ -432,20 +597,33 @@ new class extends Component
                     <span class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#EF4444]"></span>
                 </div>
 
-                <div x-data="{ userMenuOpen: false }" class="relative">
+                <div
+                    x-data="{
+                        userMenuOpen: false,
+                        navName: @js(auth()->user()->name),
+                        navEmail: @js(auth()->user()->email),
+                        navInitials: @js(strtoupper(substr(auth()->user()->name, 0, 2)))
+                    }"
+                    @profile-updated.window="
+                        if ($event.detail.name) navName = $event.detail.name;
+                        if ($event.detail.email) navEmail = $event.detail.email;
+                        if ($event.detail.initials) navInitials = $event.detail.initials;
+                    "
+                    class="relative"
+                >
                     <button 
                         @click="userMenuOpen = !userMenuOpen" 
                         type="button"
                         class="flex items-center gap-2.5 py-1 px-2 rounded-lg hover:bg-slate-50 transition focus:outline-none cursor-pointer"
                     >
-                        <div class="w-8 h-8 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-semibold text-xs shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-semibold text-xs shrink-0" x-text="navInitials">
                             {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
                         </div>
                         <div class="text-left hidden sm:block">
-                            <div class="text-xs font-semibold text-[#0F172A] leading-tight">{{ auth()->user()->name }}</div>
+                            <div class="text-xs font-semibold text-[#0F172A] leading-tight" x-text="navName">{{ auth()->user()->name }}</div>
                             <div class="text-[11px] text-[#64748B] leading-tight">
                                 @if (auth()->user()->isAdminKantor())
-                                    Administrator
+                                    Admin Gudang
                                 @elseif (auth()->user()->isAdminKeuangan())
                                     Admin Keuangan
                                 @else
@@ -464,8 +642,8 @@ new class extends Component
                         class="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 z-50 divide-y divide-slate-100"
                     >
                         <div class="px-3.5 py-2">
-                            <p class="text-xs font-semibold text-[#0F172A] truncate">{{ auth()->user()->name }}</p>
-                            <p class="text-[11px] text-[#64748B] truncate">{{ auth()->user()->email }}</p>
+                            <p class="text-xs font-semibold text-[#0F172A] truncate" x-text="navName">{{ auth()->user()->name }}</p>
+                            <p class="text-[11px] text-[#64748B] truncate" x-text="navEmail">{{ auth()->user()->email }}</p>
                         </div>
                         <div class="py-1">
                             <a 

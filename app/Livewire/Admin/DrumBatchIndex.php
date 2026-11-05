@@ -54,7 +54,7 @@ class DrumBatchIndex extends Component
 
     public ?int $hapusBatchId = null;
 
-    public ?DrumBatch $hapusBatch = null;
+    public ?DrumBatch $targetBatchHapus = null;
 
     public ?int $selectedBatchId = null;
 
@@ -75,6 +75,21 @@ class DrumBatchIndex extends Component
     public function updatingFilterProses(): void
     {
         $this->resetPage();
+    }
+
+    /**
+     * Pesan validasi kustom Bahasa Indonesia
+     */
+    protected function messages(): array
+    {
+        return [
+            'tanggal_penerimaan.required' => 'Tanggal penerimaan drum wajib diisi.',
+            'jumlah_diterima.required' => 'Jumlah drum diterima wajib diisi.',
+            'jumlah_diterima.min' => 'Jumlah drum diterima minimal 1 unit.',
+            'kategori_jenis.required' => 'Kategori jenis drum wajib dipilih.',
+            'status_pengendapan.required' => 'Status pengendapan wajib dipilih.',
+            'status_proses.required' => 'Status proses drum wajib dipilih.',
+        ];
     }
 
     public function bukaCreateModal(): void
@@ -192,7 +207,7 @@ class DrumBatchIndex extends Component
     {
         $batch = DrumBatch::findOrFail($id);
         $this->hapusBatchId = $batch->id;
-        $this->hapusBatch = $batch;
+        $this->targetBatchHapus = $batch;
         $this->modalHapusTerbuka = true;
     }
 
@@ -200,7 +215,7 @@ class DrumBatchIndex extends Component
     {
         $this->modalHapusTerbuka = false;
         $this->hapusBatchId = null;
-        $this->hapusBatch = null;
+        $this->targetBatchHapus = null;
     }
 
     public function hapusBatch(?int $id = null): void

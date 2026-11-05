@@ -29,7 +29,7 @@ class DrumProcessIndex extends Component
 
     public ?int $hapusLogId = null;
 
-    public ?DrumProcessLog $hapusLog = null;
+    public ?DrumProcessLog $targetLogHapus = null;
 
     #[Validate('required|exists:drum_batches,id')]
     public ?int $drum_batch_id = null;
@@ -65,6 +65,24 @@ class DrumProcessIndex extends Component
     public function updatingFilterBatchId(): void
     {
         $this->resetPage();
+    }
+
+    /**
+     * Pesan validasi kustom Bahasa Indonesia
+     */
+    protected function messages(): array
+    {
+        return [
+            'drum_batch_id.required' => 'Pilih batch drum yang diproses.',
+            'drum_batch_id.exists' => 'Batch drum yang dipilih tidak valid.',
+            'jenis_proses.required' => 'Jenis tahapan proses gudang wajib dipilih.',
+            'tanggal_aktivitas.required' => 'Tanggal aktivitas proses wajib diisi.',
+            'jumlah_diproses.required' => 'Jumlah drum yang diproses wajib diisi.',
+            'jumlah_diproses.min' => 'Jumlah drum diproses minimal 1 unit.',
+            'jumlah_afkir.required' => 'Jumlah drum afkir/rusak wajib diisi (isi 0 jika tidak ada).',
+            'jumlah_afkir.min' => 'Jumlah afkir tidak boleh negatif.',
+            'pelapor_gudang.required' => 'Nama pelapor/mandor gudang wajib diisi.',
+        ];
     }
 
     public function bukaCreateModal(): void
@@ -125,7 +143,7 @@ class DrumProcessIndex extends Component
     {
         $log = DrumProcessLog::with('drumBatch')->findOrFail($id);
         $this->hapusLogId = $log->id;
-        $this->hapusLog = $log;
+        $this->targetLogHapus = $log;
         $this->modalHapusTerbuka = true;
     }
 
@@ -133,7 +151,7 @@ class DrumProcessIndex extends Component
     {
         $this->modalHapusTerbuka = false;
         $this->hapusLogId = null;
-        $this->hapusLog = null;
+        $this->targetLogHapus = null;
     }
 
     public function hapusLog(): void

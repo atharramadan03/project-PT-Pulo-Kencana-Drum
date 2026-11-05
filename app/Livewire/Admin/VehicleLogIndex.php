@@ -13,18 +13,24 @@ class VehicleLogIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $filterStatus = ''; // '' (Semua), 'aktif', 'selesai'
+
     public string $filterB3 = ''; // '' (Semua), 'Lengkap', 'Tidak Lengkap', 'Bukan B3'
+
     public string $filterTanggal = '';
 
     // Modal Detail
     public bool $showDetailModal = false;
+
     public ?VehicleVisit $selectedVisit = null;
 
     // Modal Hapus
     public bool $modalHapusTerbuka = false;
+
     public ?int $hapusVisitId = null;
-    public ?VehicleVisit $hapusVisit = null;
+
+    public ?VehicleVisit $targetVisitHapus = null;
 
     public function updatingSearch(): void
     {
@@ -64,7 +70,7 @@ class VehicleLogIndex extends Component
     {
         $visit = VehicleVisit::findOrFail($id);
         $this->hapusVisitId = $visit->id;
-        $this->hapusVisit = $visit;
+        $this->targetVisitHapus = $visit;
         $this->modalHapusTerbuka = true;
     }
 
@@ -72,7 +78,7 @@ class VehicleLogIndex extends Component
     {
         $this->modalHapusTerbuka = false;
         $this->hapusVisitId = null;
-        $this->hapusVisit = null;
+        $this->targetVisitHapus = null;
     }
 
     public function hapusVisit(): void

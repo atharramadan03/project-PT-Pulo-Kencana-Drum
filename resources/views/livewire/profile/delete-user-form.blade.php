@@ -15,6 +15,9 @@ new class extends Component
     {
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
+        ], [
+            'password.required' => 'Password akun wajib diisi untuk konfirmasi penghapusan.',
+            'password.current_password' => 'Password akun yang Anda masukkan salah.',
         ]);
 
         tap(Auth::user(), $logout(...))->delete();

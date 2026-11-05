@@ -24,6 +24,8 @@ new #[Layout('layouts.guest')] class extends Component
         $user = auth()->user();
         if ($user && $user->role === 'satpam') {
             $this->redirectIntended(default: route('satpam.dashboard', absolute: false), navigate: true);
+        } elseif ($user && $user->role === 'admin_keuangan') {
+            $this->redirectIntended(default: route('keuangan.dashboard', absolute: false), navigate: true);
         } else {
             $this->redirectIntended(default: route('admin.dashboard', absolute: false), navigate: true);
         }
@@ -63,24 +65,24 @@ new #[Layout('layouts.guest')] class extends Component
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
             <!-- Form Login -->
-            <form wire:submit="login" class="space-y-4">
+            <form wire:submit="login" class="space-y-4" novalidate>
                 <!-- Field 1: Username / Email -->
                 <div>
                     <label for="email" class="block text-sm font-semibold text-[#0F172A] mb-1.5">
-                        Username
+                        Username / Email
                     </label>
                     <input 
                         wire:model="form.email" 
                         id="email" 
-                        type="email" 
+                        type="text" 
                         name="email" 
                         required 
                         autofocus 
                         autocomplete="username" 
-                        placeholder="Masukkan Email / NIP Anda"
+                        placeholder="Masukkan Username atau Email Anda"
                         class="w-full px-4 py-2.5 sm:py-3 rounded-lg border border-[#E2E8F0] text-sm text-[#0F172A] placeholder-[#94A3B8] focus:border-[#0284C7] focus:ring-1 focus:ring-[#0284C7] transition outline-none"
                     />
-                    <x-input-error :messages="$errors->get('form.email')" class="mt-1.5 text-xs text-red-600" />
+                    <x-input-error :messages="$errors->get('form.email')" class="mt-1 text-[11px] text-rose-500 font-medium" />
                 </div>
 
                 <!-- Field 2: Password dengan Toggle Visibility (Eye Icon di sisi kanan seperti reference_login.png) -->
@@ -113,7 +115,7 @@ new #[Layout('layouts.guest')] class extends Component
                             </span>
                         </button>
                     </div>
-                    <x-input-error :messages="$errors->get('form.password')" class="mt-1.5 text-xs text-red-600" />
+                    <x-input-error :messages="$errors->get('form.password')" class="mt-1 text-[11px] text-rose-500 font-medium" />
                 </div>
 
                 <!-- Checkbox Remember Me -->

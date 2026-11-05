@@ -56,6 +56,22 @@ class FinanceStockTransactions extends Component
     #[Validate('nullable|string')]
     public ?string $keterangan = null;
 
+    /**
+     * Pesan validasi kustom Bahasa Indonesia
+     */
+    protected function messages(): array
+    {
+        return [
+            'jenis_transaksi.required' => 'Jenis transaksi wajib dipilih.',
+            'kategori.required' => 'Kategori transaksi wajib dipilih.',
+            'tanggal_transaksi.required' => 'Tanggal transaksi wajib diisi.',
+            'nominal.required' => 'Nominal transaksi wajib diisi.',
+            'nominal.min' => 'Nominal transaksi minimal Rp 1.000.',
+            'metode_pembayaran.required' => 'Metode pembayaran wajib dipilih.',
+            'pihak_terkait.required' => 'Nama pihak terkait wajib diisi.',
+        ];
+    }
+
     public function updatingSearch(): void
     {
         $this->resetPage();

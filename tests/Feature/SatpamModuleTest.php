@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Livewire\Satpam\KendaraanAktif;
 use App\Livewire\Satpam\KendaraanMasuk;
+use App\Livewire\Satpam\RiwayatKendaraan;
 use App\Models\User;
 use App\Models\VehicleVisit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -188,5 +189,73 @@ class SatpamModuleTest extends TestCase
         $this->assertDatabaseMissing('vehicle_visits', [
             'id' => $visit->id,
         ]);
+    }
+
+    /**
+     * Satpam dapat mengakses halaman riwayat kendaraan dan melihat daftar kendaraan keluar masuk.
+     */
+    public function test_satpam_can_access_riwayat_kendaraan_page(): void
+    {
+        $this->actingAs($this->satpam)
+            ->get(route('satpam.riwayat'))
+            ->assertStatus(200)
+            ->assertSee('Riwayat Kunjungan Kendaraan');
+    }
+
+    /**
+     * Kendaraan yang sudah selesai keluar muncul di riwayat dan dapat dilihat detailnya.
+     */
+    public function test_exited_vehicle_appears_in_riwayat_and_can_show_detail(): void
+    {
+        $visit = VehicleVisit::create([
+            'user_id' => $this->satpam->id,
+            'nomor_kunjungan' => VehicleVisit::generateNomorKunjungan(),
+            'nomor_polisi' => 'B 5555 OUT',
+            'nama_pengemudi' => 'Supir Logistik Selesai',
+            'asal_tujuan' => 'PT Mitra Logistik',
+            'keperluan' => 'Kunjungan Pengiriman',
+            'waktu_masuk' => now()->subHours(4),
+            'waktu_keluar' => now()->subHour(),
+            'pos_gerbang' => 'Gerbang Utama',
+            'status_pemeriksaan_surat_jalan_b3' => 'sesuai',
+            'keterangan_muatan' => '100 Drum Siap Pakai',
+        ]);
+
+        Livewire::actingAs($this->satpam)
+            ->test(RiwayatKendaraan::class)
+            ->assertSee('B 5555 OUT')
+            ->assertSee('Supir Logistik Selesai')
+            ->assertSee('Selesai Keluar')
+            ->call('lihatDetail', $visit->id)
+            ->assertSet('showDetailModal', true)
+            ->assertSee('Detail Kunjungan Kendaraan');
+    }
+
+    /**
+     * Satpam dapat membatalkan status keluar jika salah pencet sehingga kendaraan kembali aktif.
+     */
+    public function test_satpam_can_cancel_exit_status_to_restore_vehicle_to_active(): void
+    {
+        $visit = VehicleVisit::create([
+            'user_id' => $this->satpam->id,
+            'nomor_kunjungan' => VehicleVisit::generateNomorKunjungan(),
+            'nomor_polisi' => 'B 6666 ACC',
+            'nama_pengemudi' => 'Supir Salah Klik Keluar',
+            'asal_tujuan' => 'PT Batal Keluar',
+            'keperluan' => 'Kunjungan Uji Batal',
+            'waktu_masuk' => now()->subHours(2),
+            'waktu_keluar' => now()->subHour(),
+            'pos_gerbang' => 'Gerbang Utama',
+            'status_pemeriksaan_surat_jalan_b3' => 'tidak_ada_b3',
+        ]);
+
+        Livewire::actingAs($this->satpam)
+            ->test(RiwayatKendaraan::class)
+            ->call('batalkanKeluar', $visit->id)
+            ->assertHasNoErrors();
+
+        $visit->refresh();
+        $this->assertNull($visit->waktu_keluar);
+        $this->assertCount(1, VehicleVisit::aktif()->where('id', $visit->id)->get());
     }
 }

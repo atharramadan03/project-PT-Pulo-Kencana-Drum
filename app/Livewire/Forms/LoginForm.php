@@ -12,17 +12,19 @@ use Livewire\Form;
 
 class LoginForm extends Form
 {
-    #[Validate('required|string|email')]
+    #[Validate('required', message: 'Username atau alamat email wajib diisi.')]
+    #[Validate('string')]
     public string $email = '';
 
-    #[Validate('required|string')]
+    #[Validate('required', message: 'Password akun wajib diisi.')]
+    #[Validate('string')]
     public string $password = '';
 
     #[Validate('boolean')]
     public bool $remember = false;
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Attempt to authenticate the request's credentials (supports Email, Username, or Name).
      *
      * @throws ValidationException
      */
@@ -30,7 +32,22 @@ class LoginForm extends Form
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
+        $loginInput = trim($this->email);
+        $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $authenticated = Auth::attempt([
+            $fieldType => $loginInput,
+            'password' => $this->password,
+        ], $this->remember);
+
+        if (! $authenticated && $fieldType === 'username') {
+            $authenticated = Auth::attempt([
+                'name' => $loginInput,
+                'password' => $this->password,
+            ], $this->remember);
+        }
+
+        if (! $authenticated) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
