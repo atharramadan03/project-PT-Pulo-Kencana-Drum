@@ -25,6 +25,72 @@
         </div>
     @endif
 
+    @php
+        $kpiTotalBatch = \App\Models\DrumBatch::count();
+        $kpiTotalDrum = (int) \App\Models\DrumBatch::sum('jumlah_diterima');
+        $kpiDrumTransit = (int) \App\Models\DrumBatch::whereIn('status_pengendapan', ['Transit', 'Mengendap'])->sum('jumlah_diterima');
+        $kpiDrumSelesai = (int) \App\Models\DrumBatch::where('status_pengendapan', 'Selesai')->sum('jumlah_diterima');
+    @endphp
+
+    <!-- 4 KPI Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Total Batch Terdaftar</p>
+                <x-icon name="clipboard-list" class="w-4 h-4 text-[#2563EB] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiTotalBatch" suffix=" Batch" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#2563EB] font-semibold">Aktif di sistem</span>
+                <span class="text-[#64748B]">Data gudang</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Total Drum Diterima</p>
+                <x-icon name="package" class="w-4 h-4 text-[#10B981] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiTotalDrum" suffix=" Unit" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#10B981] font-semibold">Penerimaan fisik</span>
+                <span class="text-[#64748B]">Akumulasi drum</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Transit & Mengendap</p>
+                <x-icon name="clock" class="w-4 h-4 text-[#F59E0B] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiDrumTransit" suffix=" Unit" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#F59E0B] font-semibold">Masa tunggu</span>
+                <span class="text-[#64748B]">Area karantina</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Selesai Pengendapan</p>
+                <x-icon name="circle-check" class="w-4 h-4 text-[#10B981] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiDrumSelesai" suffix=" Unit" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#10B981] font-semibold">Siap rekondisi</span>
+                <span class="text-[#64748B]">Lulus pengendapan</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Search & Filter Bar -->
     <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col md:flex-row justify-between items-center gap-3">
         <div class="relative w-full md:w-72">

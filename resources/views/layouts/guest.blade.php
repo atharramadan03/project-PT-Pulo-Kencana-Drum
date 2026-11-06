@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'PT PKDI') }} — Sistem Administrasi Operasional Gudang</title>
+        <title>{{ config('app.name', 'PT PKDI') }} — Portal Masuk Operasional Pabrik</title>
 
         <!-- Google Fonts: Plus Jakarta Sans (Industrial Enterprise Typography) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

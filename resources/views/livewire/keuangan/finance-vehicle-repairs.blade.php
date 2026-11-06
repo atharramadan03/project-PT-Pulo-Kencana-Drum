@@ -45,25 +45,37 @@
         </div>
     @endif
 
-    <!-- Mini KPI Summary Bar -->
+    <!-- 3 KPI Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
-            <p class="text-[11px] text-[#64748B] font-medium">Total Biaya Perbaikan</p>
-            <p class="text-base font-bold text-rose-600 tabular-nums mt-0.5">
-                Rp {{ number_format($totalBiaya, 0, ',', '.') }}
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Total Biaya Perbaikan</span>
+                <x-icon name="wrench" class="w-4 h-4 text-rose-500 shrink-0" />
+            </div>
+            <p class="text-base sm:text-lg font-bold text-rose-600 tabular-nums mt-1">
+                <x-animated-number :value="$totalBiaya" prefix="Rp " />
             </p>
+            <p class="text-[11px] text-[#64748B] mt-1">Akumulasi biaya bengkel & suku cadang</p>
         </div>
         <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
-            <p class="text-[11px] text-[#64748B] font-medium">Servis Selesai</p>
-            <p class="text-base font-bold text-[#10B981] tabular-nums mt-0.5">
-                {{ $countSelesai }} Unit Kendaraan
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Servis Selesai</span>
+                <x-icon name="circle-check" class="w-4 h-4 text-[#10B981] shrink-0" />
+            </div>
+            <p class="text-base sm:text-lg font-bold text-[#10B981] tabular-nums mt-1">
+                <x-animated-number :value="$countSelesai" suffix=" Unit Kendaraan" />
             </p>
+            <p class="text-[11px] text-[#64748B] mt-1">Armada siap beroperasi kembali</p>
         </div>
         <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
-            <p class="text-[11px] text-[#64748B] font-medium">Dalam Pengerjaan Bengkel</p>
-            <p class="text-base font-bold text-[#F59E0B] tabular-nums mt-0.5">
-                {{ $countProses }} Unit Kendaraan
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Dalam Pengerjaan Bengkel</span>
+                <x-icon name="clock" class="w-4 h-4 text-[#F59E0B] shrink-0" />
+            </div>
+            <p class="text-base sm:text-lg font-bold text-[#F59E0B] tabular-nums mt-1">
+                <x-animated-number :value="$countProses" suffix=" Unit Kendaraan" />
             </p>
+            <p class="text-[11px] text-[#64748B] mt-1">Sedang dalam proses perbaikan</p>
         </div>
     </div>
 

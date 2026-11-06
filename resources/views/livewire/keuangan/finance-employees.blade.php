@@ -38,7 +38,7 @@
                 <x-icon name="truck" class="w-4 h-4 text-[#2563EB]" />
             </div>
             <p class="text-lg sm:text-xl font-bold text-[#0F172A] mt-1.5 tabular-nums tracking-tight">
-                {{ $totalKaryawan }} Supir
+                <x-animated-number :value="$totalKaryawan" suffix=" Supir" />
             </p>
             <p class="text-[11px] text-[#94A3B8] mt-0.5">Personil armada terdata</p>
         </div>
@@ -49,7 +49,7 @@
                 <x-icon name="circle-check" class="w-4 h-4 text-emerald-600" />
             </div>
             <p class="text-lg sm:text-xl font-bold text-emerald-700 mt-1.5 tabular-nums tracking-tight">
-                {{ $totalAktif }} Driver
+                <x-animated-number :value="$totalAktif" suffix=" Driver" />
             </p>
             <p class="text-[11px] text-[#94A3B8] mt-0.5">Siap penugasan logistik</p>
         </div>
@@ -60,7 +60,7 @@
                 <x-icon name="wallet" class="w-4 h-4 text-purple-600" />
             </div>
             <p class="text-lg sm:text-xl font-bold text-purple-700 mt-1.5 tabular-nums tracking-tight">
-                {{ $totalPengelolaBiaya }} Driver
+                <x-animated-number :value="$totalPengelolaBiaya" suffix=" Driver" />
             </p>
             <p class="text-[11px] text-[#94A3B8] mt-0.5">Tercatat di kas BBM & armada</p>
         </div>

@@ -13,7 +13,7 @@
             <div class="flex items-center gap-2">
                 <a 
                     href="{{ route('satpam.riwayat') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="px-3.5 py-2 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
                 >
                     <x-icon name="history" class="w-4 h-4 text-slate-600" />
@@ -21,7 +21,7 @@
                 </a>
                 <a 
                     href="{{ route('satpam.kendaraan-masuk') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="px-3.5 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs shadow-xs transition inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
                 >
                     <x-icon name="plus" class="w-4 h-4" />
@@ -44,48 +44,42 @@
     @endphp
 
     <div class="space-y-4">
-        <!-- 1. 3 KPI Cards (Horizontal Compact Style per Reference) -->
+        <!-- 1. 3 KPI Cards (Clean Icon Without Colored Circle + Animated Number) -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-10 h-10 rounded-full bg-amber-50 text-[#F59E0B] flex items-center justify-center shrink-0">
-                        <x-icon name="clock" class="w-5 h-5" />
-                    </div>
-                    <div>
-                        <p class="text-xs text-[#64748B] font-medium">Kendaraan Aktif</p>
-                        <h3 class="text-xl font-bold text-[#0F172A] tabular-nums leading-tight mt-0.5">{{ $trukAktifCount }}</h3>
-                    </div>
+            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+                <div class="flex items-center justify-between gap-2">
+                    <p class="text-xs text-[#64748B] font-medium truncate">Kendaraan Aktif</p>
+                    <x-icon name="clock" class="w-4 h-4 text-[#F59E0B] shrink-0" />
                 </div>
+                <h3 class="text-xl font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                    <x-animated-number :value="$trukAktifCount" />
+                </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 text-[11px] text-[#64748B]">
                     Sedang berada di area pabrik
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0">
-                        <x-icon name="truck" class="w-5 h-5" />
-                    </div>
-                    <div>
-                        <p class="text-xs text-[#64748B] font-medium">Kunjungan Hari Ini</p>
-                        <h3 class="text-xl font-bold text-[#0F172A] tabular-nums leading-tight mt-0.5">{{ $trukMasukHariIniCount }}</h3>
-                    </div>
+            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+                <div class="flex items-center justify-between gap-2">
+                    <p class="text-xs text-[#64748B] font-medium truncate">Kunjungan Hari Ini</p>
+                    <x-icon name="truck" class="w-4 h-4 text-[#2563EB] shrink-0" />
                 </div>
+                <h3 class="text-xl font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                    <x-animated-number :value="$trukMasukHariIniCount" />
+                </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 text-[11px] text-[#64748B]">
                     Total kendaraan masuk hari ini
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-10 h-10 rounded-full bg-emerald-50 text-[#10B981] flex items-center justify-center shrink-0">
-                        <x-icon name="shield-check" class="w-5 h-5" />
-                    </div>
-                    <div>
-                        <p class="text-xs text-[#64748B] font-medium">Surat Jalan B3 Sesuai</p>
-                        <h3 class="text-xl font-bold text-[#0F172A] tabular-nums leading-tight mt-0.5">{{ $dokumenB3SesuaiCount }}</h3>
-                    </div>
+            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+                <div class="flex items-center justify-between gap-2">
+                    <p class="text-xs text-[#64748B] font-medium truncate">Surat Jalan B3 Sesuai</p>
+                    <x-icon name="shield-check" class="w-4 h-4 text-[#10B981] shrink-0" />
                 </div>
+                <h3 class="text-xl font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                    <x-animated-number :value="$dokumenB3SesuaiCount" />
+                </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 text-[11px] text-[#64748B]">
                     Terverifikasi hari ini
                 </div>
@@ -98,7 +92,7 @@
                 <h2 class="text-sm font-bold text-[#0F172A]">Kendaraan Aktif di Area Pabrik</h2>
                 <a 
                     href="{{ route('satpam.kendaraan-aktif') }}" 
-                    wire:navigate
+                    wire:navigate.hover
                     class="text-xs font-medium text-[#2563EB] hover:text-[#1D4ED8] inline-flex items-center gap-1"
                 >
                     <span>Lihat Semua</span>

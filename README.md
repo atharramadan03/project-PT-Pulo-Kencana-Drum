@@ -2,7 +2,7 @@
 **PT Pulo Kencana Drum Industri**
 
 Proyek ini dibangun sebagai luaran mata kuliah **Manajemen Proyek Perangkat Lunak (MPPL)** dan dirancang untuk memfasilitasi kebutuhan administrasi manajemen operasional pabrik, mendigitalisasi pencatatan laporan fisik dari gudang, serta mencatat arus keluar-masuk kendaraan armada truk dan verifikasi surat jalan kemasan limbah B3 di pos gerbang.
-
+ 
 ---
 
 ## 1. Spesifikasi Teknologi (Tech Stack)

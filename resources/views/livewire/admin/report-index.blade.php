@@ -104,49 +104,61 @@
         </div>
     </div>
 
-    <!-- 2. 4 KPI Cards Ringkas -->
+    <!-- 2. 4 KPI Cards Ringkas (Clean Enterprise Layout + Animated Number) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-full bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0">
-                <x-icon name="package" class="w-5 h-5" />
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Penerimaan Drum</p>
+                <x-icon name="package" class="w-4 h-4 text-[#2563EB] shrink-0" />
             </div>
-            <div>
-                <p class="text-xs text-[#64748B] font-medium">Penerimaan Drum</p>
-                <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-0.5">{{ number_format($totalDrumDiterima, 0, ',', '.') }}</h4>
-                <p class="text-[11px] text-[#64748B]">{{ $totalBatches }} Batch</p>
-            </div>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-full bg-amber-50 text-[#F59E0B] flex items-center justify-center shrink-0">
-                <x-icon name="clock" class="w-5 h-5" />
-            </div>
-            <div>
-                <p class="text-xs text-[#64748B] font-medium">Masa Pengendapan</p>
-                <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-0.5">{{ number_format($drumTransit, 0, ',', '.') }}</h4>
-                <p class="text-[11px] text-[#64748B]">Transit & Mengendap</p>
+            <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$totalDrumDiterima" />
+            </h4>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#2563EB] font-semibold"><x-animated-number :value="$totalBatches" suffix=" Batch" /></span>
+                <span class="text-[#64748B]">Periode laporan</span>
             </div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-full bg-emerald-50 text-[#10B981] flex items-center justify-center shrink-0">
-                <x-icon name="layers" class="w-5 h-5" />
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Masa Pengendapan</p>
+                <x-icon name="clock" class="w-4 h-4 text-[#F59E0B] shrink-0" />
             </div>
-            <div>
-                <p class="text-xs text-[#64748B] font-medium">Total Diproses</p>
-                <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-0.5">{{ number_format($drumSortir + $drumTiup + $drumCuci + $drumCat, 0, ',', '.') }}</h4>
-                <p class="text-[11px] text-[#64748B]">{{ number_format($totalAfkir, 0, ',', '.') }} Reject</p>
+            <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$drumTransit" />
+            </h4>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#F59E0B] font-semibold">Transit & Mengendap</span>
+                <span class="text-[#64748B]">Karantina drum</span>
             </div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-full bg-purple-50 text-[#7C3AED] flex items-center justify-center shrink-0">
-                <x-icon name="truck" class="w-5 h-5" />
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Total Diproses</p>
+                <x-icon name="layers" class="w-4 h-4 text-[#10B981] shrink-0" />
             </div>
-            <div>
-                <p class="text-xs text-[#64748B] font-medium">Kunjungan Truk</p>
-                <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-0.5">{{ number_format($totalKunjungan, 0, ',', '.') }}</h4>
-                <p class="text-[11px] text-[#64748B]">{{ $kunjunganB3 }} Sesuai B3</p>
+            <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$drumSortir + $drumTiup + $drumCuci + $drumCat" />
+            </h4>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-rose-600 font-semibold"><x-animated-number :value="$totalAfkir" suffix=" Reject" /></span>
+                <span class="text-[#64748B]">4 tahap proses</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Kunjungan Truk</p>
+                <x-icon name="truck" class="w-4 h-4 text-[#7C3AED] shrink-0" />
+            </div>
+            <h4 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$totalKunjungan" />
+            </h4>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#10B981] font-semibold"><x-animated-number :value="$kunjunganB3" suffix=" Sesuai B3" /></span>
+                <span class="text-[#64748B]">Pos gerbang</span>
             </div>
         </div>
     </div>

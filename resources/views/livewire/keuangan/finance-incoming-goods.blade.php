@@ -45,7 +45,7 @@
                 <x-icon name="arrow-down-left" class="w-4 h-4 text-rose-500" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                Rp {{ number_format($totalPengeluaranMasuk, 0, ',', '.') }}
+                <x-animated-number :value="$totalPengeluaranMasuk" prefix="Rp " />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Akumulasi biaya beli</p>
         </div>
@@ -56,7 +56,7 @@
                 <x-icon name="package" class="w-4 h-4 text-[#2563EB]" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                {{ number_format($totalUnitMasuk, 0, ',', '.') }} Unit
+                <x-animated-number :value="$totalUnitMasuk" suffix=" Unit" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Total drum & item fisik</p>
         </div>
@@ -67,7 +67,7 @@
                 <x-icon name="calendar" class="w-4 h-4 text-amber-500" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                {{ $totalTransaksiBulanIni }} Pengiriman
+                <x-animated-number :value="$totalTransaksiBulanIni" suffix=" Pengiriman" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">{{ now()->translatedFormat('F Y') }}</p>
         </div>
@@ -78,7 +78,7 @@
                 <x-icon name="truck" class="w-4 h-4 text-emerald-600" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                {{ $totalSupplierAktif }} Rekanan
+                <x-animated-number :value="$totalSupplierAktif" suffix=" Rekanan" />
             </p>
             <a href="{{ route('keuangan.suppliers') }}" wire:navigate class="text-[11px] text-[#2563EB] hover:underline mt-1 block">Lihat data supplier &rarr;</a>
         </div>

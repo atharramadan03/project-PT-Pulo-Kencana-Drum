@@ -25,6 +25,72 @@
         </div>
     @endif
 
+    @php
+        $kpiSortir = (int) \App\Models\DrumProcessLog::where('jenis_proses', 'penyortiran')->sum('jumlah_diproses');
+        $kpiTiup = (int) \App\Models\DrumProcessLog::where('jenis_proses', 'peniupan')->sum('jumlah_diproses');
+        $kpiCuci = (int) \App\Models\DrumProcessLog::where('jenis_proses', 'pencucian')->sum('jumlah_diproses');
+        $kpiCat = (int) \App\Models\DrumProcessLog::where('jenis_proses', 'pengecatan')->sum('jumlah_diproses');
+    @endphp
+
+    <!-- 4 KPI Summary Cards (4 Tahap Proses Gudang) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Tahap 1: Penyortiran</p>
+                <x-icon name="layers" class="w-4 h-4 text-[#2563EB] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiSortir" suffix=" Drum" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#2563EB] font-semibold">Seleksi fisik</span>
+                <span class="text-[#64748B]">Sortir awal</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Tahap 2: Peniupan</p>
+                <x-icon name="layers" class="w-4 h-4 text-[#F59E0B] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiTiup" suffix=" Drum" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#F59E0B] font-semibold">Uji tekanan</span>
+                <span class="text-[#64748B]">Deteksi bocor</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Tahap 3: Pencucian</p>
+                <x-icon name="layers" class="w-4 h-4 text-[#7C3AED] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiCuci" suffix=" Drum" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#7C3AED] font-semibold">Sterilisasi residu</span>
+                <span class="text-[#64748B]">Cuci kimia & bilas</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-xs text-[#64748B] font-medium truncate">Tahap 4: Pengecatan</p>
+                <x-icon name="circle-check" class="w-4 h-4 text-[#10B981] shrink-0" />
+            </div>
+            <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
+                <x-animated-number :value="$kpiCat" suffix=" Drum" />
+            </h3>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-[#10B981] font-semibold">Finishing cat</span>
+                <span class="text-[#64748B]">Siap distribusi</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Search & Filter Bar -->
     <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col md:flex-row justify-between items-center gap-3">
         <div class="relative w-full md:w-72">

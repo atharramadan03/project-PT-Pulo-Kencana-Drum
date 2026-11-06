@@ -45,25 +45,37 @@
         </div>
     @endif
 
-    <!-- Mini KPI Summary Bar -->
+    <!-- 3 KPI Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
-            <p class="text-[11px] text-[#64748B] font-medium">Pemasukan Terfilter</p>
-            <p class="text-base font-bold text-emerald-600 tabular-nums mt-0.5">
-                Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Pemasukan Terfilter</span>
+                <x-icon name="arrow-up-right" class="w-4 h-4 text-emerald-600 shrink-0" />
+            </div>
+            <p class="text-base sm:text-lg font-bold text-emerald-600 tabular-nums mt-1">
+                <x-animated-number :value="$totalPemasukan" prefix="Rp " />
             </p>
+            <p class="text-[11px] text-[#64748B] mt-1">Penjualan drum & produk keluar</p>
         </div>
         <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
-            <p class="text-[11px] text-[#64748B] font-medium">Pengeluaran Terfilter</p>
-            <p class="text-base font-bold text-[#F59E0B] tabular-nums mt-0.5">
-                Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Pengeluaran Terfilter</span>
+                <x-icon name="arrow-down-left" class="w-4 h-4 text-[#F59E0B] shrink-0" />
+            </div>
+            <p class="text-base sm:text-lg font-bold text-[#F59E0B] tabular-nums mt-1">
+                <x-animated-number :value="$totalPengeluaran" prefix="Rp " />
             </p>
+            <p class="text-[11px] text-[#64748B] mt-1">Pengadaan bahan baku & kimia</p>
         </div>
         <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
-            <p class="text-[11px] text-[#64748B] font-medium">Selisih Bersih</p>
-            <p class="text-base font-bold {{ ($totalPemasukan - $totalPengeluaran) >= 0 ? 'text-[#2563EB]' : 'text-rose-600' }} tabular-nums mt-0.5">
-                Rp {{ number_format($totalPemasukan - $totalPengeluaran, 0, ',', '.') }}
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Selisih Bersih</span>
+                <x-icon name="wallet" class="w-4 h-4 text-[#2563EB] shrink-0" />
+            </div>
+            <p class="text-base sm:text-lg font-bold {{ ($totalPemasukan - $totalPengeluaran) >= 0 ? 'text-[#2563EB]' : 'text-rose-600' }} tabular-nums mt-1">
+                <x-animated-number :value="$totalPemasukan - $totalPengeluaran" prefix="Rp " />
             </p>
+            <p class="text-[11px] text-[#64748B] mt-1">{{ ($totalPemasukan - $totalPengeluaran) >= 0 ? 'Surplus Stok' : 'Defisit Stok' }}</p>
         </div>
     </div>
 

@@ -120,19 +120,26 @@
         $pctSelesai = $totalDrumDiterima > 0 ? round(($drumSelesaiCount / $totalDrumDiterima) * 100) : 0;
         $pctDiproses = $totalDrumDiterima > 0 ? round(($drumDiprosesCount / $totalDrumDiterima) * 100) : 0;
         $pctTransit = $totalDrumDiterima > 0 ? max(0, 100 - $pctSelesai - $pctDiproses) : 0;
+
+        // Analisis tren mingguan (4 hari terakhir vs 4 hari sebelumnya)
+        $firstHalfTotal = array_sum(array_slice($seriesSortir, 0, 4)) + array_sum(array_slice($seriesTiup, 0, 4)) + array_sum(array_slice($seriesCuci, 0, 4)) + array_sum(array_slice($seriesCat, 0, 4));
+        $secondHalfTotal = array_sum(array_slice($seriesSortir, 4)) + array_sum(array_slice($seriesTiup, 4)) + array_sum(array_slice($seriesCuci, 4)) + array_sum(array_slice($seriesCat, 4));
+        $diffTotal = $secondHalfTotal - $firstHalfTotal;
+        $trendPct = $firstHalfTotal > 0 ? round(abs($diffTotal / $firstHalfTotal) * 100, 1) : ($secondHalfTotal > 0 ? 100 : 0);
+        $isTrendUp = $diffTotal >= 0;
     @endphp
 
     <div class="space-y-4">
-        <!-- 1. 4 KPI Cards (Clean Icon Without Colored Circle) -->
+        <!-- 1. 4 KPI Cards (Clean Icon Without Colored Circle + Animated Number) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Total Drum -->
-            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
                 <div class="flex items-center justify-between gap-2">
                     <p class="text-xs text-[#64748B] font-medium truncate">Total Drum</p>
                     <x-icon name="package" class="w-4 h-4 text-[#2563EB] shrink-0" />
                 </div>
                 <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
-                    {{ number_format($totalDrumDiterima, 0, ',', '.') }}
+                    <x-animated-number :value="$totalDrumDiterima" />
                 </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                     <span class="text-[#10B981] font-semibold">{{ $totalBatchCount }} Batch</span>
@@ -141,13 +148,13 @@
             </div>
 
             <!-- Drum Diproses -->
-            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
                 <div class="flex items-center justify-between gap-2">
                     <p class="text-xs text-[#64748B] font-medium truncate">Drum Diproses</p>
                     <x-icon name="layers" class="w-4 h-4 text-[#3B82F6] shrink-0" />
                 </div>
                 <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
-                    {{ number_format($drumDiprosesCount, 0, ',', '.') }}
+                    <x-animated-number :value="$drumDiprosesCount" />
                 </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                     <span class="text-[#2563EB] font-semibold">{{ number_format($drumTransitCount, 0, ',', '.') }} Transit</span>
@@ -156,13 +163,13 @@
             </div>
 
             <!-- Drum Selesai -->
-            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
                 <div class="flex items-center justify-between gap-2">
                     <p class="text-xs text-[#64748B] font-medium truncate">Drum Selesai</p>
                     <x-icon name="circle-check" class="w-4 h-4 text-[#10B981] shrink-0" />
                 </div>
                 <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
-                    {{ number_format($drumSelesaiCount, 0, ',', '.') }}
+                    <x-animated-number :value="$drumSelesaiCount" />
                 </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                     <span class="text-rose-600 font-semibold">{{ number_format($totalAfkirCount, 0, ',', '.') }} Reject</span>
@@ -171,13 +178,13 @@
             </div>
 
             <!-- Total Drum Afkir / Reject -->
-            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+            <div class="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] hover:border-slate-300 transition-colors">
                 <div class="flex items-center justify-between gap-2">
                     <p class="text-xs text-[#64748B] font-medium truncate">Total Drum Afkir</p>
                     <x-icon name="alert-triangle" class="w-4 h-4 text-rose-500 shrink-0" />
                 </div>
                 <h3 class="text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5">
-                    {{ number_format($totalAfkirCount, 0, ',', '.') }}
+                    <x-animated-number :value="$totalAfkirCount" />
                 </h3>
                 <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                     <span class="text-rose-600 font-semibold">{{ $totalDrumDiterima > 0 ? round(($totalAfkirCount / $totalDrumDiterima) * 100, 1) : 0 }}% Tingkat Afkir</span>
@@ -186,9 +193,9 @@
             </div>
         </div>
 
-        <!-- 2. Middle Row: Grafik Operasional Gudang (2 cols) + Aktivitas Terbaru (1 col) -->
+        <!-- 2. Middle Row: Grafik Operasional Gudang (Area Spline Chart) + Aktivitas Terbaru -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <!-- Grafik Operasional Gudang (Interactive Smooth Multi-Line & Area Chart) -->
+            <!-- Grafik Operasional Gudang (Interactive Gradient Area Spline Chart) -->
             <div 
                 x-data="{
                     activeIdx: null,
@@ -203,7 +210,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <div>
                         <h2 class="text-sm font-bold text-[#0F172A]">Grafik Operasional Gudang</h2>
-                        <p class="text-[11px] text-[#64748B]">Arahkan kursor pada grafik untuk melihat detail harian</p>
+                        <p class="text-[11px] text-[#64748B]">Ringkasan pemrosesan drum 8 hari terakhir</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 text-xs text-[#64748B]">
                         <button type="button" @click="showSortir = !showSortir" :class="showSortir ? 'opacity-100 font-medium text-[#0F172A]' : 'opacity-40'" class="inline-flex items-center gap-1.5 transition cursor-pointer">
@@ -225,7 +232,7 @@
                     </div>
                 </div>
 
-                <!-- Interactive SVG Smooth Multi-Line & Area Chart -->
+                <!-- Interactive SVG Area Spline Chart with Gradient Bloom & Path Draw -->
                 <div class="relative w-full pt-1 select-none" @mouseleave="activeIdx = null">
                     <!-- Floating Tooltip Tracker Card -->
                     <div 
@@ -233,7 +240,7 @@
                         x-cloak
                         x-transition.opacity.duration.100ms
                         :style="activeIdx !== null ? (activeIdx > 4 ? 'right: ' + (100 - days[activeIdx].pctX + 4) + '%; left: auto;' : 'left: ' + Math.max(8, days[activeIdx].pctX + 4) + '%;') : ''"
-                        class="pointer-events-none absolute top-2 z-20 w-48 rounded-xl bg-[#0F172A]/95 text-white p-3 shadow-xl border border-slate-700 text-xs"
+                        class="pointer-events-none absolute top-2 z-20 w-48 rounded-xl bg-[#0F172A]/95 text-white p-3 shadow-xl border border-slate-700 text-xs backdrop-blur-xs"
                     >
                         <template x-if="activeIdx !== null">
                             <div>
@@ -279,16 +286,20 @@
                     <svg viewBox="0 0 640 205" class="w-full h-52 overflow-visible">
                         <defs>
                             <linearGradient id="gradSortir" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.18" />
+                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.32" />
                                 <stop offset="100%" stop-color="#2563EB" stop-opacity="0.0" />
                             </linearGradient>
                             <linearGradient id="gradTiup" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.12" />
+                                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.25" />
                                 <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0" />
                             </linearGradient>
                             <linearGradient id="gradCuci" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.12" />
+                                <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.25" />
                                 <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.0" />
+                            </linearGradient>
+                            <linearGradient id="gradCat" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#10B981" stop-opacity="0.25" />
+                                <stop offset="100%" stop-color="#10B981" stop-opacity="0.0" />
                             </linearGradient>
                         </defs>
 
@@ -329,16 +340,17 @@
                             />
                         @endforeach
 
-                        <!-- Soft Area Fills -->
-                        <path x-show="showSortir" d="{{ $chartSortir['area'] }}" fill="url(#gradSortir)" />
-                        <path x-show="showTiup" d="{{ $chartTiup['area'] }}" fill="url(#gradTiup)" />
-                        <path x-show="showCuci" d="{{ $chartCuci['area'] }}" fill="url(#gradCuci)" />
+                        <!-- Multi-stop Gradient Area Fills with Bloom Animation -->
+                        <path x-show="showSortir" d="{{ $chartSortir['area'] }}" fill="url(#gradSortir)" class="area-bloom" />
+                        <path x-show="showTiup" d="{{ $chartTiup['area'] }}" fill="url(#gradTiup)" class="area-bloom" />
+                        <path x-show="showCuci" d="{{ $chartCuci['area'] }}" fill="url(#gradCuci)" class="area-bloom" />
+                        <path x-show="showCat" d="{{ $chartCat['area'] }}" fill="url(#gradCat)" class="area-bloom" />
 
-                        <!-- Smooth Spline Curves -->
-                        <path x-show="showCuci" d="{{ $chartCuci['line'] }}" fill="none" stroke="#7C3AED" stroke-width="2.2" stroke-linecap="round" />
-                        <path x-show="showCat" d="{{ $chartCat['line'] }}" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" />
-                        <path x-show="showTiup" d="{{ $chartTiup['line'] }}" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" />
-                        <path x-show="showSortir" d="{{ $chartSortir['line'] }}" fill="none" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round" />
+                        <!-- Smooth Spline Curves with Entrance Draw Animation -->
+                        <path x-show="showCuci" pathLength="100" d="{{ $chartCuci['line'] }}" fill="none" stroke="#7C3AED" stroke-width="2.2" stroke-linecap="round" class="chart-spline-draw" />
+                        <path x-show="showCat" pathLength="100" d="{{ $chartCat['line'] }}" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" class="chart-spline-draw" />
+                        <path x-show="showTiup" pathLength="100" d="{{ $chartTiup['line'] }}" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" class="chart-spline-draw" />
+                        <path x-show="showSortir" pathLength="100" d="{{ $chartSortir['line'] }}" fill="none" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round" class="chart-spline-draw" />
 
                         <!-- Data Nodes: Pencucian (Purple) -->
                         @foreach ($chartCuci['points'] as $idx => $pt)
@@ -562,41 +574,152 @@
                 </div>
             </div>
 
-            <!-- Status Drum (Donut Ring Summary per Reference) -->
-            <div class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col justify-between">
+            <!-- Status Drum (Animated Donut Ring Card) -->
+            <div 
+                x-data="{
+                    loaded: false,
+                    activeSegment: null,
+                    pctSelesai: {{ $pctSelesai }},
+                    pctDiproses: {{ $pctDiproses }},
+                    pctTransit: {{ $pctTransit }}
+                }"
+                x-init="setTimeout(() => loaded = true, 60)"
+                class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col justify-between"
+            >
                 <h2 class="text-sm font-bold text-[#0F172A] mb-3">Status Drum</h2>
 
-                <div class="flex items-center justify-center my-2">
-                    <div class="relative w-32 h-32 flex items-center justify-center rounded-full border-[12px] border-[#10B981]"
-                         style="background: conic-gradient(#10B981 0% {{ $pctSelesai }}%, #2563EB {{ $pctSelesai }}% {{ $pctSelesai + $pctDiproses }}%, #F59E0B {{ $pctSelesai + $pctDiproses }}% 100%); border: none; padding: 12px;">
-                        <div class="w-full h-full bg-white rounded-full flex flex-col items-center justify-center text-center">
-                            <span class="text-base font-bold text-[#0F172A] tabular-nums leading-none">{{ number_format($totalDrumDiterima, 0, ',', '.') }}</span>
-                            <span class="text-[10px] text-[#64748B] mt-1">Total Drum</span>
-                        </div>
+                <!-- Animated SVG Donut Ring -->
+                <div class="relative w-36 h-36 mx-auto my-2 flex items-center justify-center">
+                    <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90 overflow-visible">
+                        <!-- Background Circle Track -->
+                        <circle 
+                            cx="50" 
+                            cy="50" 
+                            r="38" 
+                            stroke="#F1F5F9" 
+                            stroke-width="10" 
+                            fill="none" 
+                        />
+
+                        @php
+                            $circ = round(2 * pi() * 38, 2); // ~ 238.76
+                            $dashSelesai = round(($pctSelesai / 100) * $circ, 2);
+                            $offsetSelesai = round($circ - $dashSelesai, 2);
+                            
+                            $dashDiproses = round(($pctDiproses / 100) * $circ, 2);
+                            $offsetDiproses = round($circ - $dashDiproses, 2);
+                            $rotDiproses = round(($pctSelesai / 100) * 360, 1);
+
+                            $dashTransit = round(($pctTransit / 100) * $circ, 2);
+                            $offsetTransit = round($circ - $dashTransit, 2);
+                            $rotTransit = round((($pctSelesai + $pctDiproses) / 100) * 360, 1);
+                        @endphp
+
+                        @if ($pctSelesai > 0)
+                            <circle 
+                                cx="50" 
+                                cy="50" 
+                                r="38" 
+                                stroke="#10B981" 
+                                stroke-width="10" 
+                                stroke-dasharray="{{ $circ }}" 
+                                :style="loaded ? 'stroke-dashoffset: {{ $offsetSelesai }}' : 'stroke-dashoffset: {{ $circ }}'"
+                                style="stroke-dashoffset: {{ $circ }}"
+                                stroke-linecap="round"
+                                fill="none" 
+                                class="transition-all duration-1000 ease-out cursor-pointer hover:stroke-[12]"
+                                :class="activeSegment === 'selesai' ? 'stroke-[12]' : ''"
+                                @mouseenter="activeSegment = 'selesai'"
+                                @mouseleave="activeSegment = null"
+                            />
+                        @endif
+
+                        @if ($pctDiproses > 0)
+                            <circle 
+                                cx="50" 
+                                cy="50" 
+                                r="38" 
+                                stroke="#2563EB" 
+                                stroke-width="10" 
+                                stroke-dasharray="{{ $circ }}" 
+                                :style="loaded ? 'stroke-dashoffset: {{ $offsetDiproses }}' : 'stroke-dashoffset: {{ $circ }}'"
+                                style="stroke-dashoffset: {{ $circ }}"
+                                stroke-linecap="round"
+                                fill="none" 
+                                transform="rotate({{ $rotDiproses }} 50 50)"
+                                class="transition-all duration-1000 ease-out cursor-pointer hover:stroke-[12]"
+                                :class="activeSegment === 'diproses' ? 'stroke-[12]' : ''"
+                                @mouseenter="activeSegment = 'diproses'"
+                                @mouseleave="activeSegment = null"
+                            />
+                        @endif
+
+                        @if ($pctTransit > 0)
+                            <circle 
+                                cx="50" 
+                                cy="50" 
+                                r="38" 
+                                stroke="#F59E0B" 
+                                stroke-width="10" 
+                                stroke-dasharray="{{ $circ }}" 
+                                :style="loaded ? 'stroke-dashoffset: {{ $offsetTransit }}' : 'stroke-dashoffset: {{ $circ }}'"
+                                style="stroke-dashoffset: {{ $circ }}"
+                                stroke-linecap="round"
+                                fill="none" 
+                                transform="rotate({{ $rotTransit }} 50 50)"
+                                class="transition-all duration-1000 ease-out cursor-pointer hover:stroke-[12]"
+                                :class="activeSegment === 'transit' ? 'stroke-[12]' : ''"
+                                @mouseenter="activeSegment = 'transit'"
+                                @mouseleave="activeSegment = null"
+                            />
+                        @endif
+                    </svg>
+
+                    <!-- Center Count-Up Number & Label -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                        <x-animated-number :value="$totalDrumDiterima" class="text-lg font-bold text-[#0F172A] leading-tight" />
+                        <span class="text-[10px] text-[#64748B] mt-0.5 font-medium">Total Drum</span>
                     </div>
                 </div>
 
-                <div class="space-y-2 mt-3 text-xs">
-                    <div class="flex items-center justify-between">
+                <div class="space-y-2 mt-2 text-xs">
+                    <div 
+                        @mouseenter="activeSegment = 'selesai'" 
+                        @mouseleave="activeSegment = null"
+                        class="flex items-center justify-between p-1.5 rounded-lg transition-colors cursor-pointer"
+                        :class="activeSegment === 'selesai' ? 'bg-emerald-50/70 font-semibold' : 'hover:bg-slate-50'"
+                    >
                         <span class="inline-flex items-center gap-2 text-[#64748B]">
-                            <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                            Selesai
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+                            <span>Selesai</span>
                         </span>
-                        <span class="font-semibold text-[#0F172A] tabular-nums">{{ $pctSelesai }}%</span>
+                        <span class="font-bold text-[#0F172A] tabular-nums">{{ $pctSelesai }}%</span>
                     </div>
-                    <div class="flex items-center justify-between">
+
+                    <div 
+                        @mouseenter="activeSegment = 'diproses'" 
+                        @mouseleave="activeSegment = null"
+                        class="flex items-center justify-between p-1.5 rounded-lg transition-colors cursor-pointer"
+                        :class="activeSegment === 'diproses' ? 'bg-blue-50/70 font-semibold' : 'hover:bg-slate-50'"
+                    >
                         <span class="inline-flex items-center gap-2 text-[#64748B]">
-                            <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
-                            Diproses
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>
+                            <span>Diproses</span>
                         </span>
-                        <span class="font-semibold text-[#0F172A] tabular-nums">{{ $pctDiproses }}%</span>
+                        <span class="font-bold text-[#0F172A] tabular-nums">{{ $pctDiproses }}%</span>
                     </div>
-                    <div class="flex items-center justify-between">
+
+                    <div 
+                        @mouseenter="activeSegment = 'transit'" 
+                        @mouseleave="activeSegment = null"
+                        class="flex items-center justify-between p-1.5 rounded-lg transition-colors cursor-pointer"
+                        :class="activeSegment === 'transit' ? 'bg-amber-50/70 font-semibold' : 'hover:bg-slate-50'"
+                    >
                         <span class="inline-flex items-center gap-2 text-[#64748B]">
-                            <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
-                            Transit & Mengendap
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>
+                            <span>Transit & Mengendap</span>
                         </span>
-                        <span class="font-semibold text-[#0F172A] tabular-nums">{{ $pctTransit }}%</span>
+                        <span class="font-bold text-[#0F172A] tabular-nums">{{ $pctTransit }}%</span>
                     </div>
                 </div>
             </div>

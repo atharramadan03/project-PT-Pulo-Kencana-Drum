@@ -66,7 +66,7 @@
                 <x-icon name="wallet" class="w-4 h-4 text-[#10B981] shrink-0" />
             </div>
             <h3 class="text-sm sm:text-base font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
+                <x-animated-number :value="$totalPemasukan" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate.hover class="text-[#10B981] font-semibold hover:underline">{{ number_format($totalUnitTerjual, 0, ',', '.') }} Drum</a>
@@ -81,7 +81,7 @@
                 <x-icon name="package" class="w-4 h-4 text-[#F59E0B] shrink-0" />
             </div>
             <h3 class="text-sm sm:text-base font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalPengeluaranStok, 0, ',', '.') }}
+                <x-animated-number :value="$totalPengeluaranStok" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <a href="{{ route('keuangan.stok-transaksi') }}" wire:navigate.hover class="text-[#F59E0B] font-semibold hover:underline">{{ number_format($totalUnitBahanMasuk, 0, ',', '.') }} Unit</a>
@@ -96,7 +96,7 @@
                 <x-icon name="wrench" class="w-4 h-4 text-[#EF4444] shrink-0" />
             </div>
             <h3 class="text-sm sm:text-base font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalBiayaPerbaikan, 0, ',', '.') }}
+                <x-animated-number :value="$totalBiayaPerbaikan" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <a href="{{ route('keuangan.biaya-kendaraan') }}" wire:navigate.hover class="text-rose-600 font-semibold hover:underline">{{ $totalPerbaikanSelesai }} Selesai</a>
@@ -111,7 +111,7 @@
                 <x-icon name="banknote" class="w-4 h-4 text-rose-500 shrink-0" />
             </div>
             <h3 class="text-sm sm:text-base font-bold text-rose-600 tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalBiayaOperasional, 0, ',', '.') }}
+                <x-animated-number :value="$totalBiayaOperasional" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <a href="{{ route('keuangan.operasional') }}" wire:navigate.hover class="text-[#2563EB] hover:underline font-semibold">Listrik, BBM & APD</a>
@@ -126,7 +126,7 @@
                 <x-icon name="trending-up" class="w-4 h-4 text-[#2563EB] shrink-0" />
             </div>
             <h3 class="text-sm sm:text-base font-bold {{ $netOperasional >= 0 ? 'text-[#0F172A]' : 'text-rose-600' }} tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($netOperasional, 0, ',', '.') }}
+                <x-animated-number :value="$netOperasional" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-[#2563EB] font-semibold">Margin {{ $marginPct }}%</span>
@@ -267,15 +267,15 @@
                         />
                     @endforeach
 
-                    <!-- Area Fills -->
-                    <path x-show="showPemasukan" d="{{ $chartPemasukan['area'] }}" fill="url(#gradPemasukan)" />
-                    <path x-show="showPengeluaran" d="{{ $chartPengeluaranStok['area'] }}" fill="url(#gradPengeluaran)" />
-                    <path x-show="showPerbaikan" d="{{ $chartPerbaikan['area'] }}" fill="url(#gradPerbaikan)" />
+                    <!-- Multi-stop Gradient Area Fills with Bloom Animation -->
+                    <path x-show="showPemasukan" d="{{ $chartPemasukan['area'] }}" fill="url(#gradPemasukan)" class="area-bloom" />
+                    <path x-show="showPengeluaran" d="{{ $chartPengeluaranStok['area'] }}" fill="url(#gradPengeluaran)" class="area-bloom" />
+                    <path x-show="showPerbaikan" d="{{ $chartPerbaikan['area'] }}" fill="url(#gradPerbaikan)" class="area-bloom" />
 
-                    <!-- Spline Curves -->
-                    <path x-show="showPerbaikan" d="{{ $chartPerbaikan['line'] }}" fill="none" stroke="#EF4444" stroke-width="2.2" stroke-linecap="round" />
-                    <path x-show="showPengeluaran" d="{{ $chartPengeluaranStok['line'] }}" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" />
-                    <path x-show="showPemasukan" d="{{ $chartPemasukan['line'] }}" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+                    <!-- Smooth Spline Curves with Entrance Draw Animation -->
+                    <path x-show="showPerbaikan" pathLength="100" d="{{ $chartPerbaikan['line'] }}" fill="none" stroke="#EF4444" stroke-width="2.2" stroke-linecap="round" class="chart-spline-draw" />
+                    <path x-show="showPengeluaran" pathLength="100" d="{{ $chartPengeluaranStok['line'] }}" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" class="chart-spline-draw" />
+                    <path x-show="showPemasukan" pathLength="100" d="{{ $chartPemasukan['line'] }}" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" class="chart-spline-draw" />
 
                     <!-- Data Nodes: Perbaikan Mobil -->
                     @foreach ($chartPerbaikan['points'] as $idx => $pt)
@@ -462,43 +462,156 @@
             </div>
         </div>
 
-        <!-- Status Arus Kas (Donut Ring Summary per Reference) -->
-        <div class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col justify-between">
-            <h2 class="text-sm font-bold text-[#0F172A] mb-3">Distribusi Arus Kas</h2>
+        <!-- Status Arus Kas (Animated Donut Ring Card) -->
+        <div 
+            x-data="{
+                loaded: false,
+                activeSegment: null,
+                pctPemasukan: {{ $pctPemasukan }},
+                pctPengeluaran: {{ $pctPengeluaranStok }},
+                pctArmada: {{ $pctBiayaPerbaikan }}
+            }"
+            x-init="setTimeout(() => loaded = true, 60)"
+            class="bg-white p-4 sm:p-5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col justify-between"
+        >
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-sm font-bold text-[#0F172A]">Distribusi Arus Kas</h2>
+            </div>
 
-            <div class="flex items-center justify-center my-2">
-                <div class="relative w-32 h-32 flex items-center justify-center rounded-full"
-                     style="background: conic-gradient(#10B981 0% {{ $pctPemasukan }}%, #F59E0B {{ $pctPemasukan }}% {{ $pctPemasukan + $pctPengeluaranStok }}%, #EF4444 {{ $pctPemasukan + $pctPengeluaranStok }}% 100%); border: none; padding: 12px;">
-                    <div class="w-full h-full bg-white rounded-full flex flex-col items-center justify-center text-center px-1">
-                        <span class="text-xs font-bold text-[#0F172A] tabular-nums leading-none">
-                            Rp {{ number_format($totalPemasukan / 1000000, 1) }}M
-                        </span>
-                        <span class="text-[10px] text-[#64748B] mt-1">Pemasukan</span>
-                    </div>
+            <!-- Animated SVG Donut Ring -->
+            <div class="relative w-36 h-36 mx-auto my-2 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90 overflow-visible">
+                    <!-- Background Circle Track -->
+                    <circle 
+                        cx="50" 
+                        cy="50" 
+                        r="38" 
+                        stroke="#F1F5F9" 
+                        stroke-width="10" 
+                        fill="none" 
+                    />
+
+                    @php
+                        $circ = 2 * pi() * 38; // ~ 238.76
+                        $dashPem = round(($pctPemasukan / 100) * $circ, 2);
+                        $offsetPem = round($circ - $dashPem, 2);
+                        
+                        $dashPeng = round(($pctPengeluaranStok / 100) * $circ, 2);
+                        $offsetPeng = round($circ - $dashPeng, 2);
+                        $rotPeng = round(($pctPemasukan / 100) * 360, 1);
+
+                        $dashArmada = round(($pctBiayaPerbaikan / 100) * $circ, 2);
+                        $offsetArmada = round($circ - $dashArmada, 2);
+                        $rotArmada = round((($pctPemasukan + $pctPengeluaranStok) / 100) * 360, 1);
+                    @endphp
+
+                    @if ($pctPemasukan > 0)
+                        <circle 
+                            cx="50" 
+                            cy="50" 
+                            r="38" 
+                            stroke="#10B981" 
+                            stroke-width="10" 
+                            stroke-dasharray="{{ $circ }}" 
+                            :style="loaded ? 'stroke-dashoffset: {{ $offsetPem }}' : 'stroke-dashoffset: {{ $circ }}'"
+                            style="stroke-dashoffset: {{ $circ }}"
+                            stroke-linecap="round"
+                            fill="none" 
+                            class="transition-all duration-700 ease-out cursor-pointer hover:stroke-[12]"
+                            :class="activeSegment === 'pemasukan' ? 'stroke-[12]' : ''"
+                            @mouseenter="activeSegment = 'pemasukan'"
+                            @mouseleave="activeSegment = null"
+                        />
+                    @endif
+
+                    @if ($pctPengeluaranStok > 0)
+                        <circle 
+                            cx="50" 
+                            cy="50" 
+                            r="38" 
+                            stroke="#F59E0B" 
+                            stroke-width="10" 
+                            stroke-dasharray="{{ $circ }}" 
+                            :style="loaded ? 'stroke-dashoffset: {{ $offsetPeng }}' : 'stroke-dashoffset: {{ $circ }}'"
+                            style="stroke-dashoffset: {{ $circ }}"
+                            stroke-linecap="round"
+                            fill="none" 
+                            transform="rotate({{ $rotPeng }} 50 50)"
+                            class="transition-all duration-700 ease-out cursor-pointer hover:stroke-[12]"
+                            :class="activeSegment === 'pengeluaran' ? 'stroke-[12]' : ''"
+                            @mouseenter="activeSegment = 'pengeluaran'"
+                            @mouseleave="activeSegment = null"
+                        />
+                    @endif
+
+                    @if ($pctBiayaPerbaikan > 0)
+                        <circle 
+                            cx="50" 
+                            cy="50" 
+                            r="38" 
+                            stroke="#EF4444" 
+                            stroke-width="10" 
+                            stroke-dasharray="{{ $circ }}" 
+                            :style="loaded ? 'stroke-dashoffset: {{ $offsetArmada }}' : 'stroke-dashoffset: {{ $circ }}'"
+                            style="stroke-dashoffset: {{ $circ }}"
+                            stroke-linecap="round"
+                            fill="none" 
+                            transform="rotate({{ $rotArmada }} 50 50)"
+                            class="transition-all duration-700 ease-out cursor-pointer hover:stroke-[12]"
+                            :class="activeSegment === 'armada' ? 'stroke-[12]' : ''"
+                            @mouseenter="activeSegment = 'armada'"
+                            @mouseleave="activeSegment = null"
+                        />
+                    @endif
+                </svg>
+
+                <!-- Center Number & Label -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-1 pointer-events-none">
+                    <span class="text-xs font-bold text-[#0F172A] tabular-nums leading-none">
+                        Rp {{ number_format($totalPemasukan / 1000000, 1) }}M
+                    </span>
+                    <span class="text-[10px] text-[#64748B] mt-0.5 font-medium">Pemasukan</span>
                 </div>
             </div>
 
-            <div class="space-y-2 mt-3 text-xs">
-                <div class="flex items-center justify-between">
+            <div class="space-y-1.5 mt-2 text-xs">
+                <div 
+                    @mouseenter="activeSegment = 'pemasukan'" 
+                    @mouseleave="activeSegment = null"
+                    class="flex items-center justify-between p-1.5 rounded-lg transition-colors cursor-pointer"
+                    :class="activeSegment === 'pemasukan' ? 'bg-emerald-50/70 font-semibold' : 'hover:bg-slate-50'"
+                >
                     <span class="inline-flex items-center gap-2 text-[#64748B]">
-                        <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                        Pemasukan Stok
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+                        <span>Pemasukan Stok</span>
                     </span>
-                    <span class="font-semibold text-[#0F172A] tabular-nums">{{ $pctPemasukan }}%</span>
+                    <span class="font-bold text-[#0F172A] tabular-nums">{{ $pctPemasukan }}%</span>
                 </div>
-                <div class="flex items-center justify-between">
+
+                <div 
+                    @mouseenter="activeSegment = 'pengeluaran'" 
+                    @mouseleave="activeSegment = null"
+                    class="flex items-center justify-between p-1.5 rounded-lg transition-colors cursor-pointer"
+                    :class="activeSegment === 'pengeluaran' ? 'bg-amber-50/70 font-semibold' : 'hover:bg-slate-50'"
+                >
                     <span class="inline-flex items-center gap-2 text-[#64748B]">
-                        <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
-                        Pengeluaran Stok
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>
+                        <span>Pengeluaran Stok</span>
                     </span>
-                    <span class="font-semibold text-[#0F172A] tabular-nums">{{ $pctPengeluaranStok }}%</span>
+                    <span class="font-bold text-[#0F172A] tabular-nums">{{ $pctPengeluaranStok }}%</span>
                 </div>
-                <div class="flex items-center justify-between">
+
+                <div 
+                    @mouseenter="activeSegment = 'armada'" 
+                    @mouseleave="activeSegment = null"
+                    class="flex items-center justify-between p-1.5 rounded-lg transition-colors cursor-pointer"
+                    :class="activeSegment === 'armada' ? 'bg-rose-50/70 font-semibold' : 'hover:bg-slate-50'"
+                >
                     <span class="inline-flex items-center gap-2 text-[#64748B]">
-                        <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
-                        Biaya Mobil
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#EF4444]"></span>
+                        <span>Biaya Mobil</span>
                     </span>
-                    <span class="font-semibold text-[#0F172A] tabular-nums">{{ $pctBiayaPerbaikan }}%</span>
+                    <span class="font-bold text-[#0F172A] tabular-nums">{{ $pctBiayaPerbaikan }}%</span>
                 </div>
             </div>
         </div>

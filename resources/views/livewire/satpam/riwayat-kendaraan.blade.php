@@ -19,7 +19,7 @@
                 <x-icon name="clipboard-list" class="w-4 h-4 text-[#2563EB] shrink-0" />
             </div>
             <p class="text-lg sm:text-xl font-bold text-[#0F172A] mt-1 tabular-nums tracking-tight">
-                {{ $totalSemua }} Kunjungan
+                <x-animated-number :value="$totalSemua" suffix=" Kunjungan" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Keseluruhan data tercatat</p>
         </div>
@@ -30,7 +30,7 @@
                 <x-icon name="clock" class="w-4 h-4 text-amber-500 shrink-0" />
             </div>
             <p class="text-lg sm:text-xl font-bold text-amber-600 mt-1 tabular-nums tracking-tight">
-                {{ $totalAktif }} Truk Aktif
+                <x-animated-number :value="$totalAktif" suffix=" Truk Aktif" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Belum mencatat waktu keluar</p>
         </div>
@@ -41,7 +41,7 @@
                 <x-icon name="circle-check" class="w-4 h-4 text-emerald-600 shrink-0" />
             </div>
             <p class="text-lg sm:text-xl font-bold text-emerald-600 mt-1 tabular-nums tracking-tight">
-                {{ $totalSelesai }} Truk Selesai
+                <x-animated-number :value="$totalSelesai" suffix=" Truk Selesai" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Kunjungan resmi ditutup</p>
         </div>
@@ -52,7 +52,7 @@
                 <x-icon name="calendar" class="w-4 h-4 text-[#7C3AED] shrink-0" />
             </div>
             <p class="text-lg sm:text-xl font-bold text-[#0F172A] mt-1 tabular-nums tracking-tight">
-                {{ $totalHariIni }} Kendaraan
+                <x-animated-number :value="$totalHariIni" suffix=" Kendaraan" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">{{ now()->translatedFormat('d F Y') }}</p>
         </div>

@@ -40,6 +40,47 @@
         </div>
     @endif
 
+    <!-- 3 KPI Summary Cards -->
+    @php
+        $totalAktifPabrik = \App\Models\VehicleVisit::aktif()->count();
+        $totalB3Sesuai = \App\Models\VehicleVisit::aktif()->where('status_pemeriksaan_surat_jalan_b3', 'sesuai')->count();
+        $totalMasukHariIni = \App\Models\VehicleVisit::aktif()->whereDate('waktu_masuk', today())->count();
+    @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Sedang di Area Pabrik</span>
+                <x-icon name="truck" class="w-4 h-4 text-[#2563EB] shrink-0" />
+            </div>
+            <p class="text-lg sm:text-xl font-bold text-[#0F172A] mt-1 tabular-nums tracking-tight">
+                <x-animated-number :value="$totalAktifPabrik" suffix=" Truk" />
+            </p>
+            <p class="text-[11px] text-[#64748B] mt-1">Belum mencatat waktu keluar</p>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Dokumen B3 Sesuai</span>
+                <x-icon name="shield" class="w-4 h-4 text-emerald-600 shrink-0" />
+            </div>
+            <p class="text-lg sm:text-xl font-bold text-emerald-600 mt-1 tabular-nums tracking-tight">
+                <x-animated-number :value="$totalB3Sesuai" suffix=" Armada" />
+            </p>
+            <p class="text-[11px] text-[#64748B] mt-1">Surat jalan B3 telah diverifikasi</p>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-2xs">
+            <div class="flex items-center justify-between text-xs text-[#64748B]">
+                <span class="font-medium">Masuk Hari Ini (Aktif)</span>
+                <x-icon name="clock" class="w-4 h-4 text-amber-500 shrink-0" />
+            </div>
+            <p class="text-lg sm:text-xl font-bold text-amber-600 mt-1 tabular-nums tracking-tight">
+                <x-animated-number :value="$totalMasukHariIni" suffix=" Kendaraan" />
+            </p>
+            <p class="text-[11px] text-[#64748B] mt-1">{{ now()->translatedFormat('d F Y') }}</p>
+        </div>
+    </div>
+
     <!-- Search Bar -->
     <div class="bg-white p-3.5 rounded-xl border border-[#E2E8F0] shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col sm:flex-row justify-between items-center gap-3">
         <div class="relative w-full sm:w-72">
@@ -54,7 +95,7 @@
             />
         </div>
         <div class="text-xs text-[#64748B]">
-            Total Aktif: <span class="font-semibold text-[#0F172A] tabular-nums">{{ $kendaraanAktif->total() }} Truk</span>
+            Total Aktif: <span class="font-semibold text-[#0F172A] tabular-nums"><x-animated-number :value="$kendaraanAktif->total()" suffix=" Truk" /></span>
         </div>
     </div>
 

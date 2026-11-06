@@ -53,12 +53,12 @@ new #[Layout('layouts.guest')] class extends Component
                 </div>
             </div>
 
-            <!-- Judul & Sub-judul (Tipografi persis reference_login.png) -->
+            <!-- Judul & Sub-judul Resmi Brand PT PKDI -->
             <h1 class="text-2xl sm:text-[28px] font-bold text-[#0284C7] tracking-tight leading-tight">
-                Fasilitas Layanan Administrasi
+                Pulo Kencana Drum Industri
             </h1>
-            <p class="text-[#0F172A] font-bold text-base sm:text-lg mt-1 mb-6">
-                Sistem Informasi Operasional Gudang
+            <p class="text-[#0F172A] font-semibold text-base sm:text-lg mt-1 mb-6 leading-snug">
+                Sistem Administrasi Operasional Pabrik
             </p>
 
             <!-- Session Status Alert -->

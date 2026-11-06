@@ -38,7 +38,7 @@
                 <x-icon name="truck" class="w-4 h-4 text-[#2563EB]" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                {{ $totalSupplier }} Mitra
+                <x-animated-number :value="$totalSupplier" suffix=" Mitra" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Seluruh rekanan terdaftar</p>
         </div>
@@ -49,7 +49,7 @@
                 <x-icon name="circle-check" class="w-4 h-4 text-emerald-600" />
             </div>
             <p class="text-base sm:text-lg font-bold text-emerald-700 mt-1 tabular-nums">
-                {{ $totalAktif }} Supplier
+                <x-animated-number :value="$totalAktif" suffix=" Supplier" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Pemasok berstatus aktif</p>
         </div>
@@ -60,7 +60,7 @@
                 <x-icon name="circle-x" class="w-4 h-4 text-rose-500" />
             </div>
             <p class="text-base sm:text-lg font-bold text-slate-600 mt-1 tabular-nums">
-                {{ $totalNonaktif }} Supplier
+                <x-animated-number :value="$totalNonaktif" suffix=" Supplier" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Pemasok yang dinonaktifkan</p>
         </div>

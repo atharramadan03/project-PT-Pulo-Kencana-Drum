@@ -45,7 +45,7 @@
                 <x-icon name="arrow-up-right" class="w-4 h-4 text-emerald-600" />
             </div>
             <p class="text-base sm:text-lg font-bold text-emerald-600 mt-1 tabular-nums">
-                Rp {{ number_format($totalPenjualan, 0, ',', '.') }}
+                <x-animated-number :value="$totalPenjualan" prefix="Rp " />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Akumulasi pendapatan</p>
         </div>
@@ -56,7 +56,7 @@
                 <x-icon name="package" class="w-4 h-4 text-[#2563EB]" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                {{ number_format($totalUnitTerjual, 0, ',', '.') }} Unit
+                <x-animated-number :value="$totalUnitTerjual" suffix=" Unit" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Drum siap pakai terkirim</p>
         </div>
@@ -67,7 +67,7 @@
                 <x-icon name="calendar" class="w-4 h-4 text-amber-500" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                {{ $totalPengirimanBulanIni }} Transaksi
+                <x-animated-number :value="$totalPengirimanBulanIni" suffix=" Transaksi" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">{{ now()->translatedFormat('F Y') }}</p>
         </div>
@@ -78,7 +78,7 @@
                 <x-icon name="coins" class="w-4 h-4 text-[#7C3AED]" />
             </div>
             <p class="text-base sm:text-lg font-bold text-[#0F172A] mt-1 tabular-nums">
-                Rp {{ number_format($rataRataPenjualan, 0, ',', '.') }}
+                <x-animated-number :value="$rataRataPenjualan" prefix="Rp " />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Per transaksi distribusi</p>
         </div>

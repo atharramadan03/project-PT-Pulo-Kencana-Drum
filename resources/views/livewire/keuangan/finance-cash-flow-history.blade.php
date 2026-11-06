@@ -35,7 +35,7 @@
                 <x-icon name="arrow-up-right" class="w-4 h-4 text-emerald-600" />
             </div>
             <p class="text-base sm:text-lg font-bold text-emerald-700 mt-1 tabular-nums">
-                +Rp {{ number_format($totalMutasiMasuk, 0, ',', '.') }}
+                <x-animated-number :value="$totalMutasiMasuk" prefix="+Rp " />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Penjualan barang keluar</p>
         </div>
@@ -46,7 +46,7 @@
                 <x-icon name="arrow-down-left" class="w-4 h-4 text-rose-500" />
             </div>
             <p class="text-base sm:text-lg font-bold text-rose-600 mt-1 tabular-nums">
-                -Rp {{ number_format($totalMutasiKeluar, 0, ',', '.') }}
+                <x-animated-number :value="$totalMutasiKeluar" prefix="-Rp " />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Pengadaan, mobil, & operasional</p>
         </div>
@@ -57,7 +57,7 @@
                 <x-icon name="wallet" class="w-4 h-4 text-[#2563EB]" />
             </div>
             <p class="text-base sm:text-lg font-bold {{ $selisihBersih >= 0 ? 'text-[#2563EB]' : 'text-rose-600' }} mt-1 tabular-nums">
-                Rp {{ number_format($selisihBersih, 0, ',', '.') }}
+                <x-animated-number :value="$selisihBersih" prefix="Rp " />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">{{ $selisihBersih >= 0 ? 'Surplus Kas' : 'Defisit Kas' }}</p>
         </div>
@@ -68,7 +68,7 @@
                 <x-icon name="receipt" class="w-4 h-4 text-slate-500" />
             </div>
             <p class="text-base sm:text-lg font-bold text-slate-800 mt-1 tabular-nums">
-                {{ $totalTransaksi }} Transaksi
+                <x-animated-number :value="$totalTransaksi" suffix=" Transaksi" />
             </p>
             <p class="text-[11px] text-[#64748B] mt-1">Pada periode yang dipilih</p>
         </div>

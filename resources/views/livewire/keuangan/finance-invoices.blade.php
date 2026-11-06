@@ -54,10 +54,10 @@
                 <x-icon name="receipt" class="w-4 h-4 text-[#2563EB] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalSemuaTagihan, 0, ',', '.') }}
+                <x-animated-number :value="$totalSemuaTagihan" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span class="text-[#2563EB] font-semibold">{{ $invoices->total() }} Faktur</span>
+                <span class="text-[#2563EB] font-semibold"><x-animated-number :value="$invoices->total()" suffix=" Faktur" /></span>
                 <span class="text-[#64748B]">Semua berkas</span>
             </div>
         </div>
@@ -69,7 +69,7 @@
                 <x-icon name="wallet" class="w-4 h-4 text-[#F59E0B] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-[#D97706] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalBelumLunas, 0, ',', '.') }}
+                <x-animated-number :value="$totalBelumLunas" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-[#F59E0B] font-semibold">Outstanding</span>
@@ -84,7 +84,7 @@
                 <x-icon name="circle-check" class="w-4 h-4 text-[#10B981] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalSudahLunas, 0, ',', '.') }}
+                <x-animated-number :value="$totalSudahLunas" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-[#10B981] font-semibold">Tuntas</span>
@@ -99,7 +99,7 @@
                 <x-icon name="calendar" class="w-4 h-4 text-[#EF4444] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-rose-600 tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                {{ $tagihanJatuhTempoCount }} Faktur
+                <x-animated-number :value="$tagihanJatuhTempoCount" suffix=" Faktur" />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-rose-600 font-semibold">Perlu Tindak Lanjut</span>

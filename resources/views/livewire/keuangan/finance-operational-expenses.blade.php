@@ -54,7 +54,7 @@
                 <x-icon name="banknote" class="w-4 h-4 text-[#EF4444] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalBiayaBulanIni, 0, ',', '.') }}
+                <x-animated-number :value="$totalBiayaBulanIni" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-rose-600 font-semibold">{{ \Carbon\Carbon::now()->locale('id')->isoFormat('MMMM Y') }}</span>
@@ -69,7 +69,7 @@
                 <x-icon name="wallet" class="w-4 h-4 text-[#F59E0B] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalKasKecil, 0, ',', '.') }}
+                <x-animated-number :value="$totalKasKecil" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-[#F59E0B] font-semibold">Petty Cash</span>
@@ -84,7 +84,7 @@
                 <x-icon name="trending-up" class="w-4 h-4 text-[#2563EB] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalTransferBank, 0, ',', '.') }}
+                <x-animated-number :value="$totalTransferBank" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span class="text-[#2563EB] font-semibold">Rekening PT</span>
@@ -99,10 +99,10 @@
                 <x-icon name="package" class="w-4 h-4 text-[#64748B] shrink-0" />
             </div>
             <h3 class="text-base sm:text-lg font-bold text-[#0F172A] tabular-nums leading-tight mt-1.5 whitespace-nowrap">
-                Rp {{ number_format($totalKeseluruhan, 0, ',', '.') }}
+                <x-animated-number :value="$totalKeseluruhan" prefix="Rp " />
             </h3>
             <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span class="text-[#64748B] font-semibold">{{ $expenses->total() }} Transaksi</span>
+                <span class="text-[#64748B] font-semibold"><x-animated-number :value="$expenses->total()" suffix=" Transaksi" /></span>
                 <span class="text-[#64748B]">Semua catatan</span>
             </div>
         </div>

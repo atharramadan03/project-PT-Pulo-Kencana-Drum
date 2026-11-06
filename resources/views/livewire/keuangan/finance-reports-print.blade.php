@@ -101,7 +101,7 @@
                     <x-icon name="arrow-up-right" class="w-4 h-4 text-emerald-600" />
                 </div>
                 <p class="text-base sm:text-lg font-bold text-emerald-700 mt-1 tabular-nums">
-                    Rp {{ number_format($totalPemasukanPenjualan, 0, ',', '.') }}
+                    <x-animated-number :value="$totalPemasukanPenjualan" prefix="Rp " />
                 </p>
                 <p class="text-[11px] text-[#64748B] mt-1">Barang keluar / drum siap kirim</p>
             </div>
@@ -112,7 +112,7 @@
                     <x-icon name="arrow-down-left" class="w-4 h-4 text-rose-500" />
                 </div>
                 <p class="text-base sm:text-lg font-bold text-rose-600 mt-1 tabular-nums">
-                    Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
+                    <x-animated-number :value="$totalPengeluaran" prefix="Rp " />
                 </p>
                 <p class="text-[11px] text-[#64748B] mt-1">Pengadaan, mobil, & operasional</p>
             </div>
@@ -123,7 +123,7 @@
                     <x-icon name="wallet" class="w-4 h-4 text-[#2563EB]" />
                 </div>
                 <p class="text-base sm:text-lg font-bold {{ $saldoBersih >= 0 ? 'text-[#2563EB]' : 'text-rose-600' }} mt-1 tabular-nums">
-                    Rp {{ number_format($saldoBersih, 0, ',', '.') }}
+                    <x-animated-number :value="$saldoBersih" prefix="Rp " />
                 </p>
                 <p class="text-[11px] text-[#64748B] mt-1">{{ $saldoBersih >= 0 ? 'Surplus Operasional' : 'Defisit Operasional' }}</p>
             </div>
@@ -134,9 +134,9 @@
                     <x-icon name="circle-check" class="w-4 h-4 text-emerald-600" />
                 </div>
                 <p class="text-base sm:text-lg font-bold text-slate-800 mt-1 tabular-nums">
-                    Rp {{ number_format($totalTagihanLunas, 0, ',', '.') }}
+                    <x-animated-number :value="$totalTagihanLunas" prefix="Rp " />
                 </p>
-                <p class="text-[11px] text-amber-600 mt-1 font-medium">Tertunggak: Rp {{ number_format($totalTagihanTertunggak, 0, ',', '.') }}</p>
+                <p class="text-[11px] text-amber-600 mt-1 font-medium">Tertunggak: <x-animated-number :value="$totalTagihanTertunggak" prefix="Rp " /></p>
             </div>
         </div>
     </div>
